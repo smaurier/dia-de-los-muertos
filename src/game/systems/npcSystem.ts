@@ -32,7 +32,8 @@ export type NPCConfig = {
 
 export function pickScenario(scenarios: Scenario[], seed: number): Scenario {
   const total = scenarios.reduce((sum, s) => sum + s.weight, 0)
-  let pick = ((seed * 2654435761) >>> 0) % total
+  if (total === 0) return scenarios[0]
+  let pick = ((seed * 2654435761) >>> 0) % total  // Knuth multiplicative hash
   for (const scenario of scenarios) {
     pick -= scenario.weight
     if (pick < 0) return scenario
