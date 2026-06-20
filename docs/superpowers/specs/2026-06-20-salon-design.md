@@ -148,7 +148,7 @@ watching_tv ↔ laughing ↔ adjusting ↔ observing
 | `adjusting` | NPC s'assoit sur canapé | Retire pieds du repose-pied, se range |
 | `observing` | mouvement dans la zone | Tête tourne vers l'activité, pas vers le joueur |
 
-**Règle absolue :** pas d'état `walking`. Il ne quitte pas le canapé. Toutes ses transitions sont des réponses à stimuli — jamais des décisions autonomes. **Personne ne lui parle. Il ne parle à personne.**
+**Règle absolue :** pas d'état `walking`. Il ne quitte pas le canapé. Toutes ses transitions sont des réponses à stimuli — jamais des décisions autonomes. Il réagit au joueur qui s'approche (tête, ajustement) comme n'importe quel adulte. **Ce qui le distingue : personne ne lui parle. Il ne parle à personne.**
 
 ### Grand-oncle entre visites
 
@@ -190,7 +190,7 @@ getGrandUnclePosition(seed: number): 'couch' | 'buffet' | 'window'
 **Réactions par proximité (<2m) :**
 - Tier 1 : change d'état, peut regarder l'enfant
 - Tier 2 : tourne la tête
-- Grand-oncle : aucune réaction directe au joueur — continue ce qu'il fait
+- Grand-oncle : tourne la tête vers le joueur, léger ajustement sur le canapé — réagit comme les autres
 
 **Stillness** : `useStillness` hook actif — immobilité → couche audio mémoire monte légèrement.
 
