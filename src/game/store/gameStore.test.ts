@@ -42,3 +42,43 @@ describe('gameStore', () => {
     expect(useGameStore.getState().adultHasLeft).toBe(true)
   })
 })
+
+describe('grandUnclePosition', () => {
+  beforeEach(() => {
+    useGameStore.setState({ grandUnclePosition: 'couch' })
+  })
+
+  it('starts at couch', () => {
+    expect(useGameStore.getState().grandUnclePosition).toBe('couch')
+  })
+
+  it('can move to buffet', () => {
+    useGameStore.getState().setGrandUnclePosition('buffet')
+    expect(useGameStore.getState().grandUnclePosition).toBe('buffet')
+  })
+
+  it('can move to window', () => {
+    useGameStore.getState().setGrandUnclePosition('window')
+    expect(useGameStore.getState().grandUnclePosition).toBe('window')
+  })
+})
+
+describe('salonArcPhase', () => {
+  beforeEach(() => {
+    useGameStore.setState({ salonArcPhase: 0 })
+  })
+
+  it('starts at phase 0', () => {
+    expect(useGameStore.getState().salonArcPhase).toBe(0)
+  })
+
+  it('advances to phase 1', () => {
+    useGameStore.getState().setSalonArcPhase(1)
+    expect(useGameStore.getState().salonArcPhase).toBe(1)
+  })
+
+  it('advances to phase 2', () => {
+    useGameStore.getState().setSalonArcPhase(2)
+    expect(useGameStore.getState().salonArcPhase).toBe(2)
+  })
+})

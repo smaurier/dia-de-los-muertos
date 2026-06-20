@@ -20,17 +20,24 @@ export enum GamePhase {
   END = 'END',
 }
 
+export type GrandUnclePosition = 'couch' | 'buffet' | 'window'
+export type SalonArcPhase = 0 | 1 | 2
+
 interface GameState {
   chapter: Chapter
   phase: GamePhase
   salonAudibilityLevel: number
   houseScale: number
   adultHasLeft: boolean
+  grandUnclePosition: GrandUnclePosition
+  salonArcPhase: SalonArcPhase
   setChapter: (chapter: Chapter) => void
   setPhase: (phase: GamePhase) => void
   setSalonAudibility: (level: number) => void
   setHouseScale: (scale: number) => void
   setAdultHasLeft: (value: boolean) => void
+  setGrandUnclePosition: (pos: GrandUnclePosition) => void
+  setSalonArcPhase: (phase: SalonArcPhase) => void
 }
 
 export const useGameStore = create<GameState>((set) => ({
@@ -39,6 +46,8 @@ export const useGameStore = create<GameState>((set) => ({
   salonAudibilityLevel: 0.8,
   houseScale: 1.0,
   adultHasLeft: false,
+  grandUnclePosition: 'couch',
+  salonArcPhase: 0,
   setChapter: (chapter) => set({ chapter }),
   setPhase: (phase) => set({ phase }),
   setSalonAudibility: (level) =>
@@ -46,4 +55,6 @@ export const useGameStore = create<GameState>((set) => ({
   setHouseScale: (scale) =>
     set({ houseScale: Math.max(1, Math.min(2, scale)) }),
   setAdultHasLeft: (adultHasLeft) => set({ adultHasLeft }),
+  setGrandUnclePosition: (grandUnclePosition) => set({ grandUnclePosition }),
+  setSalonArcPhase: (salonArcPhase) => set({ salonArcPhase }),
 }))
