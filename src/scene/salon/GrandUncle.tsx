@@ -52,9 +52,12 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
   const scenarioTimer = useRef(0)
   const currentScenario = useRef<Scenario>(GRAND_UNCLE_SCENARIOS[0])
   const seedRef = useRef(Math.floor(Math.random() * 1000))
+  const durationRef = useRef(0)
 
   useEffect(() => {
     currentScenario.current = pickScenario(GRAND_UNCLE_SCENARIOS, seedRef.current)
+    const [min, max] = currentScenario.current.duration
+    durationRef.current = min + Math.random() * (max - min)
   }, [])
 
   useFrame((_, delta) => {
@@ -79,13 +82,13 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
 
     // Scenario timer
     scenarioTimer.current += delta
-    const [min, max] = currentScenario.current.duration
-    const duration = min + Math.random() * (max - min)
 
-    if (scenarioTimer.current > duration) {
+    if (scenarioTimer.current > durationRef.current) {
       scenarioTimer.current = 0
       seedRef.current = (seedRef.current + 1337) % 10000
       currentScenario.current = pickScenario(GRAND_UNCLE_SCENARIOS, seedRef.current)
+      const [min, max] = currentScenario.current.duration
+      durationRef.current = min + Math.random() * (max - min)
 
       if (currentScenario.current.id === 'laugh_at_tv') {
         setSubtitle('¡Ja ja ja!')

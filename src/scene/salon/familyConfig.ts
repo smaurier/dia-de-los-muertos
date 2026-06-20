@@ -355,7 +355,7 @@ export const familyConfig: NPCConfig[] = [
   },
   {
     id: 'bebe', name: 'Bebé', tier: 3,
-    startPosition: [-1, 0, 0.5],
+    startPosition: [-0.8, 0, 1.0],
     waypoints: [],
     scenarios: [],
     meshColor: '#F0C0A0',
