@@ -38,10 +38,17 @@ npx tsc --noEmit # vérifier les types
 
 ## Références
 
+- **Spec narrative V9 (source de vérité)** : `docs/specs-dia-de-muertos-v9.md`
 - Spec complète : `docs/superpowers/plans/2026-06-20-vertical-slice-chapter3.md`
 - Backlog : `docs/project_v2_backlog.md`
 - Journal : `docs/journal/project-log.md`
 - 3D model pipeline : https://messenger.abeto.co/
+- **Bibliothèque visuelle** : `docs/references/visual-refs.md`
+
+### Direction artistique cible
+
+Style cel-shading / dessin animé (ref : `docs/references/assets/cel-shading-ref-01.png`) :
+couleurs plates, contours noirs, ombres en bandes. Impl : `MeshToonMaterial` + `Outline` (postprocessing).
 
 ## Conventions
 
