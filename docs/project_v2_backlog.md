@@ -15,8 +15,14 @@ Source plan: `docs/superpowers/plans/2026-06-20-vertical-slice-chapter3.md`
 - ✅ LIVRE Task 9: Chapter 3 Scene — Corridor, Mirror, Adult, Chapter3 assembly, TS clean, committed
 - ✅ LIVRE Task 10: Audio + Stillness Hooks — `useStillness.ts`, `useAudioLayers.ts`, TS clean, 42/42 tests pass, committed
 
+## Cel-Shading Phase
+
+- ✅ LIVRE Task 1: Install Dependencies — @react-three/postprocessing + postprocessing, TS clean, committed
+- ✅ LIVRE Task 2: Toon Gradient Map — `src/scene/chapter3/toonGradient.ts` singleton DataTexture, TS clean, committed
+
 ## Backlog — Prochaines étapes
 
+- [ ] **Cel-Shading** — MeshToonMaterial + @react-three/postprocessing Outline sur Corridor + Adult. Spec : `docs/superpowers/specs/2026-06-20-cel-shading-design.md`
 - [ ] **3D Models** — Intégrer modèles GLTF via pipeline messenger.abeto.co (remplacer placeholders géométriques). À définir : format export, rig adulte, rig enfant, maison.
 - [ ] **Audio réel** — Enregistrer voix espagnoles, composer la chanson, SFX (chien, pétales, morsure pomme). Brancher sur les 6 couches AudioLayerManager.
 - [ ] **Journalisation** — Système de journal de session (à définir selon modèle projet training).
