@@ -19,10 +19,13 @@ Source plan: `docs/superpowers/plans/2026-06-20-vertical-slice-chapter3.md`
 
 - ✅ LIVRE Task 1: Install Dependencies — @react-three/postprocessing + postprocessing, TS clean, committed
 - ✅ LIVRE Task 2: Toon Gradient Map — `src/scene/chapter3/toonGradient.ts` singleton DataTexture, TS clean, committed
+- ✅ LIVRE Task 3: toonGradient minFilter Fix — Added `minFilter = THREE.NearestFilter` for sharp band boundaries at all texture scales, committed
+- ✅ LIVRE Task 4: Corridor MeshToonMaterial — `forwardRef<THREE.Group>`, `meshToonMaterial` on all 6 meshes, `directionalLight` added, TS clean, committed
+- ✅ LIVRE Task 5: Adult MeshToonMaterial — Replaced 2x meshStandardMaterial with meshToonMaterial, gradientMap wired, TS clean, committed
 
 ## Backlog — Prochaines étapes
 
-- [ ] **Cel-Shading** — MeshToonMaterial + @react-three/postprocessing Outline sur Corridor + Adult. Spec : `docs/superpowers/specs/2026-06-20-cel-shading-design.md`
+- [ ] **Cel-Shading (remaining)** — @react-three/postprocessing Outline on Corridor + Adult. Spec : `docs/superpowers/specs/2026-06-20-cel-shading-design.md`
 - [ ] **3D Models** — Intégrer modèles GLTF via pipeline messenger.abeto.co (remplacer placeholders géométriques). À définir : format export, rig adulte, rig enfant, maison.
 - [ ] **Audio réel** — Enregistrer voix espagnoles, composer la chanson, SFX (chien, pétales, morsure pomme). Brancher sur les 6 couches AudioLayerManager.
 - [ ] **Journalisation** — Système de journal de session (à définir selon modèle projet training).
