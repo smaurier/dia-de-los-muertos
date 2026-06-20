@@ -17,15 +17,17 @@ Jeu narratif browser-based. Un enfant se perd dans une maison familiale pendant 
 src/
 ├── game/
 │   ├── store/         # Zustand: gameStore, playerStore
-│   └── systems/       # Logique pure testée: stillness, song
+│   └── systems/       # Logique pure testée: stillness, song, npcSystem
 ├── audio/             # AudioLayerManager (6 couches Howler)
 ├── scene/
-│   └── chapter3/      # Corridor, Mirror, Adult
+│   ├── shared/        # toonGradient
+│   └── salon/         # Salon, SalonRoom, FamilyMember, GrandUncle, familyConfig
 └── hooks/             # useStillness, useAudioLayers
 docs/
 ├── journal/           # Journal de session (project-log.md)
 └── superpowers/
-    └── plans/         # Plans d'implémentation
+    ├── plans/         # Plans d'implémentation
+    └── specs/         # Specs de scènes
 ```
 
 ## Commandes
@@ -38,8 +40,9 @@ npx tsc --noEmit # vérifier les types
 
 ## Références
 
-- **Spec narrative V9 (source de vérité)** : `docs/specs-dia-de-muertos-v9.md`
-- Spec complète : `docs/superpowers/plans/2026-06-20-vertical-slice-chapter3.md`
+- **Spec narrative V10 (source de vérité)** : `docs/specs-dia-de-muertos-v10.md`
+- Spec salon : `docs/superpowers/specs/2026-06-20-salon-design.md`
+- Plan salon : `docs/superpowers/plans/2026-06-20-salon-scene.md`
 - Backlog : `docs/project_v2_backlog.md`
 - Journal : `docs/journal/project-log.md`
 - 3D model pipeline : https://messenger.abeto.co/
@@ -59,7 +62,7 @@ couleurs plates, contours noirs, ombres en bandes. Impl : `MeshToonMaterial` + `
 
 ## État du prototype
 
-Vertical slice Chapitre 3 uniquement. Placeholders géométriques (pas de modèles 3D réels, pas d'audio). Objectif : valider les 4 mécaniques core avant d'intégrer les assets.
+Salon sandbox (ch1/ch4). Placeholders géométriques (pas de modèles 3D réels, pas d'audio — sous-titres espagnols). Objectif : valider les mécaniques core + grand-oncle avant d'intégrer les assets.
 
 ## Philosophie
 
