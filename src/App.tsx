@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber'
 import { KeyboardControls } from '@react-three/drei'
 import { Suspense } from 'react'
 import { Player } from './scene/Player'
-// import { Chapter3 } from './scene/chapter3/Chapter3'
+import { Chapter3 } from './scene/chapter3/Chapter3'
 
 const CONTROLS_MAP = [
   { name: 'forward',  keys: ['ArrowUp', 'KeyW'] },
@@ -22,7 +22,7 @@ export default function App() {
       >
         <Suspense fallback={null}>
           <Player />
-          {/* <Chapter3 /> */}
+          <Chapter3 />
         </Suspense>
       </Canvas>
     </KeyboardControls>
