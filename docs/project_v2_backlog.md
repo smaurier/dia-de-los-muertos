@@ -30,12 +30,13 @@ Source plan: `docs/superpowers/plans/2026-06-20-vertical-slice-chapter3.md`
 - 🔄 **Salon Scene MVP** — Plan prêt : `docs/superpowers/plans/2026-06-20-salon-scene.md`. 8 tâches :
   - ✅ LIVRE Task 1: Cleanup — Supprimer chapter3, déplacer toonGradient vers shared, stub Salon, TS clean, 42/42 tests pass, committed
   - ✅ LIVRE Task 2: gameStore — grandUnclePosition + salonArcPhase (TDD), 48/48 tests pass, committed
-  - [ ] Task 3: npcSystem.ts — fonctions pures TDD
-  - [ ] Task 4: familyConfig.ts — 20 NPCs + scénarios espagnols
-  - [ ] Task 5: SalonRoom.tsx — géométrie 14×10m + éclairage
-  - [ ] Task 6: GrandUncle.tsx — observer canapé
-  - [ ] Task 7: FamilyMember.tsx — NPC générique 3 tiers
-  - [ ] Task 8: Salon.tsx — assembly final + EffectComposer + arc soirée
+  - ✅ LIVRE Task 3: npcSystem.ts — fonctions pures TDD, 65/65 tests pass, committed
+  - ✅ LIVRE Task 4: familyConfig.ts — 20 NPCs + scénarios espagnols, 65/65 tests pass, committed
+  - ✅ LIVRE Task 5: SalonRoom.tsx — géométrie 14×10m, 20 chaises, zone TV, éclairage toon, 65/65 tests pass, committed
+  - ✅ LIVRE Task 6: GrandUncle.tsx — observer canapé, head turn joueur, sous-titres laugh_at_tv, 65/65 tests pass, committed
+  - ✅ LIVRE Task 7: FamilyMember.tsx — NPC générique 3 tiers, state machine scénarios, sous-titres, 65/65 tests pass, committed
+  - ✅ LIVRE Task 8: Code Review Fixes — Duration cache per scenario, bebe position offset, 65/65 tests pass, committed
+  - [ ] Task 9: Salon.tsx — assembly final + EffectComposer + arc soirée
 - [ ] **3D Models** — Intégrer modèles GLTF via pipeline messenger.abeto.co (remplacer placeholders géométriques). À définir : format export, rig adulte, rig enfant, maison.
 - [ ] **Audio réel** — Enregistrer voix espagnoles, composer la chanson, SFX (chien, pétales, morsure pomme). Brancher sur les 6 couches AudioLayerManager.
 - [ ] **Journalisation** — Système de journal de session (à définir selon modèle projet training).
