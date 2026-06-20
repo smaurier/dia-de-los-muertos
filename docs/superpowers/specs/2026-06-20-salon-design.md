@@ -121,60 +121,71 @@ Sœur 1, Sœur 2, Bébé (dans les bras de Maman ou dans couffin), Grande tante 
 
 ## Système NPC
 
-### États `FamilyMember` (Tier 1)
+### Modèle : scénarios par type de personnage
 
+Chaque NPC a un tableau de **scénarios pondérés**. Un scheduler central (`npcSystem.ts`) sélectionne un nouveau scénario par NPC toutes les 4–12s (variable par type). Le scénario s'exécute indépendamment — pas de check de proximité globale.
+
+**La prise de parole n'est pas conditionnée à la proximité.** Elle fait partie du scénario : un personnage peut appeler quelqu'un de l'autre côté de la pièce. Deux scénarios peuvent se coordonner via événements (ex : maman part en cuisine → déclenchement scénario "proposer aide" chez un oncle).
+
+**Performance :** seuls les NPCs en état `walking` reçoivent un update de position chaque frame. Les statiques et assis ne calculent rien. Check inter-NPCs toutes les secondes (pas chaque frame).
+
+### Scénarios par type
+
+```ts
+type Scenario = {
+  id: string
+  weight: number          // probabilité relative
+  duration: [number, number]  // [min, max] en secondes
+  states: ScenarioStep[]
+}
+
+type ScenarioStep =
+  | { type: 'walk'; target: Vector3 }
+  | { type: 'sit'; target: string }   // id du meuble
+  | { type: 'idle'; duration: number }
+  | { type: 'dialogue'; text: string; direction?: Vector3 }  // spatial, pas proximity
+  | { type: 'react_to_player' }       // head turn si joueur proche
 ```
-idle → walking → sitting → reacting → idle
-```
 
-**Transitions :**
-- `idle → walking` : timer aléatoire (3–8s) ou stimulus NPC voisin
-- `walking → sitting` : arrivée au waypoint avec chaise/canapé disponible
-- `any → reacting` : joueur à moins de 2m OU action NPC remarquable
-- `reacting → idle` : après 1–2s
+**Exemples par type :**
 
-**Aléatoire :** `getNextWaypoint()` utilise un seed par NPC — reproductible mais varié entre sessions.
+| Type | Scénarios typiques |
+|------|--------------------|
+| `maman` | aller cuisine, s'asseoir table, servir, parler à tante |
+| `enfant` | courir traverser pièce, se cacher sous table, revenir |
+| `oncle` | rester assis, rire, appeler quelqu'un de loin, se lever chercher à boire |
+| `cousin` | courir, chercher cachette, s'asseoir console, interpeller cousin |
+| `tante` | assis table, discuter, se lever câliner enfant qui passe |
+| `grand_oncle` | `watch_tv`, `laugh_at_tv`, `adjust_on_couch`, `look_around` |
 
-### États `GrandUncle`
+### Grand-oncle — scénarios couch-bound
 
-```
-watching_tv ↔ laughing ↔ adjusting ↔ observing
-```
+Même modèle que les autres. **Aucun scénario avec `walk`.** Il ne quitte pas le canapé. Il réagit au joueur qui s'approche (head turn) comme n'importe quel adulte.
 
-| État | Déclencheur | Description |
-|------|-------------|-------------|
-| `watching_tv` | défaut | Pieds sur repose-pied, regard télé |
-| `laughing` | bruit/activité proche | Corps légèrement secoué |
-| `adjusting` | NPC s'assoit sur canapé | Retire pieds du repose-pied, se range |
-| `observing` | mouvement dans la zone | Tête tourne vers l'activité, pas vers le joueur |
+**Ce qui le distingue : aucun scénario ne cible le grand-oncle comme destinataire d'un dialogue. Personne ne l'appelle. Il ne répond à personne.**
 
-**Règle absolue :** pas d'état `walking`. Il ne quitte pas le canapé. Toutes ses transitions sont des réponses à stimuli — jamais des décisions autonomes. Il réagit au joueur qui s'approche (tête, ajustement) comme n'importe quel adulte. **Ce qui le distingue : personne ne lui parle. Il ne parle à personne.**
+`excludeFromSocialGraph: true` dans sa config — les scénarios des autres NPCs ne peuvent pas le cibler comme destinataire.
 
 ### Grand-oncle entre visites
 
 Quand le joueur quitte la zone salon (distance > 8m du centre), le grand-oncle choisit aléatoirement parmi :
-- Canapé (défaut, 60% probabilité)
+- Canapé (60%)
 - Debout près du buffet (20%)
 - Debout côté fenêtre (20%)
 
-Son état persiste dans `gameStore` (`grandUnclePosition`). Le joueur revient — il est ailleurs. Aucune explication.
+Persiste dans `gameStore` (`grandUnclePosition`). Le joueur revient — il est ailleurs. Aucune explication.
 
-### `npcSystem.ts` — API pure
+### `npcSystem.ts` — API pure (TDD)
 
 ```ts
-type Tier = 1 | 2 | 3
-type NPCState = 'idle' | 'walking' | 'sitting' | 'reacting'
-type GrandUncleState = 'watching_tv' | 'laughing' | 'adjusting' | 'observing'
-type Stimulus =
-  | { type: 'player_proximity'; distance: number }
-  | { type: 'npc_nearby'; action: NPCState }
-  | { type: 'timer'; elapsed: number }
+type ScenarioStep = { type: string; [key: string]: unknown }
+type Scenario = { id: string; weight: number; duration: [number,number]; steps: ScenarioStep[] }
 
-getNextWaypoint(npcId: string, waypoints: Vector3[], seed: number): Vector3
-getReactionState(current: NPCState, stimulus: Stimulus, tier: Tier): NPCState
-getGrandUncleState(current: GrandUncleState, stimulus: Stimulus): GrandUncleState
-shouldReactToProximity(pos: Vector3, playerPos: Vector3, threshold: number): boolean
+pickScenario(scenarios: Scenario[], seed: number): Scenario
+getNextStep(scenario: Scenario, stepIndex: number): ScenarioStep | null
+shouldUpdatePosition(npcState: string): boolean   // true only if 'walking'
 getGrandUnclePosition(seed: number): 'couch' | 'buffet' | 'window'
+shouldTurnTowardPlayer(pos: Vector3, playerPos: Vector3, threshold: number): boolean
 ```
 
 ---
