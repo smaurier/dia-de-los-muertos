@@ -221,6 +221,33 @@ shouldTurnTowardPlayer(pos: Vector3, playerPos: Vector3, threshold: number): boo
 
 ---
 
+## Prototype : sous-titres à la place de l'audio
+
+Pour le prototype, les voix espagnoles sont remplacées par des **sous-titres flottants** au-dessus de chaque NPC.
+
+**Format :** `[Oncle 1] ¿Y cómo va el trabajo?` — apparaît 2.5s, fade out.  
+**Implémentation :** `<Html>` de Drei (DOM au-dessus du mesh NPC, billboard).
+
+**Avantages :**
+- Le contenu espagnol est écrit maintenant → travail d'auteur fait en proto
+- Valide la variété, le timing, la dynamique sociale sans audio
+- Quand les voix sont enregistrées : textes → sous-titres sous l'audio (spec V9, accessibilité)
+- Beau-frère enregistre en lisant la liste des répliques — aucun travail en double
+
+**Nommage proto :** `Oncle 1`, `Tante 2`, `Cousin 1`, etc.  
+**Nommage final :** prénoms mexicains réels (`Tío Carlos`, `Mamá`, `Abuela`…) avec les assets audio.
+
+**Architecture couches temporelles (anti-répétition sur 15 min) :**
+
+| Couche | Durée | Description |
+|--------|-------|-------------|
+| Micro | 2–5s | Gestes idle par NPC (nod, regarder assiette, prendre verre) |
+| Individuel | 15–45s | Scénario + sous-titre par NPC — 20–30 scénarios par type |
+| Social | 60–180s | Événement cross-NPC rare et scripté (appel cuisine, cousins qui courent) |
+| Arc soirée | 3 phases / 15 min | 0-4min repas actif → 4-9min transition → 9-15min fin repas |
+
+---
+
 ## Tests
 
 - `src/game/systems/npcSystem.ts` → TDD strict, Vitest
