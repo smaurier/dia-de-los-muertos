@@ -2,6 +2,7 @@
 import { useRef, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
+import { toonGradient } from './toonGradient'
 
 interface AdultProps {
   onNearPlayer: (near: boolean) => void
@@ -47,15 +48,15 @@ export function Adult({ onNearPlayer, meshRef }: AdultProps) {
 
   return (
     <group ref={meshRef} position={[0.3, 0, 3]}>
-      {/* Body — dark capsule ~1.75m */}
+      {/* Body */}
       <mesh position={[0, 0.875, 0]}>
         <capsuleGeometry args={[0.25, 1.25, 4, 8]} />
-        <meshStandardMaterial color="#2a1a0e" roughness={0.8} />
+        <meshToonMaterial color="#2a1a0e" gradientMap={toonGradient} />
       </mesh>
       {/* Head */}
       <mesh position={[0, 1.75, 0]}>
         <sphereGeometry args={[0.18, 8, 8]} />
-        <meshStandardMaterial color="#c8956c" roughness={0.7} />
+        <meshToonMaterial color="#c8956c" gradientMap={toonGradient} />
       </mesh>
     </group>
   )
