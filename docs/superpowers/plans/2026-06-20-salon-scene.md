@@ -1458,7 +1458,7 @@ git commit -m "feat: FamilyMember — NPC générique 3 tiers, state machine sc�
 
 ```tsx
 // src/scene/salon/Salon.tsx
-import { useRef, useEffect } from 'react'
+import { useRef } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { EffectComposer, Outline } from '@react-three/postprocessing'
@@ -1469,30 +1469,18 @@ import { familyConfig } from './familyConfig'
 import { useGameStore } from '../../game/store/gameStore'
 import { useAudioLayers } from '../../hooks/useAudioLayers'
 
-// NPCs sélectionnés pour l'Outline (6 max pour les perfs)
-const OUTLINED_IDS = new Set(['cousin1', 'cousine1', 'enfant1', 'enfant2'])
-
 const ARC_TIMINGS = [240, 480] // secondes : phase 0→1 à 4min, phase 1→2 à 8min
 
 export function Salon() {
   const grandUncleRef = useRef<THREE.Group>(null)
-  const npcRefs = useRef<Map<string, THREE.Group>>(new Map())
   const arcTimer = useRef(0)
 
   const adultIsNear = false // Salon sandbox : pas de mécanique adulte-couloir
   const setSalonArcPhase = useGameStore(s => s.setSalonArcPhase)
   const salonArcPhase = useGameStore(s => s.salonArcPhase)
-  const setGrandUnclePosition = useGameStore(s => s.setGrandUnclePosition)
-  const { getGrandUnclePosition } = useRef({
-    getGrandUnclePosition: () => {
-      const { getGrandUnclePosition: fn } = require('../../game/systems/npcSystem')
-      return fn(Math.floor(Math.random() * 10000))
-    }
-  }).current
 
   useAudioLayers({ adultIsNear })
 
-  // Arc de soirée : 3 phases sur 15 min
   useFrame((_, delta) => {
     arcTimer.current += delta
     if (salonArcPhase === 0 && arcTimer.current > ARC_TIMINGS[0]) {
@@ -1501,17 +1489,6 @@ export function Salon() {
       setSalonArcPhase(2)
     }
   })
-
-  const outlineTargets = [
-    grandUncleRef,
-    ...familyConfig
-      .filter(c => OUTLINED_IDS.has(c.id))
-      .map(c => {
-        const ref = npcRefs.current.get(c.id)
-        return ref ? { current: ref } : null
-      })
-      .filter(Boolean),
-  ].filter(r => r?.current != null) as React.RefObject<THREE.Group>[]
 
   return (
     <>

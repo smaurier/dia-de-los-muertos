@@ -25,8 +25,9 @@ Source plan: `docs/superpowers/plans/2026-06-20-vertical-slice-chapter3.md`
 
 ## Backlog — Prochaines étapes
 
-- 🔄 **Salon Scene MVP** — Supprimer ch3, construire salon 14×10m, 22 NPCs (famille mexicaine), grand-oncle observer. Spec : `docs/superpowers/specs/2026-06-20-salon-design.md`
 - ✅ LIVRE **Cel-Shading (remaining)** — EffectComposer + Outline on Corridor + Adult, corridorRef forwarded, no TS cast needed, 42/42 tests pass, committed
+- ✅ LIVRE **Spec V10 + Plan salon** — Spec narrative V10 consolidée, plan d'implémentation salon complet, CLAUDE.md mis à jour
+- 🔄 **Salon Scene MVP** — Plan prêt : `docs/superpowers/plans/2026-06-20-salon-scene.md`. 8 tâches : cleanup ch3, gameStore, npcSystem (TDD), familyConfig, SalonRoom, GrandUncle, FamilyMember, Salon assembly
 - [ ] **3D Models** — Intégrer modèles GLTF via pipeline messenger.abeto.co (remplacer placeholders géométriques). À définir : format export, rig adulte, rig enfant, maison.
 - [ ] **Audio réel** — Enregistrer voix espagnoles, composer la chanson, SFX (chien, pétales, morsure pomme). Brancher sur les 6 couches AudioLayerManager.
 - [ ] **Journalisation** — Système de journal de session (à définir selon modèle projet training).
