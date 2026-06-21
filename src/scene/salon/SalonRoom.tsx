@@ -32,26 +32,29 @@ const FLAG_X  = [-5.5, -4.2, -2.9, -1.6, -0.3, 1.0, 2.3, 3.6, 4.9, 6.0]
 
 // ─── Chaises ─────────────────────────────────────────────────────────────────
 type ChairCfg = { pos: [number, number, number]; rot: number }
+// Chaises nord/sud : z=1.25 → 1.60 (assise s'étendait jusqu'à z=1.04, table va à z=1.15 → 11cm overlap).
+// End chairs : rot corrigé. local +z = direction assise. West end doit faire face à +x (table) → rot=+π/2.
+// East end doit faire face à -x → rot=-π/2. Positions x sorties du range table [-4.75, 3.75].
 const CHAIRS: ChairCfg[] = [
-  { pos: [-3.5, 0, 1.25], rot: Math.PI },
-  { pos: [-2.5, 0, 1.25], rot: Math.PI },
-  { pos: [-1.5, 0, 1.25], rot: Math.PI },
-  { pos: [-0.5, 0, 1.25], rot: Math.PI },
-  { pos: [0.5,  0, 1.25], rot: Math.PI },
-  { pos: [1.5,  0, 1.25], rot: Math.PI },
-  { pos: [2.5,  0, 1.25], rot: Math.PI },
-  { pos: [-3.5, 0, -1.25], rot: 0 },
-  { pos: [-2.5, 0, -1.25], rot: 0 },
-  { pos: [-1.5, 0, -1.25], rot: 0 },
-  { pos: [-0.5, 0, -1.25], rot: 0 },
-  { pos: [0.5,  0, -1.25], rot: 0 },
-  { pos: [1.5,  0, -1.25], rot: 0 },
-  { pos: [2.5,  0, -1.25], rot: 0 },
-  { pos: [-4.5, 0, -0.4], rot: -Math.PI / 2 },
-  { pos: [-4.5, 0,  0.4], rot: -Math.PI / 2 },
-  { pos: [3.5, 0, -0.4], rot: Math.PI / 2 },
-  { pos: [3.5, 0,  0.4], rot: Math.PI / 2 },
-  { pos: [-6.1, 0, -3.1], rot: -Math.PI / 2 },
+  { pos: [-3.5, 0, 1.60], rot: Math.PI },    // nord — face au sud (table)
+  { pos: [-2.5, 0, 1.60], rot: Math.PI },
+  { pos: [-1.5, 0, 1.60], rot: Math.PI },
+  { pos: [-0.5, 0, 1.60], rot: Math.PI },
+  { pos: [0.5,  0, 1.60], rot: Math.PI },
+  { pos: [1.5,  0, 1.60], rot: Math.PI },
+  { pos: [2.5,  0, 1.60], rot: Math.PI },
+  { pos: [-3.5, 0, -1.60], rot: 0 },         // sud — face au nord (table)
+  { pos: [-2.5, 0, -1.60], rot: 0 },
+  { pos: [-1.5, 0, -1.60], rot: 0 },
+  { pos: [-0.5, 0, -1.60], rot: 0 },
+  { pos: [0.5,  0, -1.60], rot: 0 },
+  { pos: [1.5,  0, -1.60], rot: 0 },
+  { pos: [2.5,  0, -1.60], rot: 0 },
+  { pos: [-5.0, 0, -0.4], rot:  Math.PI / 2 }, // ouest — face à +x (table), était rot=-π/2 (dos à la table!)
+  { pos: [-5.0, 0,  0.4], rot:  Math.PI / 2 },
+  { pos: [ 4.2, 0, -0.4], rot: -Math.PI / 2 }, // est — face à -x (table), était rot=+π/2 (dos à la table!)
+  { pos: [ 4.2, 0,  0.4], rot: -Math.PI / 2 },
+  { pos: [-6.1, 0, -3.1], rot: -Math.PI / 2 }, // coin buffet (inchangé)
   { pos: [-6.1, 0, -3.9], rot: -Math.PI / 2 },
 ]
 
@@ -66,7 +69,7 @@ const CANDLES_TABLE: [number, number, number][]  = [[-2.0, 0.78, 0.25], [0.8, 0.
 const WINDOW_Z  = [2.5, -1.5]
 const REJA_DZ   = [-0.35, 0, 0.35]
 const PLATE_X   = [-3.5, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5]
-const PLATE_Z   = [0.70, -0.70]
+const PLATE_Z   = [0.90, -0.90]  // aligné avec chaises à z=±1.60 (était ±0.70, aucun rapport avec les chaises)
 
 // Carrelage : 512×512 canvas, grille 4×4, joints gris, carreaux crème
 function makeTileTexture(): THREE.CanvasTexture {
@@ -465,6 +468,26 @@ export function SalonRoom() {
           </mesh>
         </group>
       )))}
+      {/* Assiettes bouts de table — end chairs ouest (x=-5.0) et est (x=4.2) */}
+      {([ [-4.6, 0.4], [-4.6, -0.4], [3.8, 0.4], [3.8, -0.4] ] as [number, number][]).map(([px, pz], i) => (
+        <group key={`end-plate-${i}`} position={[px, 0.814, pz]}>
+          <mesh>
+            <cylinderGeometry args={[0.18, 0.18, 0.014, 12]} />
+            <meshToonMaterial color="#F8F4EE" gradientMap={toonGradient} />
+            <Outlines thickness={0.010} color="black" />
+          </mesh>
+          <mesh position={[0, 0.008, 0]}>
+            <cylinderGeometry args={[0.13, 0.16, 0.008, 12]} />
+            <meshToonMaterial color="#EEEBE4" gradientMap={toonGradient} />
+          </mesh>
+          <mesh position={[0, 0.065, 0.28]}>
+            <cylinderGeometry args={[0.044, 0.036, 0.13, 8]} />
+            <meshToonMaterial color="#C8E0F0" gradientMap={toonGradient} emissive="#A0C0E0" emissiveIntensity={0.2} />
+            <Outlines thickness={0.008} color="black" />
+          </mesh>
+        </group>
+      ))}
+
       {/* Plats de service centraux */}
       <mesh position={[-0.5, 0.816, 0]}>
         <cylinderGeometry args={[0.30, 0.30, 0.020, 12]} />

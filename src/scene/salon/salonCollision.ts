@@ -7,8 +7,9 @@
 
 export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
   // Table x[-4.75,3.75] z[-1.15,1.15] + buffer 0.3m.
-  // z=±1.45 : couvre les sièges (z=±1.25) sans bloquer les NPCs à z=±1.5.
-  [-5.0, 4.0,  -1.45, 1.45],
+  // z=±1.45 : couvre les sièges (z=±1.60, assise front à z=±1.39) sans bloquer NPCs à z=±1.5.
+  // x=-5.3 : chaises ouest déplacées à x=-5.0, assise s'étend à x=-5.21 → buffer 0.1m.
+  [-5.3, 4.5,  -1.45, 1.45],
   [ 3.6, 6.5,   1.9,  3.2 ],  // canapé
   [ 4.1, 5.9,   3.2,  3.9 ],  // repose-pied (ottoman)
   [ 2.5, 3.7,   3.6,  4.7 ],  // fauteuil
