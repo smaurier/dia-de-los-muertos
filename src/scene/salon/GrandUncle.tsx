@@ -1,10 +1,12 @@
 // src/scene/salon/GrandUncle.tsx
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { Html } from '@react-three/drei'
 import * as THREE from 'three'
+import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { useGameStore } from '../../game/store/gameStore'
+import { useSubtitleStore } from '../../game/store/subtitleStore'
+import { npcPositions } from './npcRegistry'
 import { shouldTurnTowardPlayer, pickScenario } from '../../game/systems/npcSystem'
 import type { Scenario } from '../../game/systems/npcSystem'
 
@@ -48,11 +50,12 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
   const grandUnclePosition = useGameStore(s => s.grandUnclePosition)
   const { camera } = useThree()
 
-  const [subtitle, setSubtitle] = useState<string | null>(null)
+  const showSubtitle = useSubtitleStore(s => s.showSubtitle)
   const scenarioTimer = useRef(0)
   const currentScenario = useRef<Scenario>(GRAND_UNCLE_SCENARIOS[0])
   const seedRef = useRef(Math.floor(Math.random() * 1000))
   const durationRef = useRef(0)
+  const dirRef = useRef(new THREE.Vector3())
 
   useEffect(() => {
     currentScenario.current = pickScenario(GRAND_UNCLE_SCENARIOS, seedRef.current)
@@ -64,16 +67,16 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
     const group = ref.current
     if (!group) return
 
+    npcPositions.set('grand-uncle', [group.position.x, group.position.z])
+
     // Head turn toward player when nearby
     const playerPos: [number, number, number] = [camera.position.x, camera.position.y, camera.position.z]
     const pos = group.position
     const npcPos: [number, number, number] = [pos.x, pos.y, pos.z]
 
     if (headRef.current && shouldTurnTowardPlayer(npcPos, playerPos, 3)) {
-      const dir = new THREE.Vector3(
-        playerPos[0] - pos.x, 0, playerPos[2] - pos.z
-      ).normalize()
-      headRef.current.rotation.y = Math.atan2(dir.x, dir.z)
+      dirRef.current.set(playerPos[0] - pos.x, 0, playerPos[2] - pos.z).normalize()
+      headRef.current.rotation.y = Math.atan2(dirRef.current.x, dirRef.current.z)
     } else if (headRef.current) {
       headRef.current.rotation.y = THREE.MathUtils.lerp(
         headRef.current.rotation.y, 0, delta * 2
@@ -91,8 +94,7 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
       durationRef.current = min + Math.random() * (max - min)
 
       if (currentScenario.current.id === 'laugh_at_tv') {
-        setSubtitle('¡Ja ja ja!')
-        setTimeout(() => setSubtitle(null), 2500)
+        showSubtitle('¡Ja ja ja!', 'Tío Abuelo')
       }
     }
   })
@@ -105,29 +107,14 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
       <mesh position={[0, 0.875, 0]}>
         <capsuleGeometry args={[0.25, 1.25, 4, 8]} />
         <meshToonMaterial color="#2a1a0e" gradientMap={toonGradient} />
+        <Outlines thickness={0.035} color="black" />
       </mesh>
       {/* Tête */}
       <mesh ref={headRef} position={[0, 1.75, 0]}>
         <sphereGeometry args={[0.18, 8, 8]} />
         <meshToonMaterial color="#c8956c" gradientMap={toonGradient} />
+        <Outlines thickness={0.035} color="black" />
       </mesh>
-      {/* Sous-titre */}
-      {subtitle && (
-        <Html position={[0, 2.2, 0]} center distanceFactor={6}>
-          <div style={{
-            background: 'rgba(0,0,0,0.75)',
-            color: '#fff',
-            padding: '4px 8px',
-            borderRadius: '4px',
-            fontSize: '13px',
-            whiteSpace: 'nowrap',
-            fontFamily: 'sans-serif',
-          }}>
-            <span style={{ color: '#f5c87a', fontWeight: 'bold' }}>Tío Abuelo</span>
-            {' '}{subtitle}
-          </div>
-        </Html>
-      )}
     </group>
   )
 }

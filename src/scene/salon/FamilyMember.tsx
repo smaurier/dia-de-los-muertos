@@ -1,9 +1,12 @@
 // src/scene/salon/FamilyMember.tsx
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { Html } from '@react-three/drei'
 import * as THREE from 'three'
+import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
+import { useSubtitleStore } from '../../game/store/subtitleStore'
+import { isBlocked } from './salonCollision'
+import { npcPositions } from './npcRegistry'
 import {
   pickScenario, getNextStep, shouldUpdatePosition, shouldTurnTowardPlayer
 } from '../../game/systems/npcSystem'
@@ -18,7 +21,7 @@ export function FamilyMember({ config }: FamilyMemberProps) {
   const headRef = useRef<THREE.Mesh>(null)
   const { camera } = useThree()
 
-  const [subtitle, setSubtitle] = useState<string | null>(null)
+  const showSubtitle = useSubtitleStore(s => s.showSubtitle)
   const npcState = useRef<NPCState>('idle')
   const targetPos = useRef<THREE.Vector3 | null>(null)
   const scenarioTimer = useRef(Math.random() * 5)
@@ -29,18 +32,23 @@ export function FamilyMember({ config }: FamilyMemberProps) {
       ? pickScenario(config.scenarios, seedRef.current)
       : null
   )
+  const dirRef = useRef(new THREE.Vector3())
+  const walkDirRef = useRef(new THREE.Vector3())
 
   useEffect(() => {
     if (groupRef.current) {
       groupRef.current.position.set(...config.startPosition)
     }
-  }, [config.startPosition])
+    npcPositions.set(config.id, [config.startPosition[0], config.startPosition[2]])
+    return () => { npcPositions.delete(config.id) }
+  }, [config.id, config.startPosition])
 
   useFrame((_, delta) => {
     const group = groupRef.current
     if (!group) return
 
-    // Tier 3 — statique
+    // Tier 3 — statique, mais on enregistre la position quand même
+    npcPositions.set(config.id, [group.position.x, group.position.z])
     if (config.tier === 3) return
 
     const playerPos: [number, number, number] = [
@@ -51,12 +59,10 @@ export function FamilyMember({ config }: FamilyMemberProps) {
 
     // Head turn (Tier 1 & 2)
     if (headRef.current && shouldTurnTowardPlayer(npcPos, playerPos, 2)) {
-      const dir = new THREE.Vector3(
-        playerPos[0] - pos.x, 0, playerPos[2] - pos.z
-      ).normalize()
+      dirRef.current.set(playerPos[0] - pos.x, 0, playerPos[2] - pos.z).normalize()
       headRef.current.rotation.y = THREE.MathUtils.lerp(
         headRef.current.rotation.y,
-        Math.atan2(dir.x, dir.z),
+        Math.atan2(dirRef.current.x, dirRef.current.z),
         delta * 3
       )
     }
@@ -68,13 +74,17 @@ export function FamilyMember({ config }: FamilyMemberProps) {
     scenarioTimer.current += delta
 
     if (shouldUpdatePosition(npcState.current) && targetPos.current) {
-      const dir = targetPos.current.clone().sub(group.position)
-      if (dir.length() < 0.1) {
+      walkDirRef.current.copy(targetPos.current).sub(group.position)
+      if (walkDirRef.current.length() < 0.1) {
         group.position.copy(targetPos.current)
         npcState.current = 'idle'
         targetPos.current = null
       } else {
-        group.position.addScaledVector(dir.normalize(), delta * 1.2)
+        const step = walkDirRef.current.normalize().multiplyScalar(delta * 1.2)
+        const nx = group.position.x + step.x
+        const nz = group.position.z + step.z
+        if (!isBlocked(nx, group.position.z)) group.position.x = nx
+        if (!isBlocked(group.position.x, nz)) group.position.z = nz
       }
       return
     }
@@ -102,8 +112,7 @@ export function FamilyMember({ config }: FamilyMemberProps) {
         npcState.current = 'idle'
         stepIndex.current += 1
       } else if (step.type === 'dialogue') {
-        setSubtitle(step.text)
-        setTimeout(() => setSubtitle(null), 2500)
+        showSubtitle(step.text, step.speakerName)
         stepIndex.current += 1
       } else if (step.type === 'sit') {
         npcState.current = 'sitting'
@@ -128,30 +137,13 @@ export function FamilyMember({ config }: FamilyMemberProps) {
       <mesh position={[0, bodyY, 0]}>
         <capsuleGeometry args={[capsuleR, capsuleH, 4, 8]} />
         <meshToonMaterial color={config.meshColor} gradientMap={toonGradient} />
+        <Outlines thickness={0.030} color="black" />
       </mesh>
       <mesh ref={headRef} position={[0, headY, 0]}>
         <sphereGeometry args={[headR, 8, 8]} />
         <meshToonMaterial color={config.meshColor} gradientMap={toonGradient} />
+        <Outlines thickness={0.030} color="black" />
       </mesh>
-      {subtitle && (
-        <Html position={[0, headY + 0.5, 0]} center distanceFactor={8}>
-          <div style={{
-            background: 'rgba(0,0,0,0.75)',
-            color: '#fff',
-            padding: '4px 8px',
-            borderRadius: '4px',
-            fontSize: '12px',
-            whiteSpace: 'nowrap',
-            fontFamily: 'sans-serif',
-            maxWidth: '200px',
-          }}>
-            <span style={{ color: '#f5c87a', fontWeight: 'bold' }}>
-              {config.name}
-            </span>
-            {' '}{subtitle}
-          </div>
-        </Html>
-      )}
     </group>
   )
 }

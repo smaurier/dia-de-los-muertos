@@ -1,8 +1,6 @@
 // src/scene/salon/Salon.tsx
 import { useRef } from 'react'
-import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
-import { EffectComposer, Outline } from '@react-three/postprocessing'
 import { SalonRoom } from './SalonRoom'
 import { GrandUncle } from './GrandUncle'
 import { FamilyMember } from './FamilyMember'
@@ -13,7 +11,6 @@ import { useAudioLayers } from '../../hooks/useAudioLayers'
 const ARC_TIMINGS = [240, 480] // secondes : phase 0→1 à 4min, phase 1→2 à 8min
 
 export function Salon() {
-  const grandUncleRef = useRef<THREE.Group>(null)
   const arcTimer = useRef(0)
 
   const adultIsNear = false // Salon sandbox : pas de mécanique adulte-couloir
@@ -32,27 +29,15 @@ export function Salon() {
   })
 
   return (
-    <>
-      <group>
-        <SalonRoom />
-        <GrandUncle meshRef={grandUncleRef} />
-        {familyConfig.map(config => (
-          <FamilyMember
-            key={config.id}
-            config={config}
-          />
-        ))}
-      </group>
-      <EffectComposer>
-        <Outline
-          selection={[grandUncleRef]}
-          edgeStrength={3}
-          pulseSpeed={0}
-          visibleEdgeColor={0x000000}
-          hiddenEdgeColor={0x000000}
-          blur={false}
+    <group>
+      <SalonRoom />
+      <GrandUncle />
+      {familyConfig.map(config => (
+        <FamilyMember
+          key={config.id}
+          config={config}
         />
-      </EffectComposer>
-    </>
+      ))}
+    </group>
   )
 }
