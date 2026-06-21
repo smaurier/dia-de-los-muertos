@@ -7,6 +7,7 @@ import { toonGradient } from '../shared/toonGradient'
 import { useSubtitleStore } from '../../game/store/subtitleStore'
 import { isBlocked } from './salonCollision'
 import { npcPositions } from './npcRegistry'
+import { SIT_TARGETS, SEATED_Y } from './chairConfig'
 import {
   pickScenario, getNextStep, shouldUpdatePosition, shouldTurnTowardPlayer
 } from '../../game/systems/npcSystem'
@@ -34,6 +35,7 @@ export function FamilyMember({ config }: FamilyMemberProps) {
   const showSubtitle = useSubtitleStore(s => s.showSubtitle)
   const npcState = useRef<NPCState>('idle')
   const targetPos = useRef<THREE.Vector3 | null>(null)
+  const sitPendingRef = useRef(false)  // true while walking toward a sit target
   const scenarioTimer = useRef(Math.random() * 5)
   const stepIndex = useRef(0)
   const seedRef = useRef(Math.floor(Math.random() * 10000))
@@ -57,7 +59,7 @@ export function FamilyMember({ config }: FamilyMemberProps) {
     const group = groupRef.current
     if (!group) return
 
-    // Tier 3 — statique, mais on enregistre la position quand même
+    // Tier 3 — statique
     npcPositions.set(config.id, [group.position.x, group.position.z])
     if (config.tier === 3) return
 
@@ -77,17 +79,23 @@ export function FamilyMember({ config }: FamilyMemberProps) {
       )
     }
 
-    // Tier 2 — semi-actif : pas de mouvement autonome
-    if (config.tier === 2 || config.scenarios.length === 0) return
+    // Y offset : lerp vers SEATED_Y quand assis, retour à 0 sinon
+    const targetY = npcState.current === 'sitting' ? SEATED_Y : 0
+    group.position.y = THREE.MathUtils.lerp(group.position.y, targetY, delta * 5)
 
-    // Tier 1 — state machine + scénarios
+    if (config.scenarios.length === 0) return
+
+    // Walk toward target (Tier 1 & 2)
     scenarioTimer.current += delta
 
     if (shouldUpdatePosition(npcState.current) && targetPos.current) {
       walkDirRef.current.copy(targetPos.current).sub(group.position)
+      walkDirRef.current.y = 0  // ignorer axe Y pour le déplacement horizontal
       if (walkDirRef.current.length() < 0.1) {
-        group.position.copy(targetPos.current)
-        npcState.current = 'idle'
+        group.position.x = targetPos.current.x
+        group.position.z = targetPos.current.z
+        npcState.current = sitPendingRef.current ? 'sitting' : 'idle'
+        sitPendingRef.current = false
         targetPos.current = null
       } else {
         const step = walkDirRef.current.normalize().multiplyScalar(delta * 1.2)
@@ -106,6 +114,7 @@ export function FamilyMember({ config }: FamilyMemberProps) {
       if (scenarioTimer.current > duration) {
         scenarioTimer.current = 0
         stepIndex.current = 0
+        sitPendingRef.current = false
         seedRef.current = (seedRef.current * 1664525 + 1013904223) >>> 0
         currentScenario.current = pickScenario(config.scenarios, seedRef.current)
         return
@@ -125,7 +134,16 @@ export function FamilyMember({ config }: FamilyMemberProps) {
         showSubtitle(step.text, step.speakerName)
         stepIndex.current += 1
       } else if (step.type === 'sit') {
-        npcState.current = 'sitting'
+        const target = SIT_TARGETS[step.targetId]
+        if (target && step.targetId !== 'under-table') {
+          // Walk to chair first, then sit on arrival
+          targetPos.current = new THREE.Vector3(target[0], 0, target[2])
+          npcState.current = 'walking'
+          sitPendingRef.current = true
+        } else {
+          // under-table ou cible inconnue : s'asseoir sur place
+          npcState.current = 'sitting'
+        }
         stepIndex.current += 1
       } else if (step.type === 'react_to_player') {
         npcState.current = 'reacting'
