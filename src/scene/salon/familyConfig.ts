@@ -10,7 +10,7 @@ const mamanScenarios: Scenario[] = [
       { type: 'walk', target: [-1, 0, -3] },
       { type: 'dialogue', text: '¿Alguien quiere más?', speakerName: 'Mamá' },
       { type: 'idle', duration: 4 },
-      { type: 'walk', target: [-1, 0, 1] },
+      { type: 'walk', target: [-1, 0, 2.5] },  // z=1 était dans la table AABB → z=2.5 (nord de la table)
     ],
   },
   {
@@ -19,7 +19,7 @@ const mamanScenarios: Scenario[] = [
       { type: 'dialogue', text: 'Voy a la cocina un momento.', speakerName: 'Mamá' },
       { type: 'walk', target: [1, 0, -4.5] },
       { type: 'idle', duration: 6 },
-      { type: 'walk', target: [-1, 0, 0] },
+      { type: 'walk', target: [-5.5, 0, 0] },  // z=0 était dans la table → contourne par l'ouest
     ],
   },
   {
@@ -52,10 +52,10 @@ const papaScenarios: Scenario[] = [
   {
     id: 'papa_debout', weight: 2, duration: [8, 12],
     steps: [
-      { type: 'walk', target: [-3, 0, -1] },
+      { type: 'walk', target: [-3, 0, -2.5] },  // z=-1 → z=-2.5 (sud de la table)
       { type: 'dialogue', text: '¿Otro tequila, cuñado?', speakerName: 'Papá' },
       { type: 'idle', duration: 4 },
-      { type: 'walk', target: [-1.5, 0, 0.5] },
+      { type: 'walk', target: [-1.5, 0, 2.5] }, // z=0.5 → z=2.5 (nord de la table)
     ],
   },
   {
@@ -91,7 +91,7 @@ const oncleScenarios: Scenario[] = [
       { type: 'walk', target: [-4, 0, -2] },
       { type: 'idle', duration: 4 },
       { type: 'dialogue', text: '¿Y cómo va el trabajo?', speakerName: 'Tío' },
-      { type: 'walk', target: [-1, 0, 0] },
+      { type: 'walk', target: [-1, 0, -2.5] },  // z=0 → z=-2.5 (côté sud, hors table)
     ],
   },
   {
@@ -119,13 +119,13 @@ const tanteScenarios: Scenario[] = [
       { type: 'dialogue', text: '¿Te ayudo, cuñada?', speakerName: 'Tía' },
       { type: 'walk', target: [0, 0, -4] },
       { type: 'idle', duration: 5 },
-      { type: 'walk', target: [-0.5, 0, 0.5] },
+      { type: 'walk', target: [-0.5, 0, -2.5] },  // z=0.5 → z=-2.5 (retour côté sud)
     ],
   },
   {
     id: 'tante_enfant', weight: 2, duration: [6, 10],
     steps: [
-      { type: 'walk', target: [0, 0, 1] },
+      { type: 'walk', target: [0, 0, 2.5] },  // z=1 → z=2.5 (nord de la table)
       { type: 'dialogue', text: '¡Ven aquí, chiquito!', speakerName: 'Tía' },
       { type: 'idle', duration: 3 },
     ],
@@ -170,9 +170,9 @@ const enfantScenarios: Scenario[] = [
   {
     id: 'enfant_court', weight: 4, duration: [4, 7],
     steps: [
-      { type: 'walk', target: [2, 0, -1] },
+      { type: 'walk', target: [2, 0, -2.5] },  // z=-1 → z=-2.5
       { type: 'walk', target: [-2, 0, 2] },
-      { type: 'walk', target: [0, 0, 0] },
+      { type: 'walk', target: [5, 0, 4] },      // z=0 → zone canapé/TV (loin de la table)
     ],
   },
   {
@@ -197,7 +197,7 @@ const enfantScenarios: Scenario[] = [
     steps: [
       { type: 'walk', target: [1, 0, 3] },
       { type: 'idle', duration: 5 },
-      { type: 'walk', target: [-1, 0, 1] },
+      { type: 'walk', target: [-1, 0, 2.5] },  // z=1 → z=2.5 (nord de la table)
     ],
   },
 ]

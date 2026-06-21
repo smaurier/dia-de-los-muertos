@@ -1,13 +1,18 @@
 // src/scene/salon/salonCollision.ts
 // AABB collision zones — [minX, maxX, minZ, maxZ]
+//
+// Règle : l'AABB doit être PLUS PETITE que les startPositions des NPCs qui vivent
+// dans cette zone. Les NPCs "à table" spawnent à z=±1.5 → AABB z max = 1.45 (strict
+// inequality : 1.5 > 1.45 → outside → ils peuvent se placer et bouger librement).
 
 export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
-  // Table : x[-4.75,3.75] z[-1.15,1.15] + chaises nord/sud z=±1.25 prof=0.42 → z atteint ±1.67
-  [-5.1, 4.2,  -1.7, 1.7],
-  [ 3.6, 6.5,   1.9, 3.2],   // canapé
-  [ 4.1, 5.9,   3.2, 3.9],   // repose-pied (ottoman) — manquait
-  [ 2.5, 3.7,   3.6, 4.7],   // fauteuil
-  [-6.7, -5.7, -4.3, -1.4],  // buffet + 2 chaises coin (z=-3.1 et z=-3.9, rot=-π/2 → s'étendent à z≈-4.12)
+  // Table x[-4.75,3.75] z[-1.15,1.15] + buffer 0.3m.
+  // z=±1.45 : couvre les sièges (z=±1.25) sans bloquer les NPCs à z=±1.5.
+  [-5.0, 4.0,  -1.45, 1.45],
+  [ 3.6, 6.5,   1.9,  3.2 ],  // canapé
+  [ 4.1, 5.9,   3.2,  3.9 ],  // repose-pied (ottoman)
+  [ 2.5, 3.7,   3.6,  4.7 ],  // fauteuil
+  [-6.7, -5.7, -4.3, -1.4 ],  // buffet + chaises coin (z=-3.9 s'étend à z≈-4.12)
 ]
 
 // Murs du salon
