@@ -1,5 +1,5 @@
 // src/scene/salon/FamilyMember.tsx
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useMemo } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
@@ -11,6 +11,16 @@ import {
   pickScenario, getNextStep, shouldUpdatePosition, shouldTurnTowardPlayer
 } from '../../game/systems/npcSystem'
 import type { NPCConfig, NPCState } from '../../game/systems/npcSystem'
+
+// Hash déterministe sur l'id → couleurs vestimentaires stables entre reloads
+function nameHash(s: string): number {
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0
+  return Math.abs(h)
+}
+const SHIRT_COLORS = ['#C0392B', '#2980B9', '#8E44AD', '#27AE60', '#D4AC0D', '#C87941']
+const PANTS_COLORS = ['#2C3E50', '#5D4037', '#424242', '#1A5276', '#2D4A22']
+const HAIR_COLORS  = ['#1A0800', '#3D1A00', '#0A0A0A', '#5C3418']
 
 interface FamilyMemberProps {
   config: NPCConfig
@@ -127,23 +137,51 @@ export function FamilyMember({ config }: FamilyMemberProps) {
   const isChild = config.tier === 1 && config.id.startsWith('enfant')
   const isBaby = config.id === 'bebe'
   const capsuleR = isBaby ? 0.12 : isChild ? 0.18 : 0.25
-  const capsuleH = isBaby ? 0.2 : isChild ? 0.7 : 1.25
   const bodyY = isBaby ? 0.4 : isChild ? 0.6 : 0.875
   const headY = isBaby ? 0.55 : isChild ? 1.15 : 1.75
   const headR = capsuleR * 0.72
 
+  // Vêtements : pantalon = bas du corps, chemise = haut du corps
+  const pantsH = bodyY - 0.04
+  const pantsY = 0.02 + pantsH / 2
+  const shirtH = headY - headR * 0.6 - bodyY
+  const shirtY = bodyY + shirtH / 2
+  const hairR  = headR * 1.06
+
+  const hash = useMemo(() => nameHash(config.id), [config.id])
+  const shirtColor = SHIRT_COLORS[hash % SHIRT_COLORS.length]
+  const pantsColor = PANTS_COLORS[(hash >> 3) % PANTS_COLORS.length]
+  const hairColor  = HAIR_COLORS[(hash >> 6) % HAIR_COLORS.length]
+
   return (
     <group ref={groupRef} position={config.startPosition}>
-      <mesh position={[0, bodyY, 0]}>
-        <capsuleGeometry args={[capsuleR, capsuleH, 4, 8]} />
-        <meshToonMaterial color={config.meshColor} gradientMap={toonGradient} />
-        <Outlines thickness={0.030} color="black" />
+      {/* Pantalon / bas */}
+      <mesh position={[0, pantsY, 0]}>
+        <cylinderGeometry args={[capsuleR, capsuleR, pantsH, 8]} />
+        <meshToonMaterial color={isBaby ? config.meshColor : pantsColor} gradientMap={toonGradient} />
+        <Outlines thickness={0.025} color="black" />
       </mesh>
+      {/* Chemise / haut — pas pour bébé */}
+      {!isBaby && (
+        <mesh position={[0, shirtY, 0]}>
+          <cylinderGeometry args={[capsuleR * 1.04, capsuleR, shirtH, 8]} />
+          <meshToonMaterial color={shirtColor} gradientMap={toonGradient} />
+          <Outlines thickness={0.025} color="black" />
+        </mesh>
+      )}
+      {/* Tête — couleur peau */}
       <mesh ref={headRef} position={[0, headY, 0]}>
         <sphereGeometry args={[headR, 8, 8]} />
         <meshToonMaterial color={config.meshColor} gradientMap={toonGradient} />
         <Outlines thickness={0.030} color="black" />
       </mesh>
+      {/* Cheveux — calotte sphérique (thetaLength < PI/2 → juste le dessus) */}
+      {!isBaby && (
+        <mesh position={[0, headY + headR * 0.1, 0]}>
+          <sphereGeometry args={[hairR, 8, 4, 0, Math.PI * 2, 0, Math.PI * 0.52]} />
+          <meshToonMaterial color={hairColor} gradientMap={toonGradient} />
+        </mesh>
+      )}
     </group>
   )
 }

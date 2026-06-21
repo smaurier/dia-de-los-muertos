@@ -101,19 +101,37 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
 
   const worldPos = GRAND_UNCLE_POSITIONS[grandUnclePosition]
 
+  // Tío Abuelo : guayabera ivoire, pantalon gris-bleu, quelques cheveux gris (vieil homme)
+  // bodyY=0.875, headY=1.75, headR=0.18, capsuleR=0.25
+  const pantsH  = 0.835  // 0.875 - 0.04
+  const pantsY  = 0.44
+  const shirtH  = 0.76   // 1.75 - 0.18*0.6 - 0.875
+  const shirtY  = 1.255
+
   return (
     <group ref={ref} position={worldPos}>
-      {/* Corps */}
-      <mesh position={[0, 0.875, 0]}>
-        <capsuleGeometry args={[0.25, 1.25, 4, 8]} />
-        <meshToonMaterial color="#2a1a0e" gradientMap={toonGradient} />
-        <Outlines thickness={0.035} color="black" />
+      {/* Pantalon gris-bleu */}
+      <mesh position={[0, pantsY, 0]}>
+        <cylinderGeometry args={[0.25, 0.25, pantsH, 8]} />
+        <meshToonMaterial color="#3A4A5C" gradientMap={toonGradient} />
+        <Outlines thickness={0.030} color="black" />
+      </mesh>
+      {/* Guayabera ivoire — chemise typique du grand-oncle mexicain */}
+      <mesh position={[0, shirtY, 0]}>
+        <cylinderGeometry args={[0.26, 0.25, shirtH, 8]} />
+        <meshToonMaterial color="#EDE8DE" gradientMap={toonGradient} />
+        <Outlines thickness={0.030} color="black" />
       </mesh>
       {/* Tête */}
       <mesh ref={headRef} position={[0, 1.75, 0]}>
         <sphereGeometry args={[0.18, 8, 8]} />
         <meshToonMaterial color="#c8956c" gradientMap={toonGradient} />
         <Outlines thickness={0.035} color="black" />
+      </mesh>
+      {/* Cheveux gris clairsemés — calotte partielle */}
+      <mesh position={[0, 1.768, 0]}>
+        <sphereGeometry args={[0.192, 8, 3, 0, Math.PI * 2, 0, Math.PI * 0.38]} />
+        <meshToonMaterial color="#C0BCBA" gradientMap={toonGradient} />
       </mesh>
     </group>
   )
