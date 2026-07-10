@@ -12,6 +12,14 @@ dist
 dist-ssr
 *.local
 
+# Screenshots de vérification visuelle (scripts/shot.mjs)
+.shots/
+
+# Intermédiaires pipeline 3D (régénérables) + FBX Mixamo bruts (licence : usage
+# in-product OK, redistribution standalone non — jamais sur le repo public)
+docs/references/characters/*/work/
+docs/references/characters/*/mixamo/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

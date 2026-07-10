@@ -2,7 +2,7 @@
 import { useRef, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { Outlines } from '@react-three/drei'
+import { useGLTF, useAnimations } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { useGameStore } from '../../game/store/gameStore'
 import { useSubtitleStore } from '../../game/store/subtitleStore'
@@ -11,9 +11,19 @@ import { shouldTurnTowardPlayer, pickScenario } from '../../game/systems/npcSyst
 import type { Scenario } from '../../game/systems/npcSystem'
 
 const GRAND_UNCLE_POSITIONS: Record<string, [number, number, number]> = {
-  couch:  [5, 0, 2.5],
+  couch: [5, 0, 2.5],
   buffet: [-6, 0, -2.5],
   window: [-6, 0, 2],
+}
+
+// Modèle 3D (pipeline Hunyuan3D → Mixamo). Mesh sans UV → couleur unie toon.
+// TODO : clip standing pour les positions buffet/window (sitting partout en attendant).
+const MODEL_URL = '/models/characters/grand-oncle.glb'
+const MODEL_TUNING = {
+  scale: 1,                                         // échelle native OK (1.83m debout)
+  offset: [0, 0, 0.62] as [number, number, number], // hanches sur l'avant de l'assise, pieds au sol devant
+  rotationY: 0,                                     // face au repose-pied (sud)
+  color: '#EDE8DE',                                 // guayabera ivoire (une seule couleur, pas d'UV)
 }
 
 const GRAND_UNCLE_SCENARIOS: Scenario[] = [
@@ -46,9 +56,31 @@ interface GrandUncleProps {
 export function GrandUncle({ meshRef }: GrandUncleProps) {
   const internalRef = useRef<THREE.Group>(null)
   const ref = meshRef ?? internalRef
-  const headRef = useRef<THREE.Mesh>(null)
+  const headBoneRef = useRef<THREE.Object3D | null>(null)
   const grandUnclePosition = useGameStore(s => s.grandUnclePosition)
   const { camera } = useThree()
+
+  const { scene, animations } = useGLTF(MODEL_URL)
+  const { actions, names } = useAnimations(animations, ref)
+
+  // Matériau toon uni sur tout le mesh (pas d'UV → pas de texture) + repère le bone tête
+  useEffect(() => {
+    scene.traverse(obj => {
+      if ((obj as THREE.Mesh).isMesh) {
+        const mesh = obj as THREE.Mesh
+        mesh.material = new THREE.MeshToonMaterial({ color: MODEL_TUNING.color, gradientMap: toonGradient })
+        mesh.frustumCulled = false // skinned mesh : bounds de repos faux une fois assis
+      }
+    })
+    headBoneRef.current = scene.getObjectByName('mixamorigHead') ?? null
+  }, [scene])
+
+  // Sitting idle en boucle
+  useEffect(() => {
+    const action = actions[names[0]]
+    action?.reset().setLoop(THREE.LoopRepeat, Infinity).play()
+    return () => { action?.stop() }
+  }, [actions, names])
 
   const showSubtitle = useSubtitleStore(s => s.showSubtitle)
   const scenarioTimer = useRef(0)
@@ -69,18 +101,17 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
 
     npcPositions.set('grand-uncle', [group.position.x, group.position.z])
 
-    // Head turn toward player when nearby
+    // Head turn toward player when nearby — appliqué sur le bone tête, après le mixer
     const playerPos: [number, number, number] = [camera.position.x, camera.position.y, camera.position.z]
     const pos = group.position
     const npcPos: [number, number, number] = [pos.x, pos.y, pos.z]
 
-    if (headRef.current && shouldTurnTowardPlayer(npcPos, playerPos, 3)) {
+    const head = headBoneRef.current
+    if (head && shouldTurnTowardPlayer(npcPos, playerPos, 3)) {
       dirRef.current.set(playerPos[0] - pos.x, 0, playerPos[2] - pos.z).normalize()
-      headRef.current.rotation.y = Math.atan2(dirRef.current.x, dirRef.current.z)
-    } else if (headRef.current) {
-      headRef.current.rotation.y = THREE.MathUtils.lerp(
-        headRef.current.rotation.y, 0, delta * 2
-      )
+      const worldYaw = Math.atan2(dirRef.current.x, dirRef.current.z)
+      const localYaw = THREE.MathUtils.clamp(worldYaw - MODEL_TUNING.rotationY, -0.6, 0.6)
+      head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, localYaw, delta * 4)
     }
 
     // Scenario timer
@@ -101,38 +132,16 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
 
   const worldPos = GRAND_UNCLE_POSITIONS[grandUnclePosition]
 
-  // Tío Abuelo : guayabera ivoire, pantalon gris-bleu, quelques cheveux gris (vieil homme)
-  // bodyY=0.875, headY=1.75, headR=0.18, capsuleR=0.25
-  const pantsH  = 0.835  // 0.875 - 0.04
-  const pantsY  = 0.44
-  const shirtH  = 0.76   // 1.75 - 0.18*0.6 - 0.875
-  const shirtY  = 1.255
-
   return (
     <group ref={ref} position={worldPos}>
-      {/* Pantalon gris-bleu */}
-      <mesh position={[0, pantsY, 0]}>
-        <cylinderGeometry args={[0.25, 0.25, pantsH, 8]} />
-        <meshToonMaterial color="#3A4A5C" gradientMap={toonGradient} />
-        <Outlines thickness={0.030} color="black" />
-      </mesh>
-      {/* Guayabera ivoire — chemise typique du grand-oncle mexicain */}
-      <mesh position={[0, shirtY, 0]}>
-        <cylinderGeometry args={[0.26, 0.25, shirtH, 8]} />
-        <meshToonMaterial color="#EDE8DE" gradientMap={toonGradient} />
-        <Outlines thickness={0.030} color="black" />
-      </mesh>
-      {/* Tête */}
-      <mesh ref={headRef} position={[0, 1.75, 0]}>
-        <sphereGeometry args={[0.18, 8, 8]} />
-        <meshToonMaterial color="#c8956c" gradientMap={toonGradient} />
-        <Outlines thickness={0.035} color="black" />
-      </mesh>
-      {/* Cheveux gris clairsemés — calotte partielle */}
-      <mesh position={[0, 1.768, 0]}>
-        <sphereGeometry args={[0.192, 8, 3, 0, Math.PI * 2, 0, Math.PI * 0.38]} />
-        <meshToonMaterial color="#C0BCBA" gradientMap={toonGradient} />
-      </mesh>
+      <primitive
+        object={scene}
+        position={MODEL_TUNING.offset}
+        rotation={[0, MODEL_TUNING.rotationY, 0]}
+        scale={MODEL_TUNING.scale}
+      />
     </group>
   )
 }
+
+useGLTF.preload(MODEL_URL)

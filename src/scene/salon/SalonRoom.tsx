@@ -511,30 +511,30 @@ export function SalonRoom() {
       {/* ─── Bougies table ──────────────────────────────────────────────────── */}
       {CANDLES_TABLE.map((pos, i) => <AnimatedCandle key={i} position={pos} />)}
 
-      {/* ─── Canapé 3 places ────────────────────────────────────────────────── */}
-      <mesh position={[5, 0.2, 2.5]}>
-        <boxGeometry args={[2.85, 0.4, 0.95]} />
+      {/* ─── Canapé 3 places — dimensions réelles (assise ~0.44m) ──────────── */}
+      <mesh position={[5, 0.13, 2.5]}>
+        <boxGeometry args={[2.85, 0.26, 0.95]} />
         <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
         <Outlines thickness={0.022} color="black" />
       </mesh>
       {/* 3 coussins d'assise — RoundedBox */}
       {([-0.92, 0, 0.92] as number[]).map((dx, i) => (
-        <RoundedBox key={i} args={[0.83, 0.30, 0.82]} radius={0.04} smoothness={3}
-          position={[5 + dx, 0.55, 2.52]}>
+        <RoundedBox key={i} args={[0.83, 0.18, 0.82]} radius={0.04} smoothness={3}
+          position={[5 + dx, 0.35, 2.52]}>
           <meshToonMaterial color={C_UPHOLSTERY} gradientMap={toonGradient} />
           <Outlines thickness={0.022} color="black" />
         </RoundedBox>
       ))}
       {/* Dossier structure */}
-      <mesh position={[5, 0.90, 2.08]}>
-        <boxGeometry args={[2.85, 0.70, 0.14]} />
+      <mesh position={[5, 0.70, 2.08]}>
+        <boxGeometry args={[2.85, 0.50, 0.14]} />
         <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
         <Outlines thickness={0.022} color="black" />
       </mesh>
       {/* 3 coussins dossier — RoundedBox */}
       {([-0.92, 0, 0.92] as number[]).map((dx, i) => (
-        <RoundedBox key={i} args={[0.81, 0.58, 0.12]} radius={0.03} smoothness={3}
-          position={[5 + dx, 0.90, 2.15]}>
+        <RoundedBox key={i} args={[0.81, 0.45, 0.12]} radius={0.03} smoothness={3}
+          position={[5 + dx, 0.70, 2.15]}>
           <meshToonMaterial color={C_UPHOLSTERY} gradientMap={toonGradient} />
           <Outlines thickness={0.020} color="black" />
         </RoundedBox>

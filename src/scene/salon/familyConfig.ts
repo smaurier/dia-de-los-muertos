@@ -10,7 +10,7 @@ const mamanScenarios: Scenario[] = [
       { type: 'walk', target: [-1, 0, -3] },
       { type: 'dialogue', text: '¿Alguien quiere más?', speakerName: 'Mamá' },
       { type: 'idle', duration: 4 },
-      { type: 'walk', target: [-1, 0, 2.5] },  // z=1 était dans la table AABB → z=2.5 (nord de la table)
+      { type: 'walk', target: [-1, 0, 2.5] },
     ],
   },
   {
@@ -19,7 +19,7 @@ const mamanScenarios: Scenario[] = [
       { type: 'dialogue', text: 'Voy a la cocina un momento.', speakerName: 'Mamá' },
       { type: 'walk', target: [1, 0, -4.5] },
       { type: 'idle', duration: 6 },
-      { type: 'walk', target: [-5.5, 0, 0] },  // z=0 était dans la table → contourne par l'ouest
+      { type: 'walk', target: [-5.5, 0, 0] },
     ],
   },
   {
@@ -52,10 +52,10 @@ const papaScenarios: Scenario[] = [
   {
     id: 'papa_debout', weight: 2, duration: [8, 12],
     steps: [
-      { type: 'walk', target: [-3, 0, -2.5] },  // z=-1 → z=-2.5 (sud de la table)
+      { type: 'walk', target: [-3, 0, -2.5] },
       { type: 'dialogue', text: '¿Otro tequila, cuñado?', speakerName: 'Papá' },
       { type: 'idle', duration: 4 },
-      { type: 'walk', target: [-1.5, 0, 2.5] }, // z=0.5 → z=2.5 (nord de la table)
+      { type: 'walk', target: [-1.5, 0, 2.5] },
     ],
   },
   {
@@ -91,7 +91,7 @@ const oncleScenarios: Scenario[] = [
       { type: 'walk', target: [-4, 0, -2] },
       { type: 'idle', duration: 4 },
       { type: 'dialogue', text: '¿Y cómo va el trabajo?', speakerName: 'Tío' },
-      { type: 'walk', target: [-1, 0, -2.5] },  // z=0 → z=-2.5 (côté sud, hors table)
+      { type: 'walk', target: [-1, 0, -2.5] },
     ],
   },
   {
@@ -119,13 +119,13 @@ const tanteScenarios: Scenario[] = [
       { type: 'dialogue', text: '¿Te ayudo, cuñada?', speakerName: 'Tía' },
       { type: 'walk', target: [0, 0, -4] },
       { type: 'idle', duration: 5 },
-      { type: 'walk', target: [-0.5, 0, -2.5] },  // z=0.5 → z=-2.5 (retour côté sud)
+      { type: 'walk', target: [-0.5, 0, -2.5] },
     ],
   },
   {
     id: 'tante_enfant', weight: 2, duration: [6, 10],
     steps: [
-      { type: 'walk', target: [0, 0, 2.5] },  // z=1 → z=2.5 (nord de la table)
+      { type: 'walk', target: [0, 0, 2.5] },
       { type: 'dialogue', text: '¡Ven aquí, chiquito!', speakerName: 'Tía' },
       { type: 'idle', duration: 3 },
     ],
@@ -170,9 +170,9 @@ const enfantScenarios: Scenario[] = [
   {
     id: 'enfant_court', weight: 4, duration: [4, 7],
     steps: [
-      { type: 'walk', target: [2, 0, -2.5] },  // z=-1 → z=-2.5
+      { type: 'walk', target: [2, 0, -2.5] },
       { type: 'walk', target: [-2, 0, 2] },
-      { type: 'walk', target: [5, 0, 4] },      // z=0 → zone canapé/TV (loin de la table)
+      { type: 'walk', target: [5, 0, 4] },
     ],
   },
   {
@@ -197,7 +197,7 @@ const enfantScenarios: Scenario[] = [
     steps: [
       { type: 'walk', target: [1, 0, 3] },
       { type: 'idle', duration: 5 },
-      { type: 'walk', target: [-1, 0, 2.5] },  // z=1 → z=2.5 (nord de la table)
+      { type: 'walk', target: [-1, 0, 2.5] },
     ],
   },
 ]
@@ -215,66 +215,68 @@ const oncleJeuneScenarios: Scenario[] = [
 ]
 
 // ─── Config des 20 NPCs ────────────────────────────────────────────────
+// Tier 2 : startPosition = leur chaise de sit target (démarrent là, bougent selon scénario)
+// Tier 3 : startPosition avec y=-0.45 (assis dès le spawn — Tier 3 ne passe pas par le lerp Y)
 
 export const familyConfig: NPCConfig[] = [
-  // Tier 2 — semi-actifs
+  // ── Tier 2 — semi-actifs (exécutent scénarios, démarrent à leur chaise) ──────
   {
     id: 'maman', name: 'Mamá', tier: 2,
-    startPosition: [-1, 0, 1.5],
-    waypoints: [[-1, 0, 1.5], [-1, 0, -2], [1, 0, -4.5]],
+    startPosition: [-3.5, 0, 1.60],   // table-chair-1
+    waypoints: [],
     scenarios: mamanScenarios,
     meshColor: '#c8956c',
   },
   {
     id: 'papa', name: 'Papá', tier: 2,
-    startPosition: [-1.5, 0, 1.5],
-    waypoints: [[-1.5, 0, 1.5], [-3, 0, 2], [2, 0, 3.5]],
+    startPosition: [-2.5, 0, 1.60],   // table-chair-2
+    waypoints: [],
     scenarios: papaScenarios,
     meshColor: '#8B6543',
   },
   {
     id: 'oncle1', name: 'Tío Carlos', tier: 2,
-    startPosition: [-3, 0, 1.5],
-    waypoints: [[-3, 0, 1.5], [-4, 0, 2.5], [-1, 0, 1.5]],
+    startPosition: [-1.5, 0, 1.60],   // table-chair-3 (nord)
+    waypoints: [],
     scenarios: oncleScenarios,
     meshColor: '#7A5533',
   },
   {
     id: 'oncle2', name: 'Tío Roberto', tier: 2,
-    startPosition: [1, 0, -1.5],
-    waypoints: [[1, 0, -1.5], [-1, 0, -2.5], [0, 0, -1.5]],
+    startPosition: [-1.5, 0, -1.60],  // sud, symétrique de chair-3
+    waypoints: [],
     scenarios: oncleScenarios,
     meshColor: '#6B4423',
   },
   {
     id: 'oncle3', name: 'Tío Miguel', tier: 2,
-    startPosition: [-2, 0, 1.5],
-    waypoints: [[-2, 0, 1.5], [-3, 0, 2.5], [-1, 0, 1.5]],
+    startPosition: [0.5, 0, -1.60],   // sud
+    waypoints: [],
     scenarios: oncleScenarios,
     meshColor: '#8B6040',
   },
   {
     id: 'tante1', name: 'Tía Rosa', tier: 2,
-    startPosition: [0, 0, -1.5],
-    waypoints: [[0, 0, -1.5], [0, 0, -4], [-1, 0, 0]],
+    startPosition: [-0.5, 0, -1.60],  // table-chair-4
+    waypoints: [],
     scenarios: tanteScenarios,
     meshColor: '#C27B5A',
   },
   {
     id: 'tante2', name: 'Tía Elena', tier: 2,
-    startPosition: [-2, 0, -1.5],
-    waypoints: [[-2, 0, -1.5], [-1, 0, 1.5], [0, 0, -2.5]],
+    startPosition: [-2.5, 0, -1.60],  // sud
+    waypoints: [],
     scenarios: tanteScenarios,
     meshColor: '#B8705A',
   },
   {
     id: 'enfant4', name: 'Niño', tier: 2,
-    startPosition: [0, 0, 1.5],
-    waypoints: [[0, 0, 1]],
+    startPosition: [-0.5, 0, 1.60],   // table-chair-5
+    waypoints: [],
     scenarios: [{ id: 'enfant4_sage', weight: 1, duration: [20, 30], steps: [{ type: 'sit', targetId: 'table-chair-5' }, { type: 'idle', duration: 20 }] }],
     meshColor: '#D4956A',
   },
-  // Tier 1 — actifs
+  // ── Tier 1 — actifs (roaming) ─────────────────────────────────────────────────
   {
     id: 'cousin1', name: 'Primo Diego', tier: 1,
     startPosition: [1, 0, 3],
@@ -331,31 +333,31 @@ export const familyConfig: NPCConfig[] = [
     scenarios: enfantScenarios,
     meshColor: '#C88050',
   },
-  // Tier 3 — statiques
+  // ── Tier 3 — statiques, y=-0.45 dans startPosition = assis dès le spawn ───────
   {
     id: 'soeur1', name: 'Hermana', tier: 3,
-    startPosition: [-0.5, 0, 1.5],
+    startPosition: [1.5, -0.45, -1.60],   // sud, assise
     waypoints: [],
     scenarios: [],
     meshColor: '#E0A888',
   },
   {
     id: 'soeur2', name: 'Hermana', tier: 3,
-    startPosition: [0.5, 0, 1.5],
+    startPosition: [2.5, -0.45, -1.60],   // sud, assise
     waypoints: [],
     scenarios: [],
     meshColor: '#E8B090',
   },
   {
     id: 'grande-tante', name: 'Tía Abuela', tier: 3,
-    startPosition: [-5.5, 0, -3],
+    startPosition: [-6.1, -0.45, -3.1],   // chaise coin buffet, assise
     waypoints: [],
     scenarios: [],
     meshColor: '#A88068',
   },
   {
     id: 'bebe', name: 'Bebé', tier: 3,
-    startPosition: [-0.8, 0, 1.5],
+    startPosition: [1.5, 0, 1.60],         // nord, debout (trop petit pour offset adulte)
     waypoints: [],
     scenarios: [],
     meshColor: '#F0C0A0',
