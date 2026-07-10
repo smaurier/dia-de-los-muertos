@@ -26,6 +26,26 @@ Bibliothèque de références pour le direction artistique de *Día de Muertos*.
 
 ---
 
+## Cible aspirationnelle : rendu peint / Ghibli
+
+### `rooms/cuisine/cuisine-entree-02.png` + `cuisine-coin-pierres-02.png`
+
+**Source :** générations ChatGPT (GPT-4o image), 2026-07-10
+**Statut :** cible de rendu qu'on aimerait atteindre (décision Sylvain 2026-07-10) — pas une promesse technique, un horizon.
+
+**Ce qu'on retient :**
+- Matière picturale : touches de pinceau, murs granuleux, rien de plat
+- Lumière : halo d'ampoule chaud contre nuit bleue dans les vitres, ombres colorées (jamais noires)
+- Profondeur : les fonds de pièce fondent dans la pénombre chaude
+
+**Chemin technique (par paliers, du moins cher au plus cher) :**
+1. ✅ Fog chaud + bloom + vignette (`TOON_RICHE` dans App.tsx) — posé, tuning à faire
+2. Gradient toon 4-5 bandes + ombres teintées (couleur d'ombre chaude, pas grise)
+3. Textures peintes générées (image AI → texture tileable murs/sol) — remplace les aplats
+4. Post-processing peintre (grain, léger displacement des contours) — à expérimenter avec prudence, gadget vite atteint
+
+Le palier 3 est celui qui rapproche vraiment du rendu peint. Il reste compatible pipeline 0 € (générer des textures = même outil que les concepts).
+
 ## À venir
 
 Ajouter ici les références pour :

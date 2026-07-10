@@ -7,6 +7,8 @@ Une ligne = source exacte, licence, date. Les sorties d'outils non-commerciaux
 | Asset | Type | Chaîne de production | Licence | Date |
 |---|---|---|---|---|
 | `public/models/characters/grand-oncle.glb` | Modèle 3D riggé + anim sitting idle | Image ChatGPT (GPT-4o, sortie propriété utilisateur) → Hunyuan3D-2 HF Space (open source, commercial OK) → gltf-transform simplify → Blender headless → Mixamo auto-rig + Sitting Idle (licence Adobe : usage in-product OK) → Blender headless → GLB | Commercial OK (chaîne complète) | 2026-07-10 |
+| `public/models/props/fauteuil.glb` | Prop 3D statique | Image ChatGPT → Hunyuan3D-2 HF Space → gltf-transform weld+simplify | Commercial OK | 2026-07-10 |
+| `public/models/props/tv.glb` | Prop 3D statique (CRT + meuble) | Image ChatGPT → Hunyuan3D-2 HF Space → gltf-transform weld+simplify | Commercial OK | 2026-07-10 |
 
 Notes :
 - FBX Mixamo bruts et intermédiaires : conservés en local (`docs/references/characters/*/mixamo|work/`), gitignorés — la licence Mixamo couvre l'usage dans le produit, pas la redistribution de fichiers standalone sur un repo public.

@@ -80,17 +80,20 @@ export default function App() {
           <Suspense fallback={null}>
             {PHOTO ? <PhotoCamera conf={PHOTO} /> : <Player />}
             <Salon />
+            {/* DANS le Suspense : monté hors Suspense, le composer capture un
+                framebuffer vide pendant le chargement des GLB et rend un écran
+                uniforme (couleur fog) définitivement. */}
+            {TOON_RICHE.enabled && (
+              <EffectComposer>
+                <Bloom
+                  luminanceThreshold={TOON_RICHE.bloomThreshold}
+                  intensity={TOON_RICHE.bloomIntensity}
+                  mipmapBlur
+                />
+                <Vignette darkness={TOON_RICHE.vignetteDarkness} />
+              </EffectComposer>
+            )}
           </Suspense>
-          {TOON_RICHE.enabled && (
-            <EffectComposer>
-              <Bloom
-                luminanceThreshold={TOON_RICHE.bloomThreshold}
-                intensity={TOON_RICHE.bloomIntensity}
-                mipmapBlur
-              />
-              <Vignette darkness={TOON_RICHE.vignetteDarkness} />
-            </EffectComposer>
-          )}
         </Canvas>
       </KeyboardControls>
     </>

@@ -19,6 +19,7 @@ dist-ssr
 # in-product OK, redistribution standalone non — jamais sur le repo public)
 docs/references/characters/*/work/
 docs/references/characters/*/mixamo/
+docs/references/prop/**/*.glb
 
 # Editor directories and files
 .vscode/*

@@ -4,6 +4,8 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { Outlines, RoundedBox } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
+import { Prop } from '../shared/Prop'
+
 
 // ─── Couleurs ────────────────────────────────────────────────────────────────
 const C_WOOD_DARK  = '#3A2008'
@@ -590,85 +592,32 @@ export function SalonRoom() {
         ))
       )}
 
-      {/* ─── Fauteuil ───────────────────────────────────────────────────────── */}
-      <mesh position={[3, 0.19, 4.15]}>
-        <boxGeometry args={[0.90, 0.38, 0.92]} />
-        <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
-        <Outlines thickness={0.020} color="black" />
-      </mesh>
-      <RoundedBox args={[0.76, 0.22, 0.76]} radius={0.035} smoothness={3} position={[3, 0.49, 4.16]}>
-        <meshToonMaterial color={C_UPHOLSTERY} gradientMap={toonGradient} />
-        <Outlines thickness={0.020} color="black" />
-      </RoundedBox>
-      <mesh position={[3, 0.80, 3.74]}>
-        <boxGeometry args={[0.90, 0.72, 0.13]} />
-        <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
-        <Outlines thickness={0.020} color="black" />
-      </mesh>
-      <RoundedBox args={[0.74, 0.58, 0.12]} radius={0.025} smoothness={3} position={[3, 0.80, 3.80]}>
-        <meshToonMaterial color={C_UPHOLSTERY} gradientMap={toonGradient} />
-        <Outlines thickness={0.018} color="black" />
-      </RoundedBox>
-      <mesh position={[2.57, 0.56, 4.1]}>
-        <boxGeometry args={[0.15, 0.44, 0.92]} />
-        <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
-        <Outlines thickness={0.016} color="black" />
-      </mesh>
-      <mesh position={[2.57, 0.80, 4.1]}>
-        <boxGeometry args={[0.18, 0.07, 0.98]} />
-        <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-        <Outlines thickness={0.014} color="black" />
-      </mesh>
-      <mesh position={[3.43, 0.56, 4.1]}>
-        <boxGeometry args={[0.15, 0.44, 0.92]} />
-        <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
-        <Outlines thickness={0.016} color="black" />
-      </mesh>
-      <mesh position={[3.43, 0.80, 4.1]}>
-        <boxGeometry args={[0.18, 0.07, 0.98]} />
-        <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-        <Outlines thickness={0.014} color="black" />
-      </mesh>
-      {([2.63, 3.37] as number[]).flatMap(px =>
-        ([3.72, 4.58] as number[]).map((pz, j) => (
-          <mesh key={`${px}-${j}`} position={[px, 0.09, pz]}>
-            <cylinderGeometry args={[0.032, 0.038, 0.18, 6]} />
-            <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-          </mesh>
-        ))
-      )}
+      {/* ─── Fauteuil (pipeline image-to-3D) ────────────────────────────────── */}
+      <Prop
+        url="/models/props/fauteuil.glb"
+        color={C_UPHOLSTERY}
+        position={[3, 0, 4.1]}
+        rotationY={0}
+        targetHeight={0.95}
+      />
 
-      {/* ─── Meuble TV + Télé ───────────────────────────────────────────────── */}
-      <mesh position={[6.68, 0.24, 2.5]}>
-        <boxGeometry args={[0.24, 0.48, 2.0]} />
-        <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-        <Outlines thickness={0.018} color="black" />
-      </mesh>
-      <mesh position={[6.67, 0.50, 2.5]}>
-        <boxGeometry args={[0.28, 0.04, 2.1]} />
-        <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
-      </mesh>
-      {([1.55, 3.45] as number[]).map((pz, i) => (
-        <mesh key={i} position={[6.68, 0.05, pz]}>
-          <boxGeometry args={[0.22, 0.10, 0.06]} />
-          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-        </mesh>
-      ))}
-      <mesh position={[6.80, 1.70, 2.5]}>
-        <boxGeometry args={[0.06, 0.90, 1.62]} />
-        <meshToonMaterial color="#1a1a1a" gradientMap={toonGradient} />
-        <Outlines thickness={0.018} color="black" />
-      </mesh>
-      <mesh position={[6.77, 1.70, 2.5]}>
-        <boxGeometry args={[0.02, 0.78, 1.46]} />
-        <meshToonMaterial color="#2a3850" gradientMap={toonGradient} emissive="#3a4a6a" emissiveIntensity={0.7} />
-      </mesh>
-      <mesh position={[6.84, 1.70, 2.5]}>
-        <boxGeometry args={[0.06, 0.30, 0.06]} />
-        <meshToonMaterial color="#1a1a1a" gradientMap={toonGradient} />
+      {/* ─── Télé CRT 90s + meuble (pipeline image-to-3D) ───────────────────── */}
+      <Prop
+        url="/models/props/tv.glb"
+        color="#3a3a3e"
+        position={[6.35, 0, 2.5]}
+        rotationY={-Math.PI / 2}
+        targetHeight={1.25}
+      />
+      {/* Lueur d'écran conservée (la couche lumière ne vient pas du mesh) */}
+      <mesh position={[6.15, 0.95, 2.5]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[0.55, 0.42]} />
+        <meshBasicMaterial color="#3a4a6a" />
       </mesh>
 
-      {/* ─── Buffet ─────────────────────────────────────────────────────────── */}
+      {/* ─── Buffet — placeholder conservé ──────────────────────────────────── */}
+      {/* Le GLB Hunyuan du buffet contient des vertices corrompus (écran noir) :
+          à régénérer. Le remplacement par <Prop> attendra un modèle sain. */}
       <mesh position={[-6.30, 0.54, -2.5]}>
         <boxGeometry args={[0.52, 1.00, 2.10]} />
         <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
