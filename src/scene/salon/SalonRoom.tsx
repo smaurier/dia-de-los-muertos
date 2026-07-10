@@ -63,7 +63,6 @@ const CHAIRS: ChairCfg[] = [
   { pos: [-6.1, 0, -3.9], rot: -Math.PI / 2 },
 ]
 
-const LEG_POS: [number, number][] = [[-0.16, 0.15], [0.16, 0.15], [-0.16, -0.17], [0.16, -0.17]]
 const TABLE_LEG_X = [-4.0, -0.5, 3.0]
 const TABLE_LEG_Z = [-0.9, 0.9]
 
@@ -77,50 +76,6 @@ const PLATE_X   = [-3.5, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5]
 const PLATE_Z   = [0.90, -0.90]  // aligné avec chaises à z=±1.60 (était ±0.70, aucun rapport avec les chaises)
 
 // ─── Composants ───────────────────────────────────────────────────────────────
-function Chair({ pos, rot }: { pos: [number, number, number]; rot: number }) {
-  return (
-    <group position={pos} rotation={[0, rot, 0]}>
-      {/* Assise structurelle */}
-      <mesh position={[0, 0.44, 0]}>
-        <boxGeometry args={[0.44, 0.055, 0.42]} />
-        <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-      </mesh>
-      {/* Coussin — RoundedBox */}
-      <RoundedBox args={[0.36, 0.08, 0.34]} radius={0.018} smoothness={3} position={[0, 0.48, 0.01]}>
-        <meshToonMaterial color={C_CUSHION} gradientMap={toonGradient} />
-        <Outlines thickness={0.018} color="black" />
-      </RoundedBox>
-      {/* Montant dossier gauche */}
-      <mesh position={[-0.155, 0.74, -0.19]}>
-        <boxGeometry args={[0.038, 0.58, 0.038]} />
-        <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-      </mesh>
-      {/* Montant dossier droit */}
-      <mesh position={[0.155, 0.74, -0.19]}>
-        <boxGeometry args={[0.038, 0.58, 0.038]} />
-        <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-      </mesh>
-      {/* Rail supérieur */}
-      <mesh position={[0, 1.01, -0.19]}>
-        <boxGeometry args={[0.38, 0.06, 0.038]} />
-        <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
-        <Outlines thickness={0.016} color="black" />
-      </mesh>
-      {/* Barreau central */}
-      <mesh position={[0, 0.75, -0.19]}>
-        <boxGeometry args={[0.30, 0.038, 0.038]} />
-        <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
-      </mesh>
-      {/* 4 pieds */}
-      {LEG_POS.map(([lx, lz], i) => (
-        <mesh key={i} position={[lx, 0.21, lz]}>
-          <cylinderGeometry args={[0.024, 0.028, 0.42, 7]} />
-          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-        </mesh>
-      ))}
-    </group>
-  )
-}
 
 // Flicker : timer accumule dt, change target intensité tous ~100ms (Math.random → organique),
 // lerp lisse la transition. Sin séparé pour la forme de la flamme (scale oscillant).
@@ -544,8 +499,17 @@ export function SalonRoom() {
         <Outlines thickness={0.010} color="black" />
       </mesh>
 
-      {/* ─── 20 chaises ─────────────────────────────────────────────────────── */}
-      {CHAIRS.map((c, i) => <Chair key={i} pos={c.pos} rot={c.rot} />)}
+      {/* ─── 20 chaises (pipeline image-to-3D, ladder-back ref salon-vue-entree-01) ── */}
+      {CHAIRS.map((c, i) => (
+        <Prop
+          key={i}
+          url="/models/props/chaise.glb"
+          color={C_WOOD_DARK}
+          position={c.pos}
+          rotationY={c.rot}
+          targetHeight={1.05}
+        />
+      ))}
 
       {/* ─── Bougies table ──────────────────────────────────────────────────── */}
       {CANDLES_TABLE.map((pos, i) => <AnimatedCandle key={i} position={pos} />)}
