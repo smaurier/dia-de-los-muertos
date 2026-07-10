@@ -1,5 +1,8 @@
 # Prompts props 3D — salon chantier 4 (table + chaise)
 
+**Référence visuelle cible : `docs/references/rooms/salon/salon-vue-entree-01.png`**
+(chaises ladder-back coloniales hautes, table masquée par la nappe brodée).
+
 Pipeline (identique fauteuil/tv/buffet, voir ASSETS-LEDGER) :
 image ChatGPT → Hunyuan3D-2 HF Space → gltf-transform weld+simplify →
 déposer le GLB dans `public/models/props/` + l'image dans `docs/references/props/`.
@@ -17,15 +20,18 @@ seule la **forme** compte, pas la couleur de l'image).
 
 ## 1. `chaise-salon-01.png` — chaise (réutilisée ×20)
 
-> Une seule chaise mexicaine rustique en bois, style dessin animé cel-shading :
-> dossier droit à deux barreaux horizontaux, assise carrée légèrement creusée,
-> quatre pieds droits robustes avec entretoises. Bois brun chaud. Proportions
-> simples et trapues, silhouette épaisse lisible de loin. Vue de trois quarts,
-> objet entier centré sur fond blanc uni, éclairage doux uniforme, aucune ombre
-> portée, aucun autre objet.
+> Une seule chaise coloniale mexicaine en bois sombre, style dessin animé
+> cel-shading : dossier haut de type ladder-back avec trois traverses
+> horizontales, deux montants verticaux légèrement tournés dépassant du
+> dossier, assise carrée en bois, quatre pieds droits reliés par des
+> entretoises basses. Le dossier est nettement plus haut que l'assise
+> (proportions élancées, comme une chaise de salle à manger d'hacienda).
+> Vue de trois quarts, objet entier centré sur fond blanc uni, éclairage doux
+> uniforme, aucune ombre portée, aucun autre objet.
 
-Intégration prévue : `targetHeight={0.88}`, remplace `Chair` (placeholder)
-aux 20 positions de `CHAIRS` dans `SalonRoom.tsx`.
+Intégration prévue : `targetHeight={1.05}` (dossier haut, cf. ref — l'assise
+doit rester à ~0.45 m), remplace `Chair` (placeholder) aux 20 positions de
+`CHAIRS` dans `SalonRoom.tsx`.
 
 ## 2. `table-banquet-01.png` — table de banquet
 
