@@ -17,7 +17,7 @@ const mamanScenarios: Scenario[] = [
     id: 'maman_cuisine', weight: 2, duration: [10, 18],
     steps: [
       { type: 'dialogue', text: 'Voy a la cocina un momento.', speakerName: 'Mamá' },
-      { type: 'walk', target: [1, 0, -4.5] },
+      { type: 'walk', target: [-2.5, 0, 4.6] },  // devant l'arche de la cuisine (mur nord)
       { type: 'idle', duration: 6 },
       { type: 'walk', target: [-5.5, 0, 0] },
     ],
@@ -61,7 +61,7 @@ const papaScenarios: Scenario[] = [
   {
     id: 'papa_tv', weight: 1, duration: [10, 15],
     steps: [
-      { type: 'walk', target: [2, 0, 3.5] },
+      { type: 'walk', target: [2, 0, -3.5] },
       { type: 'idle', duration: 8 },
       { type: 'dialogue', text: '¡Gol! ¡Gol!', speakerName: 'Papá' },
       { type: 'walk', target: [-1, 0, 0] },
@@ -152,7 +152,7 @@ const cousinScenarios: Scenario[] = [
   {
     id: 'cousin_console', weight: 2, duration: [15, 25],
     steps: [
-      { type: 'walk', target: [3, 0, 4] },
+      { type: 'walk', target: [3, 0, -4] },
       { type: 'sit', targetId: 'fauteuil' },
       { type: 'idle', duration: 18 },
     ],

@@ -6,30 +6,33 @@
 // inequality : 1.5 > 1.45 → outside → ils peuvent se placer et bouger librement).
 
 export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
-  // Table x[-4.75,3.75] z[-1.15,1.15] + buffer 0.3m.
+  // Table x[-4.75,3.75] z[-1.05,1.05] + sièges.
   // z=±1.45 : couvre les sièges (z=±1.60, assise front à z=±1.39) sans bloquer NPCs à z=±1.5.
   // x=-5.3 : chaises ouest déplacées à x=-5.0, assise s'étend à x=-5.21 → buffer 0.1m.
   [-5.3, 4.5,  -1.45, 1.45],
-  [ 3.6, 6.5,   1.9,  3.2 ],  // canapé
-  [ 4.1, 5.9,   3.2,  3.9 ],  // repose-pied (ottoman)
-  [ 2.5, 3.7,   3.6,  4.7 ],  // fauteuil
-  [-6.7, -5.7, -4.3, -1.4 ],  // buffet + chaises coin (z=-3.9 s'étend à z≈-4.12)
-  [ 5.6, 6.7,   3.7,  4.8 ],  // TV CRT coin nord-est (en diagonale)
+  [ 3.6, 6.5,  -4.0, -2.7 ],  // canapé (coin salon sud, ref vue-entrée)
+  [ 4.1, 5.9,  -4.7, -4.0 ],  // repose-pied (ottoman)
+  [ 2.5, 3.7,  -5.5, -4.4 ],  // fauteuil
+  [ 2.2, 4.5,   5.0,  5.7 ],  // buffet mur nord (photos/vase/bougies)
+  [ 5.6, 6.7,  -5.6, -4.5 ],  // TV CRT coin sud-est (en diagonale)
   [ 6.1, 6.7,   0.85, 1.55],  // plante en pot mur est
-  [ 2.9, 3.4,   2.35, 2.85],  // lampe à abat-jour (coin canapé)
-  [-6.6, -5.6,  3.5,  4.3 ],  // cactus coin nord-ouest
+  [ 2.9, 3.4,  -3.65, -3.15], // lampe à abat-jour (coin canapé)
+  [-6.6, -5.6,  4.3,  5.1 ],  // cactus coin nord-ouest
   [-6.6, -6.1,  2.1,  2.6 ],  // plante fenêtre nord
   [-6.6, -6.1, -1.3, -0.8 ],  // plante fenêtre sud
+  [-6.5, -5.7, -4.3, -2.7 ],  // chaises coin sud-ouest (grande-tante)
+  [ 5.2,  6.4,  5.15, 5.75],  // vaisselier coin nord-est
 ]
 
-// Murs du salon
-export const SALON_BOUNDS = { minX: -6.7, maxX: 6.7, minZ: -4.8, maxZ: 4.8 }
+// Murs du salon (pièce élargie : z=±5.8 — l'arche sud reste infranchissable
+// tant que la cuisine n'est pas jouable)
+export const SALON_BOUNDS = { minX: -6.7, maxX: 6.7, minZ: -5.6, maxZ: 5.6 }
 
-// Murs physiques du salon (plans à x=±7, z=±5) et marge caméra.
+// Murs physiques du salon (plans à x=±7, z=±5.8) et marge caméra.
 // CAM_MARGIN > near plane (0.1) : la caméra clampée ne coupe jamais un mur.
 // Doit rester ≥ SALON_BOUNDS pour ne pas clamper plus fort que le garçon.
 const WALL_X = 7
-const WALL_Z = 5
+const WALL_Z = 5.8
 const CAM_MARGIN = 0.15
 
 // La caméra (1,2 m derrière le garçon) peut sortir de la pièce quand il est dos
@@ -93,8 +96,16 @@ export function cameraBackDistance(
   return Math.max(0, t)
 }
 
-export function isBlocked(x: number, z: number): boolean {
-  if (x < SALON_BOUNDS.minX || x > SALON_BOUNDS.maxX) return true
-  if (z < SALON_BOUNDS.minZ || z > SALON_BOUNDS.maxZ) return true
-  return SALON_OBSTACLES.some(([mx, Mx, mz, Mz]) => x > mx && x < Mx && z > mz && z < Mz)
+// Déplacement autorisé ? Bloqué seulement en ENTRANT dans un obstacle : un
+// personnage déjà à l'intérieur (NPC assis à sa chaise, spawn limite) peut
+// toujours en sortir au lieu de geler sur place.
+export function canMove(fromX: number, fromZ: number, toX: number, toZ: number): boolean {
+  if (toX < SALON_BOUNDS.minX || toX > SALON_BOUNDS.maxX) return false
+  if (toZ < SALON_BOUNDS.minZ || toZ > SALON_BOUNDS.maxZ) return false
+  return !SALON_OBSTACLES.some(([mx, Mx, mz, Mz]) => {
+    const toInside = toX > mx && toX < Mx && toZ > mz && toZ < Mz
+    if (!toInside) return false
+    const fromInside = fromX > mx && fromX < Mx && fromZ > mz && fromZ < Mz
+    return !fromInside
+  })
 }

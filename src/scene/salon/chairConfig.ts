@@ -8,7 +8,7 @@ export const SIT_TARGETS: Record<string, [number, number, number]> = {
   'table-chair-4': [-0.5, 0, -1.60],  // tante — sud
   'table-chair-5': [-0.5, 0,  1.60],  // enfant4 — nord
   'under-table':   [-1.0, 0,   0.0],  // dessous table (pas de walk, en place)
-  'fauteuil':      [ 3.0, 0,   4.0],  // fauteuil zone TV
+  'fauteuil':      [ 3.0, 0,  -4.8],  // fauteuil zone TV (coin salon au sud, ref)
 }
 
 // NPC group Y when seated: pieds à -0.45m (sol opaque → invisibles),

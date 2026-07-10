@@ -11,8 +11,8 @@ import { shouldTurnTowardPlayer, pickScenario } from '../../game/systems/npcSyst
 import type { Scenario } from '../../game/systems/npcSystem'
 
 const GRAND_UNCLE_POSITIONS: Record<string, [number, number, number]> = {
-  couch: [5, 0, 2.5],
-  buffet: [-6, 0, -2.5],
+  couch: [5, 0, -3.3],      // coin salon au sud (ref vue-entrée : à droite en entrant)
+  buffet: [3.2, 0, 4.6],    // buffet au mur nord
   window: [-6, 0, 2],
 }
 

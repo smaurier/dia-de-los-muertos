@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cameraBackDistance, clampCameraToRoom, SALON_BOUNDS } from './salonCollision'
+import { cameraBackDistance, canMove, clampCameraToRoom, SALON_BOUNDS } from './salonCollision'
 
 // La caméra suit le garçon 1,2 m derrière lui : dos au mur, elle sortait de la
 // pièce (murs = planes une face → écran entièrement sombre). Elle doit rester
@@ -19,23 +19,23 @@ describe('clampCameraToRoom', () => {
   })
 
   it('ramène la caméra à l’intérieur quand elle sort par un mur nord/sud', () => {
-    const [, z] = clampCameraToRoom(0, 6.0)
-    expect(z).toBeLessThan(5)
-    const [, z2] = clampCameraToRoom(0, -5.9)
-    expect(z2).toBeGreaterThan(-5)
+    const [, z] = clampCameraToRoom(0, 6.9)
+    expect(z).toBeLessThan(5.8)
+    const [, z2] = clampCameraToRoom(0, -6.7)
+    expect(z2).toBeGreaterThan(-5.8)
   })
 
   it('garde une marge > near plane (0.1) par rapport aux murs', () => {
     const [x] = clampCameraToRoom(7.9, 0)
     expect(7 - x).toBeGreaterThan(0.1)
     const [, z] = clampCameraToRoom(0, -9)
-    expect(z - -5).toBeGreaterThan(0.1)
+    expect(z - -5.8).toBeGreaterThan(0.1)
   })
 
   it('gère les coins (deux axes hors limites à la fois)', () => {
-    const [x, z] = clampCameraToRoom(8, -6)
+    const [x, z] = clampCameraToRoom(8, -6.9)
     expect(x).toBeLessThan(7)
-    expect(z).toBeGreaterThan(-5)
+    expect(z).toBeGreaterThan(-5.8)
   })
 
   it('la marge caméra reste plus large que les bornes du garçon', () => {
@@ -61,9 +61,9 @@ describe('cameraBackDistance', () => {
   })
 
   it('raccourcit le recul contre un mur', () => {
-    // Garçon dos au mur sud (z=4.7), caméra repoussée vers z=5.9 :
-    // limite mur = 4.85 → recul max 0.15.
-    expect(cameraBackDistance(0, 4.7, 0, 1, MAX_BACK)).toBeCloseTo(0.15, 5)
+    // Garçon dos au mur nord (z=5.5), caméra repoussée vers z=6.7 :
+    // limite mur = 5.65 → recul max 0.15.
+    expect(cameraBackDistance(0, 5.5, 0, 1, MAX_BACK)).toBeCloseTo(0.15, 5)
     // Mur est : garçon x=6.6, caméra vers +x, limite 6.85 → 0.25.
     expect(cameraBackDistance(6.6, 0, 1, 0, MAX_BACK)).toBeCloseTo(0.25, 5)
   })
@@ -91,6 +91,33 @@ describe('cameraBackDistance', () => {
 
   it('ne rend jamais un recul négatif', () => {
     // Garçon (impossible mais défensif) au-delà de la limite mur.
-    expect(cameraBackDistance(0, 4.95, 0, 1, MAX_BACK)).toBe(0)
+    expect(cameraBackDistance(0, 5.75, 0, 1, MAX_BACK)).toBe(0)
+  })
+})
+
+// Un personnage déjà DANS un obstacle (NPC assis, spawn limite) doit pouvoir
+// en sortir : canMove ne bloque qu'en ENTRANT dans une AABB depuis l'extérieur.
+describe('canMove', () => {
+  it('autorise un déplacement en espace libre', () => {
+    expect(canMove(0, 3, 0.1, 3)).toBe(true)
+  })
+
+  it("bloque l'entrée dans un obstacle depuis l'extérieur", () => {
+    // Table AABB z max 1.45 : entrer depuis z=1.5 vers z=1.4 → refusé.
+    expect(canMove(0, 1.5, 0, 1.4)).toBe(false)
+  })
+
+  it("autorise la sortie d'un obstacle depuis l'intérieur", () => {
+    // Départ dans la zone table (z=1.0), sortie vers z=1.5 → accepté.
+    expect(canMove(0, 1.0, 0, 1.5)).toBe(true)
+  })
+
+  it("autorise le déplacement à l'intérieur d'un même obstacle (traversée de sortie)", () => {
+    expect(canMove(0, 1.0, 0.2, 1.1)).toBe(true)
+  })
+
+  it('bloque toujours la sortie de la pièce', () => {
+    expect(canMove(0, 5.5, 0, 5.7)).toBe(false)
+    expect(canMove(6.6, 0, 6.8, 0)).toBe(false)
   })
 })

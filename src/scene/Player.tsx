@@ -5,7 +5,7 @@ import { useKeyboardControls, PointerLockControls, Outlines } from '@react-three
 import * as THREE from 'three'
 import { toonGradient } from './shared/toonGradient'
 import { usePlayerStore } from '../game/store/playerStore'
-import { isBlocked, cameraBackDistance, clampCameraToRoom } from './salon/salonCollision'
+import { canMove, cameraBackDistance, clampCameraToRoom } from './salon/salonCollision'
 import { npcPositions } from './salon/npcRegistry'
 
 const SPEED = 3
@@ -49,8 +49,8 @@ export function Player() {
       const nx = boyPos.current.x + direction.current.x
       const nz = boyPos.current.z + direction.current.z
 
-      if (!isBlocked(nx, boyPos.current.z)) boyPos.current.x = nx
-      if (!isBlocked(boyPos.current.x, nz)) boyPos.current.z = nz
+      if (canMove(boyPos.current.x, boyPos.current.z, nx, boyPos.current.z)) boyPos.current.x = nx
+      if (canMove(boyPos.current.x, boyPos.current.z, boyPos.current.x, nz)) boyPos.current.z = nz
 
       // Garçon tourne vers direction de déplacement
       if (boyRef.current) {

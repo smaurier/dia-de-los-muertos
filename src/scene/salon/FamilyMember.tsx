@@ -5,7 +5,7 @@ import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { useSubtitleStore } from '../../game/store/subtitleStore'
-import { isBlocked } from './salonCollision'
+import { canMove } from './salonCollision'
 import { npcPositions } from './npcRegistry'
 import { SIT_TARGETS, SEATED_Y } from './chairConfig'
 import {
@@ -101,8 +101,8 @@ export function FamilyMember({ config }: FamilyMemberProps) {
         const step = walkDirRef.current.normalize().multiplyScalar(delta * 1.2)
         const nx = group.position.x + step.x
         const nz = group.position.z + step.z
-        if (!isBlocked(nx, group.position.z)) group.position.x = nx
-        if (!isBlocked(group.position.x, nz)) group.position.z = nz
+        if (canMove(group.position.x, group.position.z, nx, group.position.z)) group.position.x = nx
+        if (canMove(group.position.x, group.position.z, group.position.x, nz)) group.position.z = nz
       }
       return
     }
