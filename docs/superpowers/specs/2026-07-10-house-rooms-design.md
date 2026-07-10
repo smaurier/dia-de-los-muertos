@@ -29,7 +29,9 @@ Un fichier par pièce : `docs/superpowers/specs/rooms/<pièce>.md`. Six volets o
 
 **Prompt de base maison (cohérence inter-fiches) :** défini une seule fois ci-dessous, chaque fiche l'étend sans le modifier. Sans lui, 6 fiches générées à des semaines d'écart dérivent en style.
 
-> *Base prompt : Mexican family home interior, 1990s, cel-shaded cartoon style, flat colors with 3-tone banded shading, black outlines, warm terracotta and cream walls, ceramic tile floors, seen from a child's eye level (1.1m), Día de Muertos evening, candle-lit warmth against cool blue shadows.*
+> *Base prompt : Mexican family home interior, 1990s, painted anime style (Ghibli-like), soft painterly textures, visible brushwork feel, warm terracotta and cream walls, ceramic tile floors, seen from a child's eye level (1.1m), Día de Muertos evening, candle-lit warmth against cool blue night shadows. The home is completely ordinary — NO altar, NO sugar skulls, NO votive candle shrines, NO framed portraits with candles; festival traces stay subtle.*
+
+**Statut DA (décision 2026-07-10) :** le style *peint/animé* des concepts est adopté comme **cible de mood** (test cuisine-entree-01 concluant, préféré au cel-shading strict initial). L'interdit « maison ordinaire, pas de décor Día de Muertos hors patio » est intégré au prompt de base — première génération avait dérivé (mini-ofrendas partout). Rendu in-engine : **expérience « toon riche » à mener** (gradient 4-5 bandes, fog coloré, bloom doux, palette calée sur les concepts) avant d'amender la DA de la V10 — la matière picturale vraie (textures peintes) reste hors budget pipeline. Concepts = référence de lumière et composition, pas de promesse de rendu.
 
 ## 2. Topologie de la maison
 

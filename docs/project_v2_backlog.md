@@ -36,9 +36,19 @@ Source plan: `docs/superpowers/plans/2026-06-20-vertical-slice-chapter3.md`
   - ✅ LIVRE Task 6: GrandUncle.tsx — observer canapé, head turn joueur, sous-titres laugh_at_tv, 65/65 tests pass, committed
   - ✅ LIVRE Task 7: FamilyMember.tsx — NPC générique 3 tiers, state machine scénarios, sous-titres, 65/65 tests pass, committed
   - ✅ LIVRE Task 8: Code Review Fixes — Duration cache per scenario, bebe position offset, 65/65 tests pass, committed
-  - [ ] Task 9: Salon.tsx — assembly final + EffectComposer + arc soirée
-- [ ] **3D Models** — Intégrer modèles GLTF via pipeline messenger.abeto.co (remplacer placeholders géométriques). À définir : format export, rig adulte, rig enfant, maison.
-- [ ] **Audio réel** — Enregistrer voix espagnoles, composer la chanson, SFX (chien, pétales, morsure pomme). Brancher sur les 6 couches AudioLayerManager.
+  - ✅ LIVRE Task 9: Salon.tsx — assembly final, EffectComposer retiré (perf), Outlines back-face sur tous meubles/PNJ, committed
+- ✅ LIVRE **Enrichissement salon** — Fenêtres rejas, papel picado, tapis, bougies, cadres photos, cactus, porte avec panneaux
+- ✅ LIVRE **Mobilier détaillé** — Pieds cylindriques, RoundedBox coussins, dossiers à barreaux, canapé 3 coussins séparés, buffet avec portes
+- ✅ LIVRE **Cartoon render** — Outlines (back-face extrusion, Drei) sur meubles+PNJ, toonGradient 4 bandes, meshBasicMaterial sur murs/sol/plafond (élimine pointillés)
+- ✅ LIVRE **Gameplay socle** — Sous-titres film (createPortal), collision AABB, NPC registry, troisième personne WASD, overlay PointerLock
+- ✅ LIVRE **Carrelage + animation + table + architecture + personnages** — CanvasTexture carrelage céramique, flicker bougies (AnimatedCandle + pointLight locale), papel picado animé (PapelStrand), table dressée (nappe + assiettes + verres + plats), plinthes + corniche, vêtements (pantalon + chemise par nameHash) + cheveux (calotte sphérique), guayabera grand-oncle.
+- ✅ LIVRE **Chaises + collisions + assiettes** — Chaises nord/sud z=±1.25→±1.60 (élimine overlap 11cm avec bord table). End chairs sorties du range table (x=-5.0/+4.2), rotations corrigées (faisaient dos à la table). PLATE_Z ±0.70→±0.90. 4 assiettes supplémentaires bouts de table. AABB x élargie [-5.3, 4.5]. 18 assiettes au total.
+- ✅ LIVRE **NPCs assis à table** — `chairConfig.ts` : map targetId→position (table-chair-1..5, fauteuil, under-table). SEATED_Y=-0.45 : lerp Y smooth (delta*5) assis↔debout. Tier 2 (maman/papa/oncle/tante) exécutent maintenant leurs scénarios. `sit` step → walk to chair, state 'sitting' à l'arrivée. Chaises vides quand NPCs se déplacent.
+- ✅ LIVRE **startPositions NPCs → chaises** — Tier 2 démarrent à leur chaise de sit target (maman→chair-1, papa→chair-2, oncle1→chair-3, etc.). Tier 3 (soeur1/2, grande-tante) : startPosition y=-0.45 = assis dès le spawn (pas de lerp Tier 3). bebe à [1.5, 0, 1.60] debout (trop petit pour offset adulte).
+- [ ] **3D Models** — Pipeline défini : spec `2026-07-10-ai-asset-pipeline-design.md` (HF Spaces + gltf-transform + Blender headless + Mixamo, 0 €). Pilote = grand-oncle (T-pose générée : `docs/references/characters/grand-oncle/`).
+- [ ] **Audio réel** — Pipeline défini : spec `2026-07-10-ai-asset-pipeline-design.md` (freesound CC0, Kokoro/Chatterbox, ACE-Step, enregistrements maison). Première filière à exécuter.
+- [ ] **Toon riche (expérience DA)** — Pousser le salon existant vers le mood des concepts peints (gradient 4-5 bandes, fog coloré, bloom doux, palette cuisine-entree-01) et juger in-engine avant d'amender la DA V10. Décision 2026-07-10 : style peint = cible de mood.
+- [ ] **Fiches pièces** — Spec `2026-07-10-house-rooms-design.md`. Cuisine ✅ gelée. Suivantes : couloir → couloir intérieur → chambre → débarras → patio → addendum salon.
 - [ ] **Journalisation** — Système de journal de session (à définir selon modèle projet training).
 - [ ] **Chapitres 1-9** — Étendre le système chapitres, ajouter pièces (cuisine, chambre, débarras, patio, salon).
 - [ ] **Chien** — Comportement pathfinding vers joueur quand perdu, regarde l'adulte différemment.

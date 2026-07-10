@@ -111,14 +111,20 @@ Dimensions : **6m (E-O) × 5m (N-S)**, plafond 2.6m. depthZone = 1.
 - ch5+ : chien absent (il est « ailleurs » — réapparaît ch7-8). Vaporera éteinte
 - ch9 (retour) : lumière identique, vaisselle propre égouttée, bruits de fin de soirée depuis le salon — la cuisine a été rangée pendant qu'on était perdu. Personne ne le commente
 
-## 6. Concept art (à générer — Gemini / Nano Banana)
+## 6. Concept art
 
-Images attendues dans `docs/references/rooms/cuisine/` :
+Images dans `docs/references/rooms/cuisine/`. Outil : ChatGPT (GPT-4o image), 2026-07-10.
 
-**Prompt 1 — vue d'entrée (angle joueur) :**
-> *[BASE PROMPT maison] + A cozy small Mexican kitchen seen from the living-room doorway at a child's eye level: a wooden table in the foreground with a sleeping dog underneath, a bare flickering lightbulb hanging from the ceiling, a battered tamale steamer on the stove releasing gentle steam, an old stone wall corner in the back right shadow, a night-blue door to the patio in the back wall.*
+**Génération -01 (faite) — leçons retenues :**
+- ✅ Lumière chaude/froide, chien, vaporera, ampoule, porte patio, talavera : tout juste
+- ✅ Style peint/animé **adopté comme cible de mood** (décision DA, voir spec parente) — le correctif « flat cel-shading » initialement prévu est abandonné
+- ❌ **Dérive sur-décoration** : crânes en sucre, votives, portraits encadrés = mini-ofrendas dans la cuisine. Contraire à la V10 (maison ordinaire, le sacré est au patio). Interdit intégré au prompt de base
+- ❌ Coin-pierres : la lueur venait d'une bougie posée à côté, pas de l'intérieur des pierres
 
-**Prompt 2 — le coin des pierres (mood du beat) :**
-> *[BASE PROMPT maison] + Close corner of an old exposed-stone wall in a dim kitchen, faint warm glow emanating from within the stones as if they remember a fire, barely visible wisp of steam, a dog's eye watching from under a table in the foreground shadow, quiet and tender, not scary.*
+**Prompts -02 (à régénérer, base prompt maison à jour + extensions) :**
 
-Prompts conservés ici (reproductibilité). Ajouter les images générées + retenir ce qui diverge de la fiche.
+Prompt 1 — vue d'entrée :
+> *[BASE PROMPT maison] + A cozy small Mexican kitchen seen from the living-room doorway: a wooden table in the foreground with a sleeping dog underneath, a bare flickering lightbulb hanging from the ceiling, a battered tamale steamer on the stove releasing gentle steam, an old exposed-stone wall corner in the back right shadow, a night-blue door to the patio in the back wall. The only festival trace is a simple bowl of orange marigold petals on the countertop. 16:9.*
+
+Prompt 2 — le coin des pierres :
+> *[BASE PROMPT maison] + Close corner of an old exposed-stone wall in a dim kitchen at night, a faint warm glow emanating from within the stones themselves as if they remember a fire — no visible light source, no candle. A barely visible wisp of steam. A dog's eye watching from under a table in the foreground shadow. Quiet and tender, not scary. Nothing else on the walls or furniture. 16:9.*
