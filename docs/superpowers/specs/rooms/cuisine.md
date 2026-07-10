@@ -121,7 +121,12 @@ Images dans `docs/references/rooms/cuisine/`. Outil : ChatGPT (GPT-4o image), 20
 - ❌ **Dérive sur-décoration** : crânes en sucre, votives, portraits encadrés = mini-ofrendas dans la cuisine. Contraire à la V10 (maison ordinaire, le sacré est au patio). Interdit intégré au prompt de base
 - ❌ Coin-pierres : la lueur venait d'une bougie posée à côté, pas de l'intérieur des pierres
 
-**Prompts -02 (à régénérer, base prompt maison à jour + extensions) :**
+**Génération -02 (faite, 2026-07-10) — VALIDÉE, concept art gelé :**
+- ✅ `cuisine-entree-02.png` = **référence mood officielle de la pièce**. Dérive sur-décoration corrigée, tout le cahier des charges présent, cadrage depuis le passage salon (vue joueur)
+- ✅ `cuisine-coin-pierres-02.png` validée **avec réserve d'intensité** : l'image montre des braises dans les joints — mood amplifié pour communiquer l'intention. In-engine, le beat reste le shift de teinte léger + vapeur à peine perceptible du volet 5. **Ne pas prendre l'image au pied de la lettre : le jeu fait ~20% de ça**, sinon surnaturel frontal (interdit V10)
+- Divergence mineure : cempasúchil en vase au lieu d'un bol de pétales — corriger en 3D, pas en image
+
+**Prompts -02 (utilisés, base prompt maison + extensions) :**
 
 Prompt 1 — vue d'entrée :
 > *[BASE PROMPT maison] + A cozy small Mexican kitchen seen from the living-room doorway: a wooden table in the foreground with a sleeping dog underneath, a bare flickering lightbulb hanging from the ceiling, a battered tamale steamer on the stove releasing gentle steam, an old exposed-stone wall corner in the back right shadow, a night-blue door to the patio in the back wall. The only festival trace is a simple bowl of orange marigold petals on the countertop. 16:9.*
