@@ -5,8 +5,10 @@ image t-pose ChatGPT → Hunyuan3D-2 HF Space → gltf-transform simplify →
 Blender headless → Mixamo auto-rig + animations → GLB dans
 `public/models/characters/`. Images dans `docs/references/characters/<id>/`.
 
-**9 archétypes pour 20 NPCs** (même logique que la chaise ×20) : la variation
-vient des couleurs `meshColor` de familyConfig et des scénarios, pas du mesh.
+**Le héros d'abord** (toujours à l'écran), puis **12 archétypes pour 20 NPCs** :
+les rôles de masse (tantes, enfants, ados) partagent un mesh — la variation
+vient des couleurs `meshColor` et des scénarios. Les oncles, eux, sont
+distincts (4 modèles) : trop présents à table pour être des clones.
 
 ## Specs communes (à inclure dans chaque prompt)
 
@@ -25,6 +27,19 @@ Référence de cadrage : `grand-oncle/grand-oncle-tpose-01.png`.
 
 ---
 
+## 0. `heros-tpose-01.png` — LE GARÇON (joueur) — **PRIORITÉ 1**
+
+Toujours à l'écran (caméra 3e personne, souvent de dos) : silhouette et dos
+doivent être immédiatement lisibles.
+
+> Petit garçon mexicain de 7 ans, cheveux noirs courts avec un épi rebelle,
+> t-shirt uni rouge brique, short brun, baskets blanches usées. Grosse tête
+> ronde de dessin animé, joues pleines, grands yeux curieux. [+ specs communes]
+
+Animations : Standing Idle, Walking, **Crouching Idle** (mécanique « E pour
+se cacher »). Intégration : remplace la capsule dans `Player.tsx`, garçon
+masqué quand `backDist < 0.35` (déjà géré).
+
 ## 1. `mama-tpose-01.png` — Mamá
 
 > Femme mexicaine d'environ 40 ans, cheveux noirs attachés en chignon bas,
@@ -37,11 +52,29 @@ Référence de cadrage : `grand-oncle/grand-oncle-tpose-01.png`.
 > carreaux rouge et brun manches retroussées, jean brun foncé, ceinture à
 > boucle, bottes de travail. Carrure solide. [+ specs communes]
 
-## 3. `oncle-tpose-01.png` — Tíos Carlos / Roberto / Miguel (×3)
+## 3a. `oncle-carlos-tpose-01.png` — Tío Carlos
 
 > Homme mexicain d'environ 50 ans, léger embonpoint, chemise guayabera vert
 > sauge, pantalon gris, moustache fine, cheveux noirs peignés en arrière.
 > Expression joviale. [+ specs communes]
+
+## 3b. `oncle-roberto-tpose-01.png` — Tío Roberto
+
+> Homme mexicain d'environ 55 ans, grand et mince, lunettes carrées, chemise
+> rayée bleu clair et blanc rentrée dans un pantalon beige à ceinture,
+> cheveux grisonnants aux tempes, visage anguleux et sérieux. [+ specs communes]
+
+## 3c. `oncle-miguel-tpose-01.png` — Tío Miguel
+
+> Homme mexicain d'environ 48 ans, costaud et large d'épaules, barbe noire
+> courte, chemise unie bordeaux ouverte sur un t-shirt blanc, jean bleu
+> foncé, casquette posée en arrière. Air débonnaire. [+ specs communes]
+
+## 3d. `oncle-jeune-tpose-01.png` — Tío Joven
+
+> Jeune homme mexicain d'environ 28 ans, cheveux noirs mi-longs, polo jaune
+> ocre, jean clair, baskets, bracelet tressé au poignet. Silhouette élancée,
+> sourire en coin. [+ specs communes]
 
 ## 4. `tante-tpose-01.png` — Tías Rosa / Elena / Joven (×3)
 
@@ -86,9 +119,13 @@ Référence de cadrage : `grand-oncle/grand-oncle-tpose-01.png`.
 
 | Modèle | NPCs | Tier | Anims |
 |---|---|---|---|
+| **heros** | **le joueur (Player.tsx)** | — | idle/walk/crouch |
 | mama | maman | 2 | walk/idle/sit/stand |
 | papa | papa | 2 | walk/idle/sit/stand |
-| oncle | oncle1, oncle2, oncle3, oncle-jeune | 2+1 | walk/idle/sit/stand |
+| oncle-carlos | oncle1 | 2 | walk/idle/sit/stand |
+| oncle-roberto | oncle2 | 2 | walk/idle/sit/stand |
+| oncle-miguel | oncle3 | 2 | walk/idle/sit/stand |
+| oncle-jeune | oncle-jeune | 1 | walk/idle |
 | tante | tante1, tante2, tante-jeune | 2+1 | walk/idle/sit/stand |
 | ado-garcon | cousin1 | 1 | walk/idle/sit |
 | ado-fille | cousine1, cousine2 | 1 | walk/idle |
