@@ -18,6 +18,8 @@ export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
   [ 6.1, 6.7,   0.85, 1.55],  // plante en pot mur est
   [ 2.9, 3.4,   2.35, 2.85],  // lampe à abat-jour (coin canapé)
   [-6.6, -5.6,  3.5,  4.3 ],  // cactus coin nord-ouest
+  [-6.6, -6.1,  2.1,  2.6 ],  // plante fenêtre nord
+  [-6.6, -6.1, -1.3, -0.8 ],  // plante fenêtre sud
 ]
 
 // Murs du salon
