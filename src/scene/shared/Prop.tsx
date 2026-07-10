@@ -30,6 +30,12 @@ export function Prop({ url, color, position, rotationY = 0, targetHeight }: Prop
     object.traverse(o => {
       if ((o as THREE.Mesh).isMesh) {
         const mesh = o as THREE.Mesh
+        // Les GLB du pipeline image-to-3D arrivent sans attribut normal :
+        // l'éclairage toon produit alors des NaN que le Bloom du composer
+        // étale sur toute la frame (écran noir dès que le prop est visible).
+        if (!mesh.geometry.hasAttribute('normal')) {
+          mesh.geometry.computeVertexNormals()
+        }
         mesh.material = new THREE.MeshToonMaterial({ color, gradientMap: toonGradient })
       }
     })
