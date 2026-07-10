@@ -21,7 +21,7 @@ const GRAND_UNCLE_POSITIONS: Record<string, [number, number, number]> = {
 const MODEL_URL = '/models/characters/grand-oncle.glb'
 const MODEL_TUNING = {
   scale: 1,                                         // échelle native OK (1.83m debout)
-  offset: [0, 0, 0.62] as [number, number, number], // hanches sur l'avant de l'assise, pieds au sol devant
+  offset: [0, 0, 0.15] as [number, number, number], // origine modèle = hanches → hanches sur le coussin
   rotationY: 0,                                     // face au repose-pied (sud)
   color: '#EDE8DE',                                 // guayabera ivoire (une seule couleur, pas d'UV)
 }

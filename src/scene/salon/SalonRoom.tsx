@@ -571,18 +571,18 @@ export function SalonRoom() {
         ))
       )}
 
-      {/* ─── Repose-pied ────────────────────────────────────────────────────── */}
-      <mesh position={[5, 0.14, 3.52]}>
+      {/* ─── Repose-pied (reculé : place pour les pieds du grand-oncle) ─────── */}
+      <mesh position={[5, 0.14, 3.85]}>
         <boxGeometry args={[1.55, 0.28, 0.52]} />
         <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
         <Outlines thickness={0.018} color="black" />
       </mesh>
-      <RoundedBox args={[1.42, 0.12, 0.40]} radius={0.025} smoothness={3} position={[5, 0.30, 3.52]}>
+      <RoundedBox args={[1.42, 0.12, 0.40]} radius={0.025} smoothness={3} position={[5, 0.30, 3.85]}>
         <meshToonMaterial color={C_UPHOLSTERY} gradientMap={toonGradient} />
         <Outlines thickness={0.016} color="black" />
       </RoundedBox>
       {([4.32, 5.68] as number[]).flatMap(px =>
-        ([3.30, 3.74] as number[]).map((pz, j) => (
+        ([3.63, 4.07] as number[]).map((pz, j) => (
           <mesh key={`${px}-${j}`} position={[px, 0.07, pz]}>
             <cylinderGeometry args={[0.028, 0.030, 0.14, 6]} />
             <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
