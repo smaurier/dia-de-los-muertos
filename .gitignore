@@ -31,3 +31,6 @@ docs/references/prop/**/*.glb
 *.njsproj
 *.sln
 *.sw?
+
+# Artefacts de session brainstorm
+.superpowers/
