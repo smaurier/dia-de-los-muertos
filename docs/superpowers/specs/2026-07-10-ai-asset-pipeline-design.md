@@ -9,7 +9,7 @@
 | Décision | Choix |
 |---|---|
 | Objectif qualité | Production finale (pas du jetable de prototype) |
-| Budget | Phase 1 = 0 €. Paiements ponctuels ciblés (~10-25 €/outil/mois) déclenchés par plafond constaté, jamais planifiés |
+| Budget | Phase 1 = 0 € STRICT, y compris licences : tout fichier de la build vient d'une source gratuite ET commercial-OK. Paiements ponctuels ciblés (~5-25 €/outil/mois) déclenchés par plafond constaté, jamais planifiés |
 | Voix | Tout IA d'abord, passe humaine ensuite (fichiers remplaçables un par un) |
 | Animation persos | Rig + clips (pas d'animation en bloc) |
 | Blender | Jamais en manuel — uniquement headless scripté (l'utilisateur ne connaît pas Blender) |
@@ -24,8 +24,8 @@ GPU local = GTX 1660 Ti 6 Go : génération 3D locale exclue. Tout passe par ser
 
 Le repo est sous licence propriétaire (tous droits réservés). Tout asset entrant doit être commercialement exploitable et traçable :
 
-- **OK build finale :** sorties TRELLIS 2 (MIT), Hunyuan3D (open source), Mixamo (gratuit commercial), freesound CC0, sorties d'abonnements payants (Suno Pro, ElevenLabs payant, Tripo/Meshy payant)
-- **JAMAIS build finale :** sorties free tier Suno/Tripo/Meshy (licences non-commerciales) — matériel de validation uniquement, hors repo
+- **OK build finale :** sorties TRELLIS 2 (MIT), Hunyuan3D (open source), Mixamo (gratuit commercial), freesound CC0, Pixabay audio (licence commerciale), Kokoro (Apache 2.0), Chatterbox (MIT), ACE-Step (Apache 2.0), enregistrements maison, sorties d'abonnements payants (Suno Pro, ElevenLabs payant, Tripo/Meshy payant)
+- **JAMAIS build finale :** sorties free tier Suno/Tripo/Meshy **et ElevenLabs free** (licences non-commerciales, attribution) — matériel de validation/benchmark uniquement, hors repo
 - **Registre :** `docs/references/ASSETS-LEDGER.md` — une ligne par asset (source, outil+modèle, date, licence, prompt). Règle dure : pas d'asset dans `public/` sans ligne dans le ledger
 
 ## Phasage
@@ -39,17 +39,21 @@ Le repo est sous licence propriétaire (tous droits réservés). Tout asset entr
 | Rig + clips | Mixamo | Humanoïdes uniquement |
 | Optimisation mesh | gltf-transform (CLI npm) | — |
 | Conversion GLB↔FBX | Blender headless (scripts fournis) | — |
-| SFX courts | ElevenLabs SFX v2 free (~10 min/mois) | Volume limité |
+| SFX courts | freesound.org (CC0 strict) + Pixabay audio (commercial OK) | Recherche manuelle vs génération |
 | Ambiances longues | freesound.org (CC0 strict) | Recherche manuelle |
-| Voix | ElevenLabs free (Voice Library d'abord) | ~6 voix, priorisées |
-| Chanson (exploration) | Suno free | Non-commercial : validation mélodie only |
+| Voix (production) | Kokoro-82M (Apache 2.0, espagnol) + Chatterbox Multilingual (MIT, contrôle émotion) — HF Spaces ou local CPU | Expressivité < ElevenLabs, à valider au pilote |
+| Voix (benchmark) | ElevenLabs free | Non-commercial : référence qualité only, hors repo |
+| Fredonnements | Enregistrement maison (Sylvain — pas de mots, accent sans objet) + pitch-shift, ou piste hum ACE-Step | — |
+| Chanson (production) | ACE-Step 1.5 (Apache 2.0) — HF Spaces / local | Qualité entre Suno v4.5 et v5 |
+| Chanson (exploration) | Suno free | Non-commercial : validation mélodie/style only |
 
 **Phase 2 — déclencheurs ponctuels**
 
 | Déclencheur constaté | Achat | Coût |
 |---|---|---|
-| Mélodie validée en free | Suno Pro 1 mois — régénérer keeper + TOUTES les variantes le même mois | ~10 € |
-| Free tier étrangle la génération des 22 NPCs voix | ElevenLabs Creator 1 mois | ~22 € |
+| Voix Kokoro/Chatterbox trop plates au pilote (grand-oncle) | ElevenLabs Starter 1 mois (licence commerciale, 30 min) | ~5 € |
+| SFX introuvables en CC0 et volume voix > Starter | ElevenLabs Creator 1 mois | ~22 € |
+| ACE-Step insuffisant sur la chanson après itérations sérieuses | Suno Pro 1 mois — régénérer keeper + TOUTES les variantes le même mois | ~10 € |
 | Rig/mesh raté après 2-3 itérations gratuites sur un perso clé | Tripo ou Meshy 1 mois | ~15-20 € |
 
 ## Filière 1 — 3D personnages
@@ -75,18 +79,22 @@ Nano Banana (feuille de perso : T-pose, fond neutre, 3/4, style cel-shading)
 
 ## Filière 2 — Audio 6 couches + SFX
 
-Sources :
-- **ElevenLabs SFX v2 free** : sons spécifiques courts (morsure pomme, craquement précis, respiration chien, crépitement bougie). Boucles seamless natives, 48 kHz
-- **freesound.org CC0** : lits d'ambiance longs (rumeur repas familial, maison nocturne, grillons)
+Sources (0 € commercial-OK) :
+- **freesound.org (CC0 strict)** : lits d'ambiance longs (rumeur repas familial, maison nocturne, grillons) + sons spécifiques (couverts, craquements, chien)
+- **Pixabay audio (licence commerciale gratuite)** : complément SFX quand freesound ne couvre pas
+- **Enregistrement maison** : sons impossibles à trouver (morsure de pomme précise, respiration) — un téléphone suffit, la moulinette ffmpeg nettoie
+- ElevenLabs SFX free = benchmark qualité uniquement (non-commercial), jamais dans le repo
 
 | Couche | Contenu | Source principale |
 |---|---|---|
-| SALON | Lit rumeur familiale + couverts + rires ponctuels | freesound (lit) + ElevenLabs (ponctuels) |
-| HOUSE | Craquements parquet, horloge, frigo lointain, vent | ElevenLabs (boucles courtes) |
-| MEMORY | Sons sans source : rire d'enfant lointain, radio ancienne étouffée | ElevenLabs |
-| ANIMAL | Griffes carrelage, halètement, soupir | ElevenLabs |
-| SONG | Chanson (filière 4) | Suno |
-| SILENCE | Respiration enfant, acouphène léger | ElevenLabs |
+| SALON | Lit rumeur familiale + couverts + rires ponctuels | freesound CC0 |
+| HOUSE | Craquements parquet, horloge, frigo lointain, vent | freesound/Pixabay + maison |
+| MEMORY | Sons sans source : rire d'enfant lointain, radio ancienne étouffée | freesound CC0 retraité (reverb/filtre ffmpeg) |
+| ANIMAL | Griffes carrelage, halètement, soupir | freesound/Pixabay + maison (chien accessible ?) |
+| SONG | Chanson (filière 4) | ACE-Step |
+| SILENCE | Respiration enfant, acouphène léger | Enregistrement maison + freesound |
+
+Le caractère « sans source » de MEMORY vient surtout du traitement (étouffement, réverb lointaine, filtres passe-bas ffmpeg) plus que de la génération — compatible 0 €.
 
 - Post-traitement : `npm run process-audio` (ffmpeg) — loudnorm par couche, conversion webm + mp3 fallback, vérification boucle
 - Convention : `public/audio/layers/<layer>/<name>.webm`
@@ -96,10 +104,12 @@ Sources :
 ## Filière 3 — Voix NPCs + grand-oncle
 
 - Scripts = scénarios espagnols existants de `familyConfig.ts` (les sous-titres actuels)
-- **~6 voix pour 22 NPCs** (2 hommes, 2 femmes, 1 enfant, 1 âgée — variées en pitch/vitesse). Les voix sont du son spatial, jamais du dialogue frontal (spec) → la réutilisation passe inaperçue
-- Voice Library (gratuite) filtrée espagnol mexicain d'abord ; Voice Design v3 seulement si manque
-- Priorisation free tier : 1. grand-oncle + ligne pivot « ¿Dónde aprendiste esa canción? » → 2. Tier 2 → 3. Tier 3 (étalé ou déclencheur Creator)
-- **Fredonnement grand-oncle** : ElevenLabs v3 audio tags (`[hums softly]`) à tester tôt — son le plus important du jeu. Plan B : hum extrait d'une variante Suno. Pilote qualité de cette filière
+- **~6 voix pour 22 NPCs** (2 hommes, 2 femmes, 1 enfant, 1 âgée — variées en pitch/vitesse + post-traitement ffmpeg). Les voix sont du son spatial, jamais du dialogue frontal (spec) → la réutilisation passe inaperçue
+- **Production 0 € : Kokoro-82M** (Apache 2.0, espagnol natif du modèle, HF Spaces ou local CPU) pour le volume Tier 2/3 ; **Chatterbox Multilingual** (MIT, contrôle d'exagération émotionnelle) pour le grand-oncle et les répliques expressives
+- ElevenLabs free = benchmark : générer 2-3 répliques de référence pour situer l'écart de qualité, hors repo
+- Priorisation : 1. grand-oncle + ligne pivot « ¿Dónde aprendiste esa canción? » (pilote) → 2. Tier 2 → 3. Tier 3
+- **Fredonnement grand-oncle** : son le plus important du jeu, et le plus simple à faire à 0 € — **enregistrement maison** (fredonner n'a pas d'accent) pitch-shifté/vieilli au ffmpeg, ou piste hum ACE-Step. Les TTS open source ne fredonnent pas de façon fiable. Pilote qualité de cette filière
+- Déclencheur payant : si le pilote grand-oncle sonne plat en Kokoro/Chatterbox → ElevenLabs Starter 1 mois (5 €)
 - Intégration : `public/audio/voices/<npc-id>/<scenario-id>.webm`, moulinette ffmpeg commune, champ `voiceId` dans `familyConfig`, Howler spatial (position NPC → volume/pan). Sous-titres conservés = accessibilité
 - Passe humaine future : un fichier par réplique → remplacement fichier par fichier, zéro changement de code
 
@@ -110,10 +120,11 @@ Trois formes, même mélodie :
 2. Fredonnement de l'enfant (salon, fin)
 3. Version chantée avec paroles (placement final à confirmer au design des chapitres)
 
-- **Paroles écrites par nous** (berceuse mexicaine originale, espagnol simple, 2 couplets, validation authenticité possible par locutrice native). Suno en custom lyrics
-- Phase 1 (Suno free) : 10-20 variantes pour choisir LA mélodie — validation uniquement, hors repo
-- Phase 2 (Suno Pro 1 mois) : régénérer la keeper + toutes les variantes le même mois (chantée, hum homme âgé via cover, hum enfant, instrumentale) — les droits couvrent ce qui est généré pendant l'abonnement
-- Cohérence hum/voix parlée du grand-oncle : tester les deux options (Suno cover vs ElevenLabs `[hums]`) en phase 1
+- **Paroles écrites par nous** (berceuse mexicaine originale, espagnol simple, 2 couplets, validation authenticité possible par locutrice native)
+- **Production 0 € : ACE-Step 1.5** (Apache 2.0, HF Spaces ou ComfyUI local) — custom lyrics supporté, qualité entre Suno v4.5 et v5. Itérer jusqu'à LA mélodie, générer toutes les variantes (chantée, instrumentale, hum)
+- Suno free en parallèle = benchmark créatif (exploration style), jamais dans le repo
+- Cohérence hum/voix parlée du grand-oncle : hum maison (enregistrement pitch-shifté) prioritaire, hum ACE-Step en plan B — les deux gratuits
+- Déclencheur payant : ACE-Step insuffisant après itérations sérieuses → Suno Pro 1 mois (10 €), toutes les variantes générées le même mois (droits liés à la période d'abonnement)
 - Intégration : couche SONG + `songSystem` existants — on branche des fichiers, pas de nouveau code
 - Si le résultat sonne « IA » après le mois Pro : premier candidat à la passe humaine (guitare + voix humaine)
 
@@ -142,7 +153,7 @@ Code touché (minimal) :
 - `FamilyMember.tsx` / `GrandUncle.tsx` : `useGLTF` + `useAnimations`, mapping state machine → clips, `MeshToonMaterial` appliqué par-dessus
 - Howler spatial pan/volume par position NPC
 
-Prérequis outillage (une fois) : Blender installé (headless only), ffmpeg, `@gltf-transform/cli` en devDependency, comptes gratuits HF / ElevenLabs / Suno.
+Prérequis outillage (une fois) : Blender installé (headless only), ffmpeg, `@gltf-transform/cli` en devDependency, comptes gratuits HF / ElevenLabs (benchmark) / Suno (benchmark). Un micro correct (téléphone acceptable) pour les enregistrements maison.
 
 ## Performance
 
