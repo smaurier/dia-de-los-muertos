@@ -5,12 +5,13 @@ import { useKeyboardControls, PointerLockControls, Outlines } from '@react-three
 import * as THREE from 'three'
 import { toonGradient } from './shared/toonGradient'
 import { usePlayerStore } from '../game/store/playerStore'
-import { isBlocked } from './salon/salonCollision'
+import { isBlocked, cameraBackDistance, clampCameraToRoom } from './salon/salonCollision'
 import { npcPositions } from './salon/npcRegistry'
 
 const SPEED = 3
-const CAM_BACK = 1.2  // metres derriere le garçon
-const CAM_UP = 1.3    // hauteur camera
+const CAM_BACK = 1.2      // metres derriere le garçon
+const CAM_UP = 1.3        // hauteur camera
+const BOY_HIDE_DIST = 0.35 // caméra plus proche → garçon masqué (sa coque Outlines remplirait l'écran)
 
 export function Player() {
   const boyRef = useRef<THREE.Group>(null)
@@ -83,9 +84,24 @@ export function Player() {
     camDir.current.y = 0
     if (camDir.current.lengthSq() > 0.001) camDir.current.normalize()
 
-    camera.position.x = boyPos.current.x - camDir.current.x * CAM_BACK
+    // Recul raccourci à la première obstruction (murs + meubles) : les coques
+    // <Outlines> (BackSide, noires) sont visibles de l'intérieur → une caméra
+    // qui pénètre un mesh rend l'écran entièrement noir.
+    const backDist = cameraBackDistance(
+      boyPos.current.x, boyPos.current.z,
+      -camDir.current.x, -camDir.current.z,
+      CAM_BACK,
+    )
+    const [camX, camZ] = clampCameraToRoom(
+      boyPos.current.x - camDir.current.x * backDist,
+      boyPos.current.z - camDir.current.z * backDist,
+    )
+    camera.position.x = camX
     camera.position.y = CAM_UP
-    camera.position.z = boyPos.current.z - camDir.current.z * CAM_BACK
+    camera.position.z = camZ
+
+    // Caméra collée au garçon : on le masque plutôt que d'emplir l'écran de sa coque.
+    if (boyRef.current) boyRef.current.visible = backDist > BOY_HIDE_DIST
 
     if (hide !== prevHide.current) {
       prevHide.current = hide
