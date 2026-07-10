@@ -1,55 +1,60 @@
-# Día de Muertos — Vertical Slice Prototype
+# Día de Muertos
 
-Prototype jouable du Chapitre 3 d'un jeu narratif en réalisme magique.
+A narrative browser game about a child who gets lost in the family house during the Día de Muertos celebration. Magical realism is the default regime of reality: the supernatural is not another world — it is the same world, with more depth of field.
 
-Un enfant se perd dans une maison familiale pendant le Día de Muertos. Pour retrouver le salon, il traverse quelque chose.
+**One evening. Continuous. 9 chapters. One song. One dog. One adult.**
 
-## Ce que valide ce prototype
+## The game
 
-1. La boucle cache-cache fonctionne-t-elle comme moteur ?
-2. L'arrêt silencieux déclenche-t-il quelque chose de ressenti ?
-3. L'adulte est-il crédible comme personne ordinaire ?
-4. La chanson entre-t-elle naturellement depuis lui ?
+A child plays hide-and-seek during a family dinner. His cousin abandons the game to go eat. The child waits, hidden, too long. When he comes out, he can no longer find the living room. The house has quietly become larger than it should be.
 
-## Stack
+As he searches, he crosses paths with an adult nobody talks to. An ordinary man who hums a song in the corridor. The player who pays attention will notice things — a mirror without a reflection, a photo on the ofrenda, 20 chairs for 22 people. The game never points at any of it.
 
-- React Three Fiber + Drei (scène 3D)
-- Zustand (état du jeu)
-- Howler.js (audio spatial 6 couches)
-- Vitest (tests logique pure)
+Two players can walk through the same evening and come back with two completely different levels of understanding. Both are right.
 
-## Lancer le projet
+## Design pillars
+
+- **Sound is 70% of the experience.** Six spatial audio layers (the living room, the living house, the memory of rooms, the animal presence, the song, the inhabited silence). The family speaks real Mexican Spanish — never narrative dialogue, always spatial sound. Spanish-speaking players get an extra layer of understanding; both experiences are complete.
+- **Attention builds the experience.** No quest markers, no highlighted objects. Stillness is a mechanic: stop moving, and the world reveals a little more.
+- **The house breathes.** Distances stretch gently. Doors open onto rooms you don't remember. Never abrupt — like the tide.
+
+## Tech stack
+
+| Layer | Tech |
+|---|---|
+| 3D scene | React Three Fiber 8 + Drei, cel-shading (`MeshToonMaterial` + back-face outlines) |
+| Game state | Zustand 4 |
+| Spatial audio | Howler.js 2 — 6-layer `AudioLayerManager` |
+| Animation | GSAP 3 |
+| Build & language | Vite 5, TypeScript strict |
+| Tests | Vitest — pure logic layer only (stores + systems), 65+ tests |
+
+## Current state
+
+Playable sandbox of the family living room: 22 NPCs with three behavior tiers, Spanish ambient scenarios, anti-repetition scheduling, seated/walking state machine, third-person child-height camera, stillness system, subtitle system. Assets are geometric placeholders; an AI-assisted asset pipeline (3D characters, ambient audio, voices, song) is in design.
+
+## Run it
 
 ```bash
 npm install
 npm run dev
 ```
 
-Ouvrir `http://localhost:5173`, cliquer pour verrouiller la souris, naviguer avec WASD.
-
-## Tests
+Open `http://localhost:5173`, click to lock the mouse, move with WASD.
 
 ```bash
-npm test
+npm test         # pure logic tests
+npx tsc --noEmit # type check
 ```
 
-42 tests — couche logique uniquement (stores + systèmes). La scène 3D se vérifie manuellement.
+## Project documentation
 
-## Architecture
+Internal design docs (French/Spanish) live in `docs/`:
 
-```
-src/
-├── game/
-│   ├── store/        # Zustand: gameStore, playerStore
-│   └── systems/      # Logique pure: stillness, song
-├── audio/            # AudioLayerManager (6 couches Howler)
-├── scene/
-│   └── chapter3/     # Corridor, Mirror, Adult (placeholders géométriques)
-└── hooks/            # useStillness, useAudioLayers
-```
+- Narrative spec (source of truth): `docs/specs-dia-de-muertos-v10.md`
+- Backlog: `docs/project_v2_backlog.md`
+- Visual references: `docs/references/visual-refs.md`
 
-## État du prototype
+## License
 
-Placeholders géométriques (pas de modèles 3D, pas d'audio). L'objectif est de valider les mécaniques, pas le rendu final.
-
-Voir `docs/superpowers/plans/2026-06-20-vertical-slice-chapter3.md` pour le plan complet.
+All rights reserved — see [LICENSE](LICENSE). The code is public for reading and portfolio purposes; the game, its story, and its content may not be reused or redistributed.
