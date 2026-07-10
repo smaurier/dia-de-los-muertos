@@ -12,10 +12,10 @@ import { Subtitles } from './scene/ui/Subtitles'
 const TOON_RICHE = {
   enabled: true,
   fogColor: '#26140b',   // brun profond, prolonge le fond #1a0e07
-  fogNear: 10,
-  fogFar: 34,
+  fogNear: 7,            // resserré : les fonds de pièce fondent dans la pénombre (palier 2)
+  fogFar: 24,
   bloomThreshold: 0.85,  // seules les sources vives (bougies, lustre) fleurissent
-  bloomIntensity: 0.35,
+  bloomIntensity: 0.45,
   vignetteDarkness: 0.35,
 }
 
@@ -29,6 +29,9 @@ const CONTROLS_MAP = [
 
 // Mode photo (vérification visuelle sans pointer lock) :
 // http://localhost:5173/?photo=camX,camY,camZ,lookX,lookY,lookZ
+// Debug : ?nofx désactive le postprocessing (bloom/vignette)
+const NOFX = new URLSearchParams(window.location.search).has('nofx')
+
 const PHOTO = (() => {
   const raw = new URLSearchParams(window.location.search).get('photo')
   if (!raw) return null
@@ -83,7 +86,7 @@ export default function App() {
             {/* DANS le Suspense : monté hors Suspense, le composer capture un
                 framebuffer vide pendant le chargement des GLB et rend un écran
                 uniforme (couleur fog) définitivement. */}
-            {TOON_RICHE.enabled && (
+            {TOON_RICHE.enabled && !NOFX && (
               <EffectComposer>
                 <Bloom
                   luminanceThreshold={TOON_RICHE.bloomThreshold}
