@@ -17,11 +17,15 @@ bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=input_glb)
 
 # Mixamo expects a Y-up, reasonably scaled mesh; glTF is already Y-up.
+# path_mode COPY + embed : la texture voyage dans le FBX et survit à
+# l'aller-retour Mixamo (indispensable pour les meshes texturés Hunyuan).
 bpy.ops.export_scene.fbx(
     filepath=output_fbx,
     use_selection=False,
     apply_scale_options="FBX_SCALE_ALL",
     add_leaf_bones=False,
+    path_mode="COPY",
+    embed_textures=True,
 )
 
 print(f"Exported {output_fbx}")
