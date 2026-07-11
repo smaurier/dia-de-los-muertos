@@ -12,8 +12,8 @@ export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
   [-4.85, 4.95,  -1.45, 1.45],
   // Coin salon SUD-OUEST (refs) : canapé face à l'ouest, TV au mur ouest près
   // de la fenêtre, repose-pied entre les deux, lampe derrière le canapé.
-  [-3.75, -2.65, -5.70, -2.70],  // canapé segment principal (axe N-S, dossier est)
-  [-5.10, -3.20, -5.80, -4.80],  // canapé retour d'angle (mur sud, assise nord)
+  [-3.25, -2.00, -5.70, -2.10],  // canapé model (bbox mesurée) : segment principal
+  [-4.75, -3.20, -5.75, -4.40],  // canapé model : retour d'angle
   [-4.85, -4.25, -4.75, -3.15],  // repose-pied (ottoman)
   [-6.90, -5.95, -1.10, -0.10],  // fauteuil (dossier contre le bas de la fenêtre, face est)
   [ 2.2, 4.5,   5.0,  5.7 ],  // buffet mur nord (photos/vase/bougies)

@@ -51,7 +51,7 @@ Source plan: `docs/superpowers/plans/2026-06-20-vertical-slice-chapter3.md`
   - Plantes en pot (remplacent PlanteFeuillue)
   - Chaises v2 : **assise en osier tressé** + **2 barreaux bas** (ref vue-entree), haut dossier ladder-back — remplace chaise.glb + l'étirement Y×1.14
   - Table : model dédié aux BONNES dimensions pour insertion directe — plateau **8,5 × 2,1 m**, hauteur plateau **0,76-0,80 m** (assiettes posées à y=0.814), 6 pieds, ceintures basses à y≈0.66 ; les 20 chaises/NPCs/collisions sont calibrés sur z=±1.5/1.6
-- [ ] **Audio réel** — Pipeline défini : spec `2026-07-10-ai-asset-pipeline-design.md` (freesound CC0, Kokoro/Chatterbox, ACE-Step, enregistrements maison). Première filière à exécuter.
+- [ ] **Audio réel** — Pipeline défini : spec `2026-07-10-ai-asset-pipeline-design.md` (freesound CC0, Kokoro/Chatterbox, ACE-Step, enregistrements maison). Première filière à exécuter. Décision 2026-07-11 : **la voix du héros sera enregistrée par la fille de Sylvain** (+ possiblement d'autres enfants pour les cousins) — prévoir le format des répliques (liste des lignes du héros par chapitre) et une session d'enregistrement simple (téléphone/micro, pièce calme).
 - [ ] **Toon riche (expérience DA)** — Pousser le salon existant vers le mood des concepts peints (gradient 4-5 bandes, fog coloré, bloom doux, palette cuisine-entree-01) et juger in-engine avant d'amender la DA V10. Décision 2026-07-10 : style peint = cible de mood.
 - [ ] **Fiches pièces** — Spec `2026-07-10-house-rooms-design.md`. Cuisine ✅ gelée. Suivantes : couloir → couloir intérieur → chambre → débarras → patio → addendum salon.
 - [ ] **Journalisation** — Système de journal de session (à définir selon modèle projet training).

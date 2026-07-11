@@ -911,77 +911,8 @@ export function SalonRoom() {
           repose-pied entre les deux. Le groupe hérite de l'ancienne géométrie
           locale, tournée de π/2 puis translatée (centre canapé → (-3.6,-3.3)). ── */}
       <group position={[-0.7, 0, 0.8]} rotation={[0, Math.PI / 2, 0]}>
-      {/* ─── Canapé 3 places — dimensions réelles (assise ~0.44m) ──────────── */}
-      <mesh position={[5, 0.13, -2.5]}>
-        <boxGeometry args={[2.85, 0.26, 0.95]} />
-        <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
-        <Outlines thickness={0.022} color="black" />
-      </mesh>
-      {/* 3 coussins d'assise — RoundedBox. Le coussin CENTRAL (dx=0) porte le
-          grand-oncle : écrasé de 35 % et légèrement élargi (le tissu chasse
-          sur les côtés) — la déformation statique vend le moelleux sans
-          simulation. */}
-      {([-0.92, 0, 0.92] as number[]).map((dx, i) => (
-        <RoundedBox key={i} args={[0.83, 0.18, 0.82]} radius={0.04} smoothness={3}
-          position={[5 + dx, dx === 0 ? 0.33 : 0.35, -2.52]}
-          scale={dx === 0 ? [1.06, 0.78, 1.03] : [1, 1, 1]}>
-          <meshToonMaterial color={C_UPHOLSTERY} gradientMap={toonGradient} />
-          <Outlines thickness={0.022} color="black" />
-        </RoundedBox>
-      ))}
-      {/* Dossier structure */}
-      <mesh position={[5, 0.70, -2.08]}>
-        <boxGeometry args={[2.85, 0.50, 0.14]} />
-        <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
-        <Outlines thickness={0.022} color="black" />
-      </mesh>
-      {/* 3 coussins dossier — le central, dans le dos du grand-oncle, est
-          NETTEMENT écrasé : moitié moins épais, élargi (le rembourrage chasse
-          sur les côtés), creusé au centre par une gorge horizontale sombre. */}
-      {([-0.92, 0, 0.92] as number[]).map((dx, i) => (
-        <RoundedBox key={i} args={[0.81, 0.45, 0.12]} radius={0.03} smoothness={3}
-          position={[5 + dx, 0.70, dx === 0 ? -2.13 : -2.15]}
-          scale={dx === 0 ? [1.08, 1.02, 0.5] : [1, 1, 1]}>
-          <meshToonMaterial color={C_UPHOLSTERY} gradientMap={toonGradient} />
-          <Outlines thickness={0.020} color="black" />
-        </RoundedBox>
-      ))}
-      {/* Gorge d'écrasement au centre du coussin dossier central */}
-      <mesh position={[5, 0.72, -2.165]} rotation={[0.12, 0, 0]}>
-        <boxGeometry args={[0.62, 0.16, 0.04]} />
-        <meshToonMaterial color="#3A2314" gradientMap={toonGradient} />
-      </mesh>
-      {/* Accoudoir gauche */}
-      <mesh position={[3.58, 0.62, -2.5]}>
-        <boxGeometry args={[0.17, 0.54, 0.95]} />
-        <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
-        <Outlines thickness={0.018} color="black" />
-      </mesh>
-      <mesh position={[3.58, 0.90, -2.5]}>
-        <boxGeometry args={[0.20, 0.08, 1.02]} />
-        <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-        <Outlines thickness={0.016} color="black" />
-      </mesh>
-      {/* Accoudoir droit */}
-      <mesh position={[6.42, 0.62, -2.5]}>
-        <boxGeometry args={[0.17, 0.54, 0.95]} />
-        <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
-        <Outlines thickness={0.018} color="black" />
-      </mesh>
-      <mesh position={[6.42, 0.90, -2.5]}>
-        <boxGeometry args={[0.20, 0.08, 1.02]} />
-        <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-        <Outlines thickness={0.016} color="black" />
-      </mesh>
-      {/* 4 pieds canapé */}
-      {([3.68, 6.32] as number[]).flatMap(px =>
-        ([-2.08, -2.92] as number[]).map((pz, j) => (
-          <mesh key={`${px}-${j}`} position={[px, 0.10, pz]}>
-            <cylinderGeometry args={[0.038, 0.044, 0.20, 6]} />
-            <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-          </mesh>
-        ))
-      )}
+      {/* (canapé placeholder retiré — remplacé par le model texturé
+          canape.glb, posé hors de ce groupe en coordonnées monde) */}
 
       {/* ─── Repose-pied (décalé nord : dégage le retour d'angle du canapé) ─── */}
       <mesh position={[4.75, 0.14, -3.85]}>
@@ -1005,88 +936,22 @@ export function SalonRoom() {
       {/* (fauteuil sorti du groupe : replacé en coordonnées monde près de la
           fenêtre — dans le groupe transformé il finirait devant l'écran TV) */}
 
-      {/* Coussins colorés jetés sur le canapé (ref vue-fenetre) */}
-      {([[4.22, -2.28, '#C0392B', 0.25], [5.05, -2.22, '#E67E22', -0.15], [5.78, -2.30, '#27AE60', 0.35]] as [number, number, string, number][]).map(([cx2, cz2, cc, cr], i) => (
-        <RoundedBox key={`cous-${i}`} args={[0.36, 0.36, 0.12]} radius={0.04} smoothness={3}
-          position={[cx2, 0.55, cz2]} rotation={[-0.35, 0, cr]}>
-          <meshToonMaterial color={cc} gradientMap={toonGradient} />
-          <Outlines thickness={0.012} color="black" />
-        </RoundedBox>
-      ))}
+      {/* (coussins colorés retirés : le model canape.glb a les siens) */}
       </group>
 
-      {/* ─── Retour d'angle du canapé (le long du mur SUD, assise face au nord) :
-          les refs montrent un canapé d'angle qui vient contre le mur — le L
-          ferme le coin télé. Pas d'accoudoir à la jonction (continuité). ───── */}
-      {/* Base + assises */}
-      <mesh position={[-4.1, 0.13, -5.28]}>
-        <boxGeometry args={[1.5, 0.26, 0.9]} />
-        <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
-        <Outlines thickness={0.022} color="black" />
-      </mesh>
-      {([-3.73, -4.45] as number[]).map((sx2, i) => (
-        <RoundedBox key={i} args={[0.68, 0.18, 0.78]} radius={0.04} smoothness={3}
-          position={[sx2, 0.35, -5.24]}>
-          <meshToonMaterial color={C_UPHOLSTERY} gradientMap={toonGradient} />
-          <Outlines thickness={0.022} color="black" />
-        </RoundedBox>
-      ))}
-      {/* Dossier contre le mur sud + coussins */}
-      <mesh position={[-4.1, 0.70, -5.66]}>
-        <boxGeometry args={[1.5, 0.50, 0.14]} />
-        <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
-        <Outlines thickness={0.022} color="black" />
-      </mesh>
-      {([-3.73, -4.45] as number[]).map((sx2, i) => (
-        <RoundedBox key={`d${i}`} args={[0.66, 0.45, 0.12]} radius={0.03} smoothness={3}
-          position={[sx2, 0.70, -5.58]}>
-          <meshToonMaterial color={C_UPHOLSTERY} gradientMap={toonGradient} />
-          <Outlines thickness={0.020} color="black" />
-        </RoundedBox>
-      ))}
-      {/* Accoudoir à l'extrémité ouest (la jonction est reste ouverte) */}
-      <mesh position={[-4.93, 0.62, -5.28]}>
-        <boxGeometry args={[0.17, 0.54, 0.9]} />
-        <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
-        <Outlines thickness={0.018} color="black" />
-      </mesh>
-      <mesh position={[-4.93, 0.90, -5.28]}>
-        <boxGeometry args={[0.20, 0.08, 0.97]} />
-        <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-        <Outlines thickness={0.016} color="black" />
-      </mesh>
-      {/* Pieds avant */}
-      {([-3.55, -4.75] as number[]).map((px2, i) => (
-        <mesh key={`pf${i}`} position={[px2, 0.10, -4.9]}>
-          <cylinderGeometry args={[0.038, 0.044, 0.20, 6]} />
-          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-        </mesh>
-      ))}
-      {/* Plaid rayé jeté sur le dossier d'angle (refs : textiles partout) */}
-      <group position={[-4.3, 0.94, -5.6]} rotation={[0.12, 0, 0.04]}>
-        <mesh>
-          <boxGeometry args={[0.5, 0.035, 0.3]} />
-          <meshToonMaterial color="#8A3A2A" gradientMap={toonGradient} />
-          <Outlines thickness={0.010} color="black" />
-        </mesh>
-        {[-0.16, 0, 0.16].map((dz2, i) => (
-          <mesh key={i} position={[0, 0.019, dz2 * 0.8]}>
-            <boxGeometry args={[0.5, 0.004, 0.05]} />
-            <meshToonMaterial color={['#E8940A', '#F1C40F', '#27AE60'][i]} gradientMap={toonGradient} />
-          </mesh>
-        ))}
-        {/* Pan qui pend derrière le dossier */}
-        <mesh position={[0, -0.22, -0.17]} rotation={[0.1, 0, 0]}>
-          <boxGeometry args={[0.5, 0.42, 0.03]} />
-          <meshToonMaterial color="#8A3A2A" gradientMap={toonGradient} />
-        </mesh>
-      </group>
-      {/* Coussin coloré du retour d'angle */}
-      <RoundedBox args={[0.36, 0.36, 0.12]} radius={0.04} smoothness={3}
-        position={[-3.7, 0.58, -5.5]} rotation={[-0.4, 0.2, 0.15]}>
-        <meshToonMaterial color="#8E44AD" gradientMap={toonGradient} />
-        <Outlines thickness={0.012} color="black" />
-      </RoundedBox>
+      {/* ─── Canapé d'angle — model texturé (pipeline Hunyuan, ref
+          angle-canape-ref-01) : segment principal face à l'ouest, retour le
+          long du mur sud, coussins brodés inclus. Longueur bakée au runtime
+          par targetLength (cote exacte 2,9 m sur le grand axe). ────────────── */}
+      {/* Coussins : motifs HD de Sylvain PEINTS dans l'atlas sur les zones UV
+          des coussins bakés (paint_baked_pillows.py) — le relief existait
+          déjà dans la géométrie Hunyuan, zéro prop à positionner. */}
+      <Prop
+        url="/models/props/canape.glb"
+        position={[-3.35, 0, -3.9]}
+        rotationY={-Math.PI / 2}
+        targetLength={3.6}
+      />
 
       {/* ─── Tapis tissé sous le coin salon (rayures, ancre visuellement le L) ── */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-4.3, 0.012, -3.9]}>
