@@ -354,11 +354,4 @@ export const familyConfig: NPCConfig[] = [
     scenarios: [],
     meshColor: '#A88068',
   },
-  {
-    id: 'bebe', name: 'el bebé', tier: 3,
-    startPosition: [1.95, 0, 2.60],
-    waypoints: [],
-    scenarios: [],
-    meshColor: '#F0C0A0',
-  },
 ]
