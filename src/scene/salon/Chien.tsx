@@ -44,8 +44,9 @@ export function Chien() {
   useEffect(() => {
     const action = actions[CLIP_IDLE] ?? actions[names[0]]
     if (action) {
-      action.reset().setLoop(THREE.LoopRepeat, Infinity).play()
-      action.timeScale = 0.25   // ralentir les squats → balancement doux
+      action.reset().play()
+      action.time = 0.37   // freeze au point bas du squat → posture basse/couchée
+      action.paused = true
     }
     return () => { action?.stop() }
   }, [actions, names])
