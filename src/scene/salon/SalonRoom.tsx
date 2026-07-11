@@ -12,6 +12,7 @@ import {
 import { rideauTexture, plafondBoisTexture } from '../shared/fabricTexture'
 import { WindowVista } from './WindowVista'
 import { Prop } from '../shared/Prop'
+import { Canape } from './Canape'
 import { SALON_OBSTACLES } from './salonCollision'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
@@ -939,15 +940,10 @@ export function SalonRoom() {
       {/* (coussins colorés retirés : le model canape.glb a les siens) */}
       </group>
 
-      {/* ─── Canapé d'angle — model texturé (pipeline Hunyuan, ref
-          angle-canape-ref-01) : segment principal face à l'ouest, retour le
-          long du mur sud, coussins brodés inclus. Longueur bakée au runtime
-          par targetLength (cote exacte 2,9 m sur le grand axe). ────────────── */}
-      {/* Coussins : motifs HD de Sylvain PEINTS dans l'atlas sur les zones UV
-          des coussins bakés (paint_baked_pillows.py) — le relief existait
-          déjà dans la géométrie Hunyuan, zéro prop à positionner. */}
-      <Prop
-        url="/models/props/canape.glb"
+      {/* ─── Canapé d'angle — canape-full.glb (body + coussins séparés).
+          Coussins : MeshToonMaterial + motif PNG (RepeatWrapping), override
+          par Object3D.name dans Canape.tsx. ────────────────────────────────── */}
+      <Canape
         position={[-3.15, 0, -3.9]}
         rotationY={-Math.PI / 2}
         targetLength={3.6}
