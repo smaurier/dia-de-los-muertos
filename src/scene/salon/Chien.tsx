@@ -43,7 +43,10 @@ export function Chien() {
 
   useEffect(() => {
     const action = actions[CLIP_IDLE] ?? actions[names[0]]
-    action?.reset().setLoop(THREE.LoopRepeat, Infinity).play()
+    if (action) {
+      action.reset().setLoop(THREE.LoopRepeat, Infinity).play()
+      action.timeScale = 0.25   // ralentir les squats → balancement doux
+    }
     return () => { action?.stop() }
   }, [actions, names])
 
