@@ -158,17 +158,33 @@ for rank, c in enumerate(zones):
     v_ax = np.cross(n, u_ax)
     ALLu = pos_map @ u_ax
     ALLv = pos_map @ v_ax
-    # étendue du motif = étendue de la RÉGION (pleine face du coussin)
-    u0, u1 = np.percentile(ALLu[region], [2, 98])
-    v0, v1 = np.percentile(ALLv[region], [2, 98])
+
     motif = np.asarray(Image.open(motif_order[rank]).convert("RGB")).astype(np.float32)
     MH, MW = motif.shape[:2]
-    su = np.clip((ALLu[region] - u0) / (u1 - u0 + 1e-9), 0, 1)
-    sv = np.clip((ALLv[region] - v0) / (v1 - v0 + 1e-9), 0, 1)
+    # Couleur de fond du tissu = médiane du pourtour du motif
+    border = np.concatenate([
+        motif[:8].reshape(-1, 3), motif[-8:].reshape(-1, 3),
+        motif[:, :8].reshape(-1, 3), motif[:, -8:].reshape(-1, 3),
+    ])
+    base_color = np.median(border, axis=0)
+
+    # FACE VISIBLE = texels de la région orientés comme la normale moyenne :
+    # le carré du motif couvre EXACTEMENT cette face (bord à bord) ; le reste
+    # du coussin (côtés, replis) reçoit la couleur unie du tissu.
+    facing = (nrm_map @ n) > 0.72
+    face = region & facing
+    if face.sum() < 200:
+        face = region
+    u0, u1 = np.percentile(ALLu[face], [1, 99])
+    v0, v1 = np.percentile(ALLv[face], [1, 99])
+
+    su = np.clip((ALLu[face] - u0) / (u1 - u0 + 1e-9), 0, 1)
+    sv = np.clip((ALLv[face] - v0) / (v1 - v0 + 1e-9), 0, 1)
     sx = np.clip((su * (MW - 1)).astype(int), 0, MW - 1)
     sy = np.clip(((1 - sv) * (MH - 1)).astype(int), 0, MH - 1)
-    atlas[region] = motif[sy, sx]
-    print(f"[planar] zone {c} (rang {rank}): masque {n_tex} -> region 3D {int(region.sum())} texels, motif {motif_order[rank].split('/')[-1]}")
+    atlas[region] = base_color  # tout le coussin en couleur du tissu
+    atlas[face] = motif[sy, sx]  # la face visible = le motif exact
+    print(f"[planar] zone {c} (rang {rank}): région {int(region.sum())}, face {int(face.sum())} texels, motif {motif_order[rank].split('/')[-1]}")
 
 material.baseColorTexture = Image.fromarray(atlas.clip(0, 255).astype(np.uint8))
 scene.export(out_glb)
