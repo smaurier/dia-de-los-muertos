@@ -9,18 +9,21 @@ export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
   // Table x[-4.75,3.75] z[-1.05,1.05] + sièges.
   // z=±1.45 : couvre les sièges (z=±1.60, assise front à z=±1.39) sans bloquer NPCs à z=±1.5.
   // x=-5.3 : chaises ouest déplacées à x=-5.0, assise s'étend à x=-5.21 → buffer 0.1m.
-  [-5.3, 4.5,  -1.45, 1.45],
-  [ 3.6, 6.5,  -4.0, -2.7 ],  // canapé (coin salon sud, ref vue-entrée)
-  [ 4.1, 5.9,  -4.7, -4.0 ],  // repose-pied (ottoman)
-  [ 2.5, 3.7,  -5.5, -4.4 ],  // fauteuil
+  [-4.85, 4.95,  -1.45, 1.45],
+  // Coin salon SUD-OUEST (refs) : canapé face à l'ouest, TV au mur ouest près
+  // de la fenêtre, repose-pied entre les deux, lampe derrière le canapé.
+  [-3.75, -2.65, -5.70, -2.70],  // canapé segment principal (axe N-S, dossier est)
+  [-5.10, -3.20, -5.80, -4.80],  // canapé retour d'angle (mur sud, assise nord)
+  [-4.85, -4.25, -4.75, -3.15],  // repose-pied (ottoman)
+  [-6.90, -5.95, -1.10, -0.10],  // fauteuil (dossier contre le bas de la fenêtre, face est)
   [ 2.2, 4.5,   5.0,  5.7 ],  // buffet mur nord (photos/vase/bougies)
-  [ 5.6, 6.7,  -5.6, -4.5 ],  // TV CRT coin sud-est (en diagonale)
+  [-6.90, -5.75, -2.75, -1.55],  // TV CRT + meuble (mur ouest, écran vers l'est)
   [ 6.1, 6.7,   0.85, 1.55],  // plante en pot mur est
-  [ 2.9, 3.4,  -3.65, -3.15], // lampe à abat-jour (coin canapé)
+  [-6.55, -6.05, -3.55, -3.05],  // guéridon + lampe de chevet (mur ouest, entre TV et fauteuil)
   [-6.6, -5.6,  4.3,  5.1 ],  // cactus coin nord-ouest
   [-6.6, -6.1,  2.1,  2.6 ],  // plante fenêtre nord
-  [-6.6, -6.1, -1.3, -0.8 ],  // plante fenêtre sud
-  [-6.5, -5.7, -4.3, -2.7 ],  // chaises coin sud-ouest (grande-tante)
+  [-6.65, -6.15, -1.85, -1.35],  // plante fenêtre sud (décalée : place du fauteuil)
+  [-2.5, -0.7, -5.75, -4.95],  // chaises d'appoint mur sud (grande-tante)
   [ 5.2,  6.4,  5.15, 5.75],  // vaisselier coin nord-est
 ]
 

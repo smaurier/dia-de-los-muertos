@@ -2,19 +2,40 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import { Outlines, RoundedBox } from '@react-three/drei'
+import { MeshReflectorMaterial, Outlines, RoundedBox } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { papelTextures } from '../shared/papelTexture'
 import {
   murAdobeNorth, murAdobeLintel, murAdobeSouth, murAdobeSide,
-  solTomettes, nappeBrodee, boisSombre,
+  solTomettes, solTomettesNormal, nappeBrodee, boisSombre,
 } from '../shared/paintedTextures'
-import { rideauTexture, paysageNuitTexture } from '../shared/fabricTexture'
+import { rideauTexture, plafondBoisTexture } from '../shared/fabricTexture'
+import { WindowVista } from './WindowVista'
 import { Prop } from '../shared/Prop'
 import { SALON_OBSTACLES } from './salonCollision'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
 const SHOW_AABB = new URLSearchParams(window.location.search).has('aabb')
+
+// Intrados de l'arche cuisine : demi-cylindre vu par DESSOUS → normales et
+// winding inversés, sinon la face est éclairée à l'envers (noire en toon).
+const intradosGeometry = (() => {
+  const g = new THREE.CylinderGeometry(0.9, 0.9, 0.35, 24, 1, true, Math.PI / 2, Math.PI)
+  g.rotateX(Math.PI / 2)
+  const normals = g.getAttribute('normal')
+  for (let i = 0; i < normals.count; i++) {
+    normals.setXYZ(i, -normals.getX(i), -normals.getY(i), -normals.getZ(i))
+  }
+  const index = g.getIndex()
+  if (index) {
+    for (let i = 0; i < index.count; i += 3) {
+      const a = index.getX(i)
+      index.setX(i, index.getX(i + 2))
+      index.setX(i + 2, a)
+    }
+  }
+  return g
+})()
 
 
 // ─── Couleurs ────────────────────────────────────────────────────────────────
@@ -24,7 +45,7 @@ const C_WOOD_LIGHT = '#7A4820'
 const C_CUSHION    = '#6B3520'
 const C_UPHOLSTERY = '#4A2E1A'
 const C_CEIL       = '#F0E0C8'
-const C_IRON       = '#2A3530'
+const C_IRON       = '#1A1512' // fer forgé quasi noir (l'ancien #2A3530 tirait au vert)
 const C_GOLD       = '#C8A040'
 const C_FRAME      = '#2A1A08'
 const C_PHOTO      = '#4A4858'
@@ -48,29 +69,29 @@ type ChairCfg = { pos: [number, number, number]; rot: number }
 // End chairs : rot corrigé. local +z = direction assise. West end doit faire face à +x (table) → rot=+π/2.
 // East end doit faire face à -x → rot=-π/2. Positions x sorties du range table [-4.75, 3.75].
 const CHAIRS: ChairCfg[] = [
-  { pos: [-3.5, 0, 1.60], rot: Math.PI },    // nord — face au sud (table)
-  { pos: [-2.5, 0, 1.60], rot: Math.PI },
-  { pos: [-1.5, 0, 1.60], rot: Math.PI },
-  { pos: [-0.5, 0, 1.60], rot: Math.PI },
-  { pos: [0.5,  0, 1.60], rot: Math.PI },
-  { pos: [1.5,  0, 1.60], rot: Math.PI },
-  { pos: [2.5,  0, 1.60], rot: Math.PI },
-  { pos: [-3.5, 0, -1.60], rot: 0 },         // sud — face au nord (table)
-  { pos: [-2.5, 0, -1.60], rot: 0 },
-  { pos: [-1.5, 0, -1.60], rot: 0 },
-  { pos: [-0.5, 0, -1.60], rot: 0 },
-  { pos: [0.5,  0, -1.60], rot: 0 },
-  { pos: [1.5,  0, -1.60], rot: 0 },
-  { pos: [2.5,  0, -1.60], rot: 0 },
-  { pos: [-5.0, 0, -0.4], rot:  Math.PI / 2 }, // ouest — face à +x (table), était rot=-π/2 (dos à la table!)
-  { pos: [-5.0, 0,  0.4], rot:  Math.PI / 2 },
-  { pos: [ 4.2, 0, -0.4], rot: -Math.PI / 2 }, // est — face à -x (table), était rot=+π/2 (dos à la table!)
-  { pos: [ 4.2, 0,  0.4], rot: -Math.PI / 2 },
-  { pos: [-6.1, 0, -3.1], rot: -Math.PI / 2 }, // coin buffet (inchangé)
-  { pos: [-6.1, 0, -3.9], rot: -Math.PI / 2 },
+  { pos: [-3.05, 0, 1.60], rot: Math.PI },    // nord — face au sud (table)
+  { pos: [-2.05, 0, 1.60], rot: Math.PI },
+  { pos: [-1.05, 0, 1.60], rot: Math.PI },
+  { pos: [-0.05, 0, 1.60], rot: Math.PI },
+  { pos: [0.95,  0, 1.60], rot: Math.PI },
+  { pos: [1.95,  0, 1.60], rot: Math.PI },
+  { pos: [2.95,  0, 1.60], rot: Math.PI },
+  { pos: [-3.05, 0, -1.60], rot: 0 },         // sud — face au nord (table)
+  { pos: [-2.05, 0, -1.60], rot: 0 },
+  { pos: [-1.05, 0, -1.60], rot: 0 },
+  { pos: [-0.05, 0, -1.60], rot: 0 },
+  { pos: [0.95,  0, -1.60], rot: 0 },
+  { pos: [1.95,  0, -1.60], rot: 0 },
+  { pos: [2.95,  0, -1.60], rot: 0 },
+  { pos: [-4.55, 0, -0.4], rot:  Math.PI / 2 }, // ouest — face à +x (table)
+  { pos: [-4.55, 0,  0.4], rot:  Math.PI / 2 },
+  { pos: [ 4.65, 0, -0.4], rot: -Math.PI / 2 }, // est — face à -x (table)
+  { pos: [ 4.65, 0,  0.4], rot: -Math.PI / 2 },
+  { pos: [-2.0, 0, -5.35], rot: -Math.PI / 2 }, // sièges d'appoint mur sud, tournés vers la TV (coin SW)
+  { pos: [-1.2, 0, -5.35], rot: -Math.PI / 2 },
 ]
 
-const TABLE_LEG_X = [-4.0, -0.5, 3.0]
+const TABLE_LEG_X = [-3.55, -0.05, 3.45]
 const TABLE_LEG_Z = [-0.75, 0.75]
 
 // Cadres muraux (ref vue-entrée). Nord : autour de l'arche et au-dessus du
@@ -80,17 +101,17 @@ const FRAMES_SOUTH: [number, number, number][] = [[3.6, 2.1, -5.77], [4.8, 1.95,
 const FRAMES_EAST:  [number, number, number][] = [[6.97, 1.9, 2.0], [6.97, 1.9, -1.8]]
 // Bougies sur le buffet (mur sud), de part et d'autre des photos
 const CANDLES_BUFFET: [number, number, number][] = [[2.12, 1.13, 5.32], [4.38, 1.13, 5.32]]
-const CANDLES_TABLE: [number, number, number][]  = [[-2.0, 0.78, 0.25], [0.8, 0.78, -0.25]]
+const CANDLES_TABLE: [number, number, number][]  = [[-1.55, 0.78, 0.25], [1.25, 0.78, -0.25]]
 // Grande fenêtre unique à rideaux, centrée mur ouest (ref salon-vue-entree-01)
 const WINDOW_CZ = 0.5
-const REJA_DZ   = [-0.8, -0.4, 0, 0.4, 0.8]
-const PLATE_X   = [-3.5, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5]
+const REJA_DZ   = [-1.32, -0.88, -0.44, 0, 0.44, 0.88, 1.32]
+const PLATE_X   = [-3.05, -2.05, -1.05, -0.05, 0.95, 1.95, 2.95]
 const PLATE_Z   = [0.80, -0.80]  // suit le plateau resserré (z=±1.05)
 
 // ─── Composants ───────────────────────────────────────────────────────────────
 // Écran CRT : lueur bleutée qui scintille (match/programme lointain).
-// Plaqué sur la face avant du tube (TV à (6.25, -4.3) monde, tournée -π/4 ;
-// le composant vit dans le groupe coin salon décalé de -0.8 en z).
+// Plaqué sur la face est du tube (TV à (-6.33, -2.15) monde contre le mur
+// ouest, écran vers l'est face au canapé).
 function TVScreen() {
   const matRef = useRef<THREE.MeshToonMaterial>(null)
   const t = useRef(0)
@@ -98,14 +119,14 @@ function TVScreen() {
     t.current += delta
     if (matRef.current) {
       const flicker =
-        0.55 +
-        0.18 * Math.sin(t.current * 9.3) * Math.sin(t.current * 2.7) +
-        (Math.random() < 0.03 ? 0.25 : 0)
+        0.95 +
+        0.25 * Math.sin(t.current * 9.3) * Math.sin(t.current * 2.7) +
+        (Math.random() < 0.03 ? 0.35 : 0)
       matRef.current.emissiveIntensity = flicker
     }
   })
   return (
-    <mesh position={[6.11, 0.78, -4.16]} rotation={[0, -Math.PI / 4, 0]}>
+    <mesh position={[-6.01, 0.78, -4.81]} rotation={[0, Math.PI / 4, 0]}>
       <planeGeometry args={[0.44, 0.34]} />
       <meshToonMaterial
         ref={matRef}
@@ -285,6 +306,84 @@ function PapelStrand({ sx, si }: { sx: number; si: number }) {
   )
 }
 
+// Rideau plissé : plane subdivisé, plis sinusoïdaux figés dans la géométrie
+// (amples en bas, froncés en haut) + ondulation lente par vertex — aérien,
+// comme un voile près d'une fenêtre. Suspendu par anneaux à la tringle.
+const RIDEAU_W = 0.95
+const RIDEAU_H = 2.82
+const RIDEAU_PLEATS = 5
+
+function RideauPanel({ z }: { z: number }) {
+  const geo = useMemo(() => {
+    const g = new THREE.PlaneGeometry(RIDEAU_W, RIDEAU_H, 28, 20)
+    const pos = g.getAttribute('position')
+    for (let i = 0; i < pos.count; i++) {
+      const u = pos.getX(i) / RIDEAU_W + 0.5      // 0..1 sur la largeur
+      const v = pos.getY(i) / RIDEAU_H + 0.5      // 0 en bas, 1 en haut
+      const depth = 0.028 + 0.05 * (1 - v)        // plis plus amples vers le bas
+      pos.setZ(i, Math.sin(u * Math.PI * 2 * RIDEAU_PLEATS) * depth)
+    }
+    g.computeVertexNormals()
+    return g
+  }, [])
+  const base = useMemo(() => Float32Array.from(geo.getAttribute('position').array), [geo])
+  const t = useRef(z * 3.7) // phase propre à chaque panneau
+
+  useFrame((_, delta) => {
+    t.current += delta
+    const pos = geo.getAttribute('position')
+    for (let i = 0; i < pos.count; i++) {
+      const bx = base[i * 3]
+      const by = base[i * 3 + 1]
+      const bz = base[i * 3 + 2]
+      const hang = (RIDEAU_H / 2 - by) / RIDEAU_H // 0 à la tringle, 1 au sol
+      pos.setZ(i, bz + Math.sin(t.current * 0.8 + bx * 4 + by * 1.5) * 0.028 * hang)
+    }
+    pos.needsUpdate = true
+    geo.computeVertexNormals()
+  })
+
+  return (
+    <group position={[-6.80, 0, z]}>
+      {/* Panneau (haut à 2.94, juste sous les anneaux) */}
+      <mesh geometry={geo} position={[0, 2.94 - RIDEAU_H / 2, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <meshToonMaterial map={rideauTexture} gradientMap={toonGradient} side={THREE.DoubleSide} />
+      </mesh>
+      {/* Anneaux de suspension sur la tringle (un par crête de pli) */}
+      {Array.from({ length: RIDEAU_PLEATS + 1 }, (_, i) => (
+        <mesh key={i} position={[0, 2.98, -RIDEAU_W / 2 + (i / RIDEAU_PLEATS) * RIDEAU_W]}>
+          <torusGeometry args={[0.036, 0.007, 6, 12]} />
+          <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+// Cadre d'un panneau coulissant : 2 montants + 2 traverses (section fine bois),
+// posé dans sa gorge de rail. La vitre est partagée (plane réflecteur unique).
+function SashFrame({ x, zMin, zMax }: { x: number; zMin: number; zMax: number }) {
+  const zc = (zMin + zMax) / 2
+  const w = zMax - zMin
+  return (
+    <group>
+      {[zMin + 0.028, zMax - 0.028].map(mz => (
+        <mesh key={mz} position={[x, 1.8, mz]}>
+          <boxGeometry args={[0.05, 2.04, 0.056]} />
+          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+          <Outlines thickness={0.008} color="black" />
+        </mesh>
+      ))}
+      {[0.815, 2.785].map(my => (
+        <mesh key={my} position={[x, my, zc]}>
+          <boxGeometry args={[0.05, 0.055, w]} />
+          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
 function PhotoFrame({ position, rotY = 0 }: { position: [number, number, number]; rotY?: number }) {
   return (
     <group position={position} rotation={[0, rotY, 0]}>
@@ -313,36 +412,57 @@ export function SalonRoom() {
       {/* Intensités relevées (0.10/0.35 → 0.30/0.60) : murs et sol sont passés
           de meshBasicMaterial (non éclairés) à meshToonMaterial — sans ce
           rattrapage la pièce entière tombe dans la bande d'ombre. */}
-      <ambientLight intensity={0.30} color="#f5c87a" />
+      {/* Refs : pièce SOMBRE, flaques de lumière chaude (lustre, bougies, lampe,
+          TV, cuisine). L'ambiance générale est basse, le contraste fait le mood. */}
+      <ambientLight intensity={0.13} color="#e8bd80" />
       {/* Ombres teintées : remplissage bicolore — chaud ambré par le haut,
           rebond terracotta par le sol. Les zones à l'ombre prennent ces teintes
           au lieu de virer au gris (palier 2, visual-refs.md). */}
-      <hemisphereLight intensity={0.60} color="#f5c87a" groundColor="#8a4a2a" />
-      <pointLight position={[-0.5, 2.35, 0]} intensity={2.2} color="#f0d890" distance={14} decay={2} />
-      <directionalLight intensity={0.65} color="#f5c87a" position={[-6, 2, 0]} />
-      <pointLight position={[5.9, 1.8, -4.75]} intensity={0.4} color="#8ab4f8" distance={3} decay={2} />
+      <hemisphereLight intensity={0.26} color="#e8bd80" groundColor="#7a4226" />
+      {/* Sous le lustre (pas dedans : à bout portant l'anneau sature en gris) */}
+      <pointLight position={[-0.05, 2.0, 0]} intensity={2.8} color="#f0d890" distance={10} decay={2} />
+      <directionalLight intensity={0.18} color="#f5c87a" position={[-6, 2, 0]} />
+      <pointLight position={[-5.7, 1.6, -4.5]} intensity={0.9} color="#8ab4f8" distance={4} decay={2} />
       {/* pointLight buffet supprimée : chaque AnimatedCandle a sa propre pointLight locale */}
       {/* Clair de lune par la grande fenêtre (bleu nuit, ref) */}
-      <pointLight position={[-6.2, 2, 0.5]} intensity={0.7} color="#8aa4d8" distance={6} decay={2} />
+      <pointLight position={[-6.2, 2, 0.5]} intensity={1.0} color="#8aa4d8" distance={7} decay={2} />
 
       {/* ─── Sol tomettes (texture peinte, palier 3) ─────────────────────────── */}
-      {/* Phong : la ref a un sol brillant — reflets spéculaires chauds des
-          bougies/lustre. Seule entorse au toon, assumée (le sol est textur é). */}
+      {/* Réflexion planaire floutée : la ref montre chaises/nappe/lustre qui se
+          mirent dans les tomettes cirées. Seule entorse au toon, assumée. */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[14, 11.6]} />
-        <meshPhongMaterial map={solTomettes} shininess={70} specular="#5a4028" />
+        <MeshReflectorMaterial
+          map={solTomettes}
+          normalMap={solTomettesNormal}
+          normalScale={new THREE.Vector2(0.7, 0.7)}
+          resolution={1024}
+          mirror={0.45}
+          mixStrength={0.8}
+          mixBlur={1}
+          blur={[250, 90]}
+          roughness={0.5}
+          metalness={0}
+          distortion={0.12}
+          distortionMap={solTomettesNormal}
+          depthScale={0.6}
+          minDepthThreshold={0.5}
+          maxDepthThreshold={1.2}
+        />
       </mesh>
 
       {/* ─── Plafond + vigas (poutres bois, ref salon-vue-entree-01) ────────── */}
       {!SHOW_AABB && (
         <>
+          {/* Plafond bois : planches sombres (refs — pas de plâtre au plafond) */}
           <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 3.2, 0]}>
             <planeGeometry args={[14, 11.6]} />
-            <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
+            <meshToonMaterial map={plafondBoisTexture} gradientMap={toonGradient} />
           </mesh>
-          {[-6, -4, -2, 0, 2, 4, 6].map(bx => (
-            <mesh key={bx} position={[bx, 3.12, 0]}>
-              <boxGeometry args={[0.18, 0.16, 11.6]} />
+          {/* Vigas : plus nombreuses et massives (refs — poutres ~1,5 m d'entraxe) */}
+          {[-6.3, -4.9, -3.5, -2.1, -0.7, 0.7, 2.1, 3.5, 4.9, 6.3].map(bx => (
+            <mesh key={bx} position={[bx, 3.08, 0]}>
+              <boxGeometry args={[0.22, 0.24, 11.6]} />
               <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
             </mesh>
           ))}
@@ -363,37 +483,44 @@ export function SalonRoom() {
       </mesh>
 
       {/* ─── Mur Nord z=5.8 avec arche vers la cuisine (ref : ouverture chaude) ── */}
-      {/* Panneaux de part et d'autre de l'ouverture [-3.4, -1.6] */}
-      <mesh position={[-5.2, 1.6, 5.8]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[3.6, 3.2]} />
+      {/* Mur ÉPAIS (0,35 m, ref : embrasure adobe profonde, aucune menuiserie).
+          Panneaux en boxes de part et d'autre de l'ouverture [-3.4, -1.6],
+          embrasure texturée (jambages plans + intrados cylindrique). */}
+      <mesh position={[-5.2, 1.6, 5.975]}>
+        <boxGeometry args={[3.6, 3.2, 0.35]} />
         <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[2.7, 1.6, 5.8]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[8.6, 3.2]} />
+      <mesh position={[2.7, 1.6, 5.975]}>
+        <boxGeometry args={[8.6, 3.2, 0.35]} />
         <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
       </mesh>
-      {/* Bandeau au-dessus de l'ouverture */}
-      <mesh position={[-2.5, 2.95, 5.8]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[1.8, 0.5]} />
+      {/* Bandeau au-dessus de l'arche (de l'apex 2,7 au plafond 3,2) */}
+      <mesh position={[-2.5, 2.95, 5.975]}>
+        <boxGeometry args={[1.8, 0.5, 0.35]} />
         <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
       </mesh>
-      {/* Cintre : anneau adobe qui arrondit le haut de l'ouverture */}
+      {/* Cintre : anneaux adobe côté salon et côté cuisine */}
       <mesh position={[-2.5, 1.8, 5.79]} rotation={[0, Math.PI, 0]}>
         <ringGeometry args={[0.9, 1.6, 24, 1, 0, Math.PI]} />
         <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
       </mesh>
-      {/* Trim bois du cintre */}
-      <mesh position={[-2.5, 1.8, 5.78]} rotation={[0, Math.PI, 0]}>
-        <torusGeometry args={[0.9, 0.045, 8, 24, Math.PI]} />
-        <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+      <mesh position={[-2.5, 1.8, 6.16]}>
+        <ringGeometry args={[0.9, 1.6, 24, 1, 0, Math.PI]} />
+        <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[-3.4, 0.9, 5.78]}>
-        <boxGeometry args={[0.09, 1.8, 0.06]} />
-        <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+      {/* Intrados : sous-face courbe de l'arche. Normales inversées (on la voit
+          par dessous) — géométrie préparée par intradosGeometry. */}
+      <mesh position={[-2.5, 1.8, 5.975]} geometry={intradosGeometry}>
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[-1.6, 0.9, 5.78]}>
-        <boxGeometry args={[0.09, 1.8, 0.06]} />
-        <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+      {/* Jambages : faces internes de l'embrasure, normales vers l'ouverture */}
+      <mesh position={[-3.4, 0.9, 5.975]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[0.35, 1.8]} />
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[-1.6, 0.9, 5.975]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[0.35, 1.8]} />
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
       </mesh>
 
       {/* ─── Cuisine vide derrière l'arche (profondeur + lumière chaude) ─────── */}
@@ -420,7 +547,7 @@ export function SalonRoom() {
           <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
         </mesh>
         {/* Lueur chaude de la cuisine (visible par l'arche, comme la ref) */}
-        <pointLight position={[-2.5, 2.2, 7.4]} intensity={1.4} color="#f5b860" distance={5} decay={2} />
+        <pointLight position={[-2.5, 2.2, 7.4]} intensity={2.4} color="#f5b860" distance={6} decay={2} />
         {/* Cadres dans la pièce au fond (la ref en montre à travers l'arche) */}
         <PhotoFrame position={[-2.5, 1.8, 8.55]} rotY={Math.PI} />
         <PhotoFrame position={[-4.35, 1.7, 7.0]} rotY={Math.PI / 2} />
@@ -432,83 +559,189 @@ export function SalonRoom() {
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ─── Mur Ouest x=-7 ─────────────────────────────────────────────────── */}
-      <mesh position={[-7, 1.6, 0]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[11.6, 3.2]} />
+      {/* ─── Mur Ouest x=-7, percé pour la fenêtre (ouverture z∈[-1.2,2.2],
+          y∈[0.75,2.85] — la ref lui donne l'essentiel du mur) : 4 segments +
+          embrasure profonde 0,35 m ──────────────────────────────────────────── */}
+      <mesh position={[-7, 1.6, -3.5]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[4.6, 3.2]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[-7, 1.6, 4.0]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[3.6, 3.2]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[-7, 3.025, 0.5]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[3.4, 0.35]} />
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[-7, 0.375, 0.5]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[3.4, 0.75]} />
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
+      </mesh>
+      {/* Embrasure : jambages, sous-linteau, appui (faces vers l'ouverture) */}
+      <mesh position={[-7.175, 1.8, 2.2]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[0.35, 2.1]} />
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[-7.175, 1.8, -1.2]}>
+        <planeGeometry args={[0.35, 2.1]} />
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[-7.175, 2.85, 0.5]} rotation={[Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[0.35, 3.4]} />
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[-7.175, 0.75, 0.5]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[0.35, 3.4]} />
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
       </mesh>
 
       {/* ─── Grande fenêtre à rideaux (mur ouest, ref salon-vue-entree-01) ──── */}
       <group position={[0, 0, WINDOW_CZ]}>
-        {/* Paysage nocturne derrière la vitre (basic : c'est un décor lumineux,
-            pas une surface éclairée par la pièce) */}
-        <mesh position={[-6.97, 1.85, 0]} rotation={[0, Math.PI / 2, 0]}>
-          <planeGeometry args={[2.55, 1.75]} />
-          <meshBasicMaterial map={paysageNuitTexture} />
-        </mesh>
-        {/* Encadrement : montants + linteau + appui */}
-        <mesh position={[-6.92, 1.85, 1.34]}>
-          <boxGeometry args={[0.1, 1.95, 0.11]} />
+        {/* Diorama extérieur en couches (parallaxe réelle) — voir WindowVista */}
+        <WindowVista />
+        {/* Encadrement : montants + linteau + appui (ouverture 3,4 × 2,1) */}
+        <mesh position={[-6.92, 1.8, 1.75]}>
+          <boxGeometry args={[0.1, 2.3, 0.11]} />
           <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
         </mesh>
-        <mesh position={[-6.92, 1.85, -1.34]}>
-          <boxGeometry args={[0.1, 1.95, 0.11]} />
+        <mesh position={[-6.92, 1.8, -1.75]}>
+          <boxGeometry args={[0.1, 2.3, 0.11]} />
           <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
         </mesh>
-        <mesh position={[-6.92, 2.86, 0]}>
-          <boxGeometry args={[0.1, 0.1, 2.8]} />
+        <mesh position={[-6.92, 2.9, 0]}>
+          <boxGeometry args={[0.1, 0.1, 3.6]} />
           <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
         </mesh>
-        <mesh position={[-6.90, 0.92, 0]}>
-          <boxGeometry args={[0.16, 0.09, 2.86]} />
+        <mesh position={[-6.90, 0.70, 0]}>
+          <boxGeometry args={[0.16, 0.09, 3.66]} />
           <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
         </mesh>
-        {/* Croisillons : 2 verticaux + 1 horizontal (x décalés — z-fighting) */}
-        <mesh position={[-6.93, 1.85, -0.44]}>
-          <boxGeometry args={[0.07, 1.77, 0.05]} />
-          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+        {/* ── Fenêtre coulissante 2 panneaux (logique réelle : dormant bois,
+            rail double haut/bas, panneau intérieur sur gorge avant, panneau
+            extérieur sur gorge arrière, recouvrement central, poignée sur le
+            montant de rencontre) ─────────────────────────────────────────── */}
+        {/* Rails haut et bas : semelle + 2 gorges décalées en profondeur */}
+        {[0.77, 2.83].map(ry => (
+          <group key={ry}>
+            <mesh position={[-7.085, ry, 0]}>
+              <boxGeometry args={[0.11, 0.04, 3.42]} />
+              <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+            </mesh>
+            {[-7.055, -7.115].map(rx => (
+              <mesh key={rx} position={[rx, ry + (ry < 1 ? 0.028 : -0.028), 0]}>
+                <boxGeometry args={[0.014, 0.022, 3.42]} />
+                <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+              </mesh>
+            ))}
+          </group>
+        ))}
+        {/* Panneau coulissant INTÉRIEUR (gauche, gorge avant x=-7.055) */}
+        <SashFrame x={-7.055} zMin={-1.71} zMax={0.06} />
+        {/* Panneau coulissant EXTÉRIEUR (droite, gorge arrière x=-7.115) */}
+        <SashFrame x={-7.115} zMin={-0.06} zMax={1.71} />
+        {/* Poignée coquille sur le montant de rencontre du panneau intérieur */}
+        <mesh position={[-7.025, 1.78, 0.01]}>
+          <boxGeometry args={[0.022, 0.16, 0.045]} />
+          <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+          <Outlines thickness={0.006} color="black" />
         </mesh>
-        <mesh position={[-6.93, 1.85, 0.44]}>
-          <boxGeometry args={[0.07, 1.77, 0.05]} />
-          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+        {/* Vitre unique partagée (mi-profondeur des deux gorges) : reflet
+            planaire — de nuit l'intérieur éclairé se mire dans le verre */}
+        <mesh position={[-7.085, 1.8, 0]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[3.36, 2.04]} />
+          <MeshReflectorMaterial
+            transparent
+            opacity={0.68}
+            color="#e8f0f4"
+            resolution={512}
+            mirror={1}
+            mixStrength={1.4}
+            mixBlur={0}
+            blur={[0, 0]}
+            roughness={0.06}
+            metalness={0}
+            depthScale={0}
+            side={THREE.DoubleSide}
+          />
         </mesh>
-        <mesh position={[-6.91, 1.85, 0]}>
-          <boxGeometry args={[0.03, 0.05, 2.57]} />
-          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-        </mesh>
-        {/* Rejas — barreaux verticaux + barre */}
+        {/* Rejas — fer forgé scellé dans la maçonnerie, PROFOND dans l'embrasure
+            (côté extérieur, comme en vrai : la menuiserie est intérieure, la
+            grille protège dehors). Barreaux carrés qui plongent dans l'appui et
+            le linteau ; traverses plates encastrées dans les jambages. Variation
+            de forge : barreaux maîtres épais alternés de barreaux fins. */}
         {REJA_DZ.map((dz, ri) => (
-          <mesh key={ri} position={[-6.91, 1.85, dz]}>
-            <cylinderGeometry args={[0.022, 0.022, 1.6, 6]} />
+          <mesh key={ri} position={[-7.24, 1.8, dz]}>
+            <boxGeometry args={ri % 2 === 0 ? [0.026, 2.16, 0.026] : [0.016, 2.16, 0.016]} />
+            <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+            <Outlines thickness={0.006} color="black" />
+          </mesh>
+        ))}
+        {/* 3 traverses plates (encastrées dans les jambages, ancrage réel) */}
+        {[1.15, 1.8, 2.45].map(hy => (
+          <mesh key={hy} position={[-7.225, hy, 0]}>
+            <boxGeometry args={[0.012, 0.04, 3.44]} />
             <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
           </mesh>
         ))}
-        <mesh position={[-6.89, 1.85, 0]}>
-          <boxGeometry args={[0.02, 0.035, 2.45]} />
-          <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
-        </mesh>
-        {/* Rideaux ouverts : panneaux texture tissu (la cantonnière traversée
-            par la tringle a été retirée — la tringle porte seule les rideaux) */}
-        <mesh position={[-6.82, 1.72, 1.62]}>
-          <boxGeometry args={[0.09, 2.5, 0.5]} />
-          <meshToonMaterial map={rideauTexture} gradientMap={toonGradient} />
-          <Outlines thickness={0.016} color="black" />
-        </mesh>
-        <mesh position={[-6.82, 1.72, -1.62]}>
-          <boxGeometry args={[0.09, 2.5, 0.5]} />
-          <meshToonMaterial map={rideauTexture} gradientMap={toonGradient} />
-          <Outlines thickness={0.016} color="black" />
-        </mesh>
-        {/* Tringle bois + embouts */}
-        <mesh position={[-6.80, 2.98, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.025, 0.025, 3.95, 6]} />
-          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-        </mesh>
-        {[-1.99, 1.99].map(dz => (
-          <mesh key={dz} position={[-6.80, 2.98, dz]}>
-            <sphereGeometry args={[0.05, 8, 8]} />
-            <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+        {/* Colliers forgés aux croisements des barreaux maîtres */}
+        {REJA_DZ.filter((_, ri) => ri % 2 === 0).flatMap(dz =>
+          [1.15, 2.45].map(hy => (
+            <mesh key={`${dz}-${hy}`} position={[-7.235, hy, dz]} rotation={[Math.PI / 2, 0, 0]}>
+              <torusGeometry args={[0.026, 0.007, 6, 10]} />
+              <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+            </mesh>
+          ))
+        )}
+        {/* Pointes de lance sur les barreaux maîtres (dépassent l'appui côté
+            extérieur — signature des rejas forgées) */}
+        {REJA_DZ.filter((_, ri) => ri % 2 === 0).map(dz => (
+          <mesh key={`spike-${dz}`} position={[-7.24, 0.72, dz]}>
+            <coneGeometry args={[0.030, 0.09, 4]} />
+            <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
           </mesh>
+        ))}
+        {/* Rideaux : panneaux plissés animés, suspendus par anneaux (voir Rideau) */}
+        <RideauPanel z={2.05} />
+        <RideauPanel z={-2.05} />
+        {/* Tringle bois tournée */}
+        <mesh position={[-6.80, 2.98, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.032, 0.032, 4.75, 10]} />
+          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+          <Outlines thickness={0.010} color="black" />
+        </mesh>
+        {/* Embouts tournés : collerette + boule */}
+        {[-2.42, 2.42].map(dz => (
+          <group key={dz}>
+            <mesh position={[-6.80, 2.98, dz]} rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[0.045, 0.045, 0.03, 10]} />
+              <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+            </mesh>
+            <mesh position={[-6.80, 2.98, dz + Math.sign(dz) * 0.055]}>
+              <sphereGeometry args={[0.055, 10, 10]} />
+              <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+              <Outlines thickness={0.010} color="black" />
+            </mesh>
+          </group>
+        ))}
+        {/* Supports muraux : platine vissée au mur + bras + collier autour de
+            la tringle — on voit COMMENT ça tient (ref) */}
+        {[-2.15, 2.15].map(dz => (
+          <group key={dz}>
+            <mesh position={[-6.965, 2.90, dz]}>
+              <boxGeometry args={[0.025, 0.16, 0.07]} />
+              <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+              <Outlines thickness={0.008} color="black" />
+            </mesh>
+            <mesh position={[-6.88, 2.94, dz]} rotation={[0, 0, -0.45]}>
+              <cylinderGeometry args={[0.014, 0.018, 0.20, 8]} />
+              <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+            </mesh>
+            <mesh position={[-6.80, 2.98, dz]}>
+              <torusGeometry args={[0.045, 0.011, 8, 14]} />
+              <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+            </mesh>
+          </group>
         ))}
       </group>
 
@@ -518,26 +751,26 @@ export function SalonRoom() {
       {/* ─── Table centrale ─────────────────────────────────────────────────── */}
       {/* Plateau resserré (2.3 → 2.1) : proportions banquet plus réalistes sans
           toucher chaises/NPCs/AABB (tous calibrés sur z=±1.5/1.6). */}
-      <mesh position={[-0.5, 0.76, 0]}>
+      <mesh position={[-0.05, 0.76, 0]}>
         <boxGeometry args={[8.5, 0.08, 2.1]} />
         <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
         <Outlines thickness={0.025} color="black" />
       </mesh>
       {/* Ceinture longue nord */}
-      <mesh position={[-0.5, 0.66, 0.88]}>
+      <mesh position={[-0.05, 0.66, 0.88]}>
         <boxGeometry args={[8.1, 0.14, 0.06]} />
         <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
       </mesh>
       {/* Ceinture longue sud */}
-      <mesh position={[-0.5, 0.66, -0.88]}>
+      <mesh position={[-0.05, 0.66, -0.88]}>
         <boxGeometry args={[8.1, 0.14, 0.06]} />
         <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[-4.2, 0.66, 0]}>
+      <mesh position={[-3.75, 0.66, 0]}>
         <boxGeometry args={[0.06, 0.14, 1.8]} />
         <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[3.2, 0.66, 0]}>
+      <mesh position={[3.65, 0.66, 0]}>
         <boxGeometry args={[0.06, 0.14, 1.8]} />
         <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
       </mesh>
@@ -557,25 +790,25 @@ export function SalonRoom() {
           qui tombent de 0.38 m, liseré brodé en bas des grandes jupes. Les
           anciennes tombées de 10 cm en meshBasicMaterial blanc pur faisaient un
           néon flottant. */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-0.5, 0.805, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-0.05, 0.805, 0]}>
         <planeGeometry args={[8.8, 2.4]} />
         <meshToonMaterial map={nappeBrodee} gradientMap={toonGradient} />
       </mesh>
       {/* Jupes nord / sud */}
-      <mesh position={[-0.5, 0.615, 1.2]}>
+      <mesh position={[-0.05, 0.615, 1.2]}>
         <planeGeometry args={[8.8, 0.38]} />
         <meshToonMaterial color="#F1EBDD" gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[-0.5, 0.615, -1.2]} rotation={[0, Math.PI, 0]}>
+      <mesh position={[-0.05, 0.615, -1.2]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[8.8, 0.38]} />
         <meshToonMaterial color="#F1EBDD" gradientMap={toonGradient} />
       </mesh>
       {/* Jupes est / ouest (bouts de table) */}
-      <mesh position={[3.9, 0.615, 0]} rotation={[0, Math.PI / 2, 0]}>
+      <mesh position={[4.35, 0.615, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[2.4, 0.38]} />
         <meshToonMaterial color="#F1EBDD" gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[-4.9, 0.615, 0]} rotation={[0, -Math.PI / 2, 0]}>
+      <mesh position={[-4.45, 0.615, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[2.4, 0.38]} />
         <meshToonMaterial color="#F1EBDD" gradientMap={toonGradient} />
       </mesh>
@@ -601,6 +834,15 @@ export function SalonRoom() {
             <cylinderGeometry args={[0.13, 0.16, 0.008, 12]} />
             <meshToonMaterial color="#EEEBE4" gradientMap={toonGradient} />
           </mesh>
+          {/* Assiette garnie (refs : plats servis) — mole / riz / frijoles alternés */}
+          <mesh position={[0, 0.022, 0]} scale={[1, 1, 0.85 + ((pi + zi) % 3) * 0.1]}>
+            <cylinderGeometry args={[0.095, 0.105, 0.025, 10]} />
+            <meshToonMaterial
+              color={['#5A2E14', '#D9C78A', '#3A1C10'][(pi + zi * 3) % 3]}
+              gradientMap={toonGradient}
+            />
+            <Outlines thickness={0.008} color="black" />
+          </mesh>
           {/* Verre : cylinder transparent-bleuté avec emissive */}
           <mesh position={[0.28, 0.065, 0]}>
             <cylinderGeometry args={[0.044, 0.036, 0.13, 8]} />
@@ -610,7 +852,7 @@ export function SalonRoom() {
         </group>
       )))}
       {/* Assiettes bouts de table — end chairs ouest (x=-5.0) et est (x=4.2) */}
-      {([ [-4.6, 0.4], [-4.6, -0.4], [3.8, 0.4], [3.8, -0.4] ] as [number, number][]).map(([px, pz], i) => (
+      {([ [-4.15, 0.4], [-4.15, -0.4], [4.25, 0.4], [4.25, -0.4] ] as [number, number][]).map(([px, pz], i) => (
         <group key={`end-plate-${i}`} position={[px, 0.814, pz]}>
           <mesh>
             <cylinderGeometry args={[0.18, 0.18, 0.014, 12]} />
@@ -630,40 +872,45 @@ export function SalonRoom() {
       ))}
 
       {/* Plats de service centraux */}
-      <mesh position={[-0.5, 0.816, 0]}>
+      <mesh position={[-0.05, 0.816, 0]}>
         <cylinderGeometry args={[0.30, 0.30, 0.020, 12]} />
         <meshToonMaterial color="#E8D4B4" gradientMap={toonGradient} />
         <Outlines thickness={0.012} color="black" />
       </mesh>
-      <mesh position={[-2.5, 0.816, 0]}>
+      <mesh position={[-2.05, 0.816, 0]}>
         <cylinderGeometry args={[0.24, 0.24, 0.018, 10]} />
         <meshToonMaterial color="#D4B890" gradientMap={toonGradient} />
         <Outlines thickness={0.010} color="black" />
       </mesh>
-      <mesh position={[1.5, 0.816, 0]}>
+      <mesh position={[1.95, 0.816, 0]}>
         <cylinderGeometry args={[0.24, 0.24, 0.018, 10]} />
         <meshToonMaterial color="#D4B890" gradientMap={toonGradient} />
         <Outlines thickness={0.010} color="black" />
       </mesh>
 
-      {/* ─── 20 chaises (pipeline image-to-3D, ladder-back ref salon-vue-entree-01) ── */}
+      {/* ─── 20 chaises (pipeline image-to-3D, ladder-back ref salon-vue-entree-01) ──
+          Étirement Y non uniforme : hauts dossiers des refs sans élargir
+          l'empreinte au sol (collisions calibrées). */}
       {CHAIRS.map((c, i) => (
-        <Prop
-          key={i}
-          url="/models/props/chaise.glb"
-          color={C_WOOD_DARK}
-          position={c.pos}
-          rotationY={c.rot}
-          targetHeight={1.05}
-        />
+        <group key={i} scale={[1, 1.14, 1]}>
+          <Prop
+            url="/models/props/chaise.glb"
+            color={C_WOOD_DARK}
+            position={c.pos}
+            rotationY={c.rot}
+            targetHeight={1.05}
+          />
+        </group>
       ))}
 
       {/* ─── Bougies table ──────────────────────────────────────────────────── */}
       {CANDLES_TABLE.map((pos, i) => <AnimatedCandle key={i} position={pos} />)}
 
-      {/* ─── Coin salon SUD (canapé/repose-pied/TV) — à droite en entrant par la
-          porte est, comme la ref. Coordonnées z internes négées (miroir). ───── */}
-      <group position={[0, 0, -0.8]}>
+      {/* ─── Coin salon SUD-OUEST (refs, crops analysés) : canapé face à l'OUEST
+          (dossier vers la table), TV contre le mur ouest près de la fenêtre,
+          repose-pied entre les deux. Le groupe hérite de l'ancienne géométrie
+          locale, tournée de π/2 puis translatée (centre canapé → (-3.6,-3.3)). ── */}
+      <group position={[-0.7, 0, 0.8]} rotation={[0, Math.PI / 2, 0]}>
       {/* ─── Canapé 3 places — dimensions réelles (assise ~0.44m) ──────────── */}
       <mesh position={[5, 0.13, -2.5]}>
         <boxGeometry args={[2.85, 0.26, 0.95]} />
@@ -724,17 +971,17 @@ export function SalonRoom() {
         ))
       )}
 
-      {/* ─── Repose-pied (reculé : place pour les pieds du grand-oncle) ─────── */}
-      <mesh position={[5, 0.14, -3.85]}>
+      {/* ─── Repose-pied (décalé nord : dégage le retour d'angle du canapé) ─── */}
+      <mesh position={[4.75, 0.14, -3.85]}>
         <boxGeometry args={[1.55, 0.28, 0.52]} />
         <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
         <Outlines thickness={0.018} color="black" />
       </mesh>
-      <RoundedBox args={[1.42, 0.12, 0.40]} radius={0.025} smoothness={3} position={[5, 0.30, -3.85]}>
+      <RoundedBox args={[1.42, 0.12, 0.40]} radius={0.025} smoothness={3} position={[4.75, 0.30, -3.85]}>
         <meshToonMaterial color={C_UPHOLSTERY} gradientMap={toonGradient} />
         <Outlines thickness={0.016} color="black" />
       </RoundedBox>
-      {([4.32, 5.68] as number[]).flatMap(px =>
+      {([4.07, 5.43] as number[]).flatMap(px =>
         ([-3.63, -4.07] as number[]).map((pz, j) => (
           <mesh key={`${px}-${j}`} position={[px, 0.07, pz]}>
             <cylinderGeometry args={[0.028, 0.030, 0.14, 6]} />
@@ -743,28 +990,130 @@ export function SalonRoom() {
         ))
       )}
 
-      {/* ─── Fauteuil (pipeline image-to-3D) ────────────────────────────────── */}
+      {/* (fauteuil sorti du groupe : replacé en coordonnées monde près de la
+          fenêtre — dans le groupe transformé il finirait devant l'écran TV) */}
+
+      {/* Coussins colorés jetés sur le canapé (ref vue-fenetre) */}
+      {([[4.22, -2.28, '#C0392B', 0.25], [5.05, -2.22, '#E67E22', -0.15], [5.78, -2.30, '#27AE60', 0.35]] as [number, number, string, number][]).map(([cx2, cz2, cc, cr], i) => (
+        <RoundedBox key={`cous-${i}`} args={[0.36, 0.36, 0.12]} radius={0.04} smoothness={3}
+          position={[cx2, 0.55, cz2]} rotation={[-0.35, 0, cr]}>
+          <meshToonMaterial color={cc} gradientMap={toonGradient} />
+          <Outlines thickness={0.012} color="black" />
+        </RoundedBox>
+      ))}
+      </group>
+
+      {/* ─── Retour d'angle du canapé (le long du mur SUD, assise face au nord) :
+          les refs montrent un canapé d'angle qui vient contre le mur — le L
+          ferme le coin télé. Pas d'accoudoir à la jonction (continuité). ───── */}
+      {/* Base + assises */}
+      <mesh position={[-4.1, 0.13, -5.28]}>
+        <boxGeometry args={[1.5, 0.26, 0.9]} />
+        <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
+        <Outlines thickness={0.022} color="black" />
+      </mesh>
+      {([-3.73, -4.45] as number[]).map((sx2, i) => (
+        <RoundedBox key={i} args={[0.68, 0.18, 0.78]} radius={0.04} smoothness={3}
+          position={[sx2, 0.35, -5.24]}>
+          <meshToonMaterial color={C_UPHOLSTERY} gradientMap={toonGradient} />
+          <Outlines thickness={0.022} color="black" />
+        </RoundedBox>
+      ))}
+      {/* Dossier contre le mur sud + coussins */}
+      <mesh position={[-4.1, 0.70, -5.66]}>
+        <boxGeometry args={[1.5, 0.50, 0.14]} />
+        <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
+        <Outlines thickness={0.022} color="black" />
+      </mesh>
+      {([-3.73, -4.45] as number[]).map((sx2, i) => (
+        <RoundedBox key={`d${i}`} args={[0.66, 0.45, 0.12]} radius={0.03} smoothness={3}
+          position={[sx2, 0.70, -5.58]}>
+          <meshToonMaterial color={C_UPHOLSTERY} gradientMap={toonGradient} />
+          <Outlines thickness={0.020} color="black" />
+        </RoundedBox>
+      ))}
+      {/* Accoudoir à l'extrémité ouest (la jonction est reste ouverte) */}
+      <mesh position={[-4.93, 0.62, -5.28]}>
+        <boxGeometry args={[0.17, 0.54, 0.9]} />
+        <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
+        <Outlines thickness={0.018} color="black" />
+      </mesh>
+      <mesh position={[-4.93, 0.90, -5.28]}>
+        <boxGeometry args={[0.20, 0.08, 0.97]} />
+        <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+        <Outlines thickness={0.016} color="black" />
+      </mesh>
+      {/* Pieds avant */}
+      {([-3.55, -4.75] as number[]).map((px2, i) => (
+        <mesh key={`pf${i}`} position={[px2, 0.10, -4.9]}>
+          <cylinderGeometry args={[0.038, 0.044, 0.20, 6]} />
+          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+        </mesh>
+      ))}
+      {/* Plaid rayé jeté sur le dossier d'angle (refs : textiles partout) */}
+      <group position={[-4.3, 0.94, -5.6]} rotation={[0.12, 0, 0.04]}>
+        <mesh>
+          <boxGeometry args={[0.5, 0.035, 0.3]} />
+          <meshToonMaterial color="#8A3A2A" gradientMap={toonGradient} />
+          <Outlines thickness={0.010} color="black" />
+        </mesh>
+        {[-0.16, 0, 0.16].map((dz2, i) => (
+          <mesh key={i} position={[0, 0.019, dz2 * 0.8]}>
+            <boxGeometry args={[0.5, 0.004, 0.05]} />
+            <meshToonMaterial color={['#E8940A', '#F1C40F', '#27AE60'][i]} gradientMap={toonGradient} />
+          </mesh>
+        ))}
+        {/* Pan qui pend derrière le dossier */}
+        <mesh position={[0, -0.22, -0.17]} rotation={[0.1, 0, 0]}>
+          <boxGeometry args={[0.5, 0.42, 0.03]} />
+          <meshToonMaterial color="#8A3A2A" gradientMap={toonGradient} />
+        </mesh>
+      </group>
+      {/* Coussin coloré du retour d'angle */}
+      <RoundedBox args={[0.36, 0.36, 0.12]} radius={0.04} smoothness={3}
+        position={[-3.7, 0.58, -5.5]} rotation={[-0.4, 0.2, 0.15]}>
+        <meshToonMaterial color="#8E44AD" gradientMap={toonGradient} />
+        <Outlines thickness={0.012} color="black" />
+      </RoundedBox>
+
+      {/* ─── Tapis tissé sous le coin salon (rayures, ancre visuellement le L) ── */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-4.3, 0.012, -3.9]}>
+        <planeGeometry args={[2.6, 3.0]} />
+        <meshToonMaterial color="#7A4226" gradientMap={toonGradient} />
+      </mesh>
+      {[-1.25, -0.85, 0.85, 1.25].map((dz2, i) => (
+        <mesh key={`rug${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[-4.3, 0.014, -3.9 + dz2]}>
+          <planeGeometry args={[2.6, 0.12]} />
+          <meshToonMaterial color={i % 2 ? '#B05038' : '#C8893A'} gradientMap={toonGradient} />
+        </mesh>
+      ))}
+
+      {/* ─── Fauteuil dossier contre le bas de la fenêtre, face à la pièce
+          (ref vue-entree) ───────────────────────────────────────────────────── */}
       <Prop
         url="/models/props/fauteuil.glb"
         color={C_UPHOLSTERY}
-        position={[3, 0, -4.1]}
-        rotationY={-Math.PI / 2}
+        position={[-6.42, 0, -0.6]}
+        rotationY={Math.PI / 2}
         targetHeight={0.95}
       />
 
-      {/* ─── Télé CRT 90s + meuble (pipeline image-to-3D) ───────────────────── */}
-      {/* Coin sud-est, en diagonale face au canapé (spec : canapé face à la télé) */}
+      {/* ─── Télé CRT 90s + meuble TV — en diagonale DANS L'ANGLE sud-ouest,
+          écran vers le nord-est : les deux segments du canapé en L la voient.
+          (Meuble TV : model dédié à venir — backlog props texturés.) ────────── */}
       <Prop
         url="/models/props/tv.glb"
         color="#3a3a3e"
-        position={[6.25, 0, -4.3]}
-        rotationY={-Math.PI / 4}
+        position={[-6.15, 0, -4.95]}
+        rotationY={Math.PI / 4}
         targetHeight={1.25}
       />
       {/* Écran : plaqué sur la face du tube, scintillement TV (contenu animé
           simple en attendant mieux — voir backlog) */}
       <TVScreen />
-      </group>
+      {/* Cadres au mur ouest autour de la TV (ref vue-entree) */}
+      <PhotoFrame position={[-6.96, 2.3, -2.15]} rotY={Math.PI / 2} />
+      <PhotoFrame position={[-6.96, 1.9, -3.5]} rotY={Math.PI / 2} />
 
       {/* ─── Buffet/commode (mur nord, à gauche en entrant — ref vue-entrée) ─── */}
       <Prop
@@ -807,22 +1156,46 @@ export function SalonRoom() {
       {/* ─── Bougies buffet ─────────────────────────────────────────────────── */}
       {CANDLES_BUFFET.map((pos, i) => <AnimatedCandle key={i} position={pos} />)}
 
-      {/* ─── Porte double d'entrée (mur est) + croix en bois (ref vue-fenetre) ── */}
+      {/* ─── Porte double d'entrée (mur est) — vantaux massifs à planches,
+          clavos forgés et pentures (ref vue-fenetre) ──────────────────────── */}
       <group position={[7, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
         {[-0.42, 0.42].map(dx => (
-          <mesh key={dx} position={[dx, 1.15, -0.04]}>
-            <boxGeometry args={[0.82, 2.3, 0.07]} />
+          <mesh key={dx} position={[dx, 1.15, -0.02]}>
+            <boxGeometry args={[0.82, 2.3, 0.12]} />
             <meshToonMaterial color="#3E2210" gradientMap={toonGradient} />
             <Outlines thickness={0.020} color="black" />
           </mesh>
         ))}
-        {/* Panneaux + poignées */}
-        {[-0.42, 0.42].map(dx => (
-          <mesh key={`p${dx}`} position={[dx, 1.5, -0.075]}>
-            <boxGeometry args={[0.6, 1.1, 0.02]} />
-            <meshToonMaterial color="#2E1808" gradientMap={toonGradient} />
-          </mesh>
-        ))}
+        {/* Planches verticales : rainures sombres sur chaque vantail */}
+        {[-0.42, 0.42].flatMap(dx =>
+          [-0.27, -0.135, 0, 0.135, 0.27].map(gx => (
+            <mesh key={`g${dx}-${gx}`} position={[dx + gx, 1.15, -0.083]}>
+              <boxGeometry args={[0.012, 2.28, 0.012]} />
+              <meshToonMaterial color="#241204" gradientMap={toonGradient} />
+            </mesh>
+          ))
+        )}
+        {/* Pentures fer : deux bandes horizontales par vantail */}
+        {[-0.42, 0.42].flatMap(dx =>
+          [0.55, 1.85].map(hy => (
+            <mesh key={`h${dx}-${hy}`} position={[dx, hy, -0.088]}>
+              <boxGeometry args={[0.74, 0.055, 0.014]} />
+              <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+              <Outlines thickness={0.008} color="black" />
+            </mesh>
+          ))
+        )}
+        {/* Clavos : clous forgés en grille */}
+        {[-0.42, 0.42].flatMap(dx =>
+          [0.35, 0.95, 1.55, 2.1].flatMap(cy =>
+            [-0.28, 0, 0.28].map(cx => (
+              <mesh key={`c${dx}-${cy}-${cx}`} position={[dx + cx, cy, -0.088]}>
+                <sphereGeometry args={[0.018, 6, 6]} />
+                <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+              </mesh>
+            ))
+          )
+        )}
         <mesh position={[-0.09, 1.1, -0.09]}>
           <sphereGeometry args={[0.035, 8, 8]} />
           <meshToonMaterial color={C_GOLD} gradientMap={toonGradient} />
@@ -944,7 +1317,7 @@ export function SalonRoom() {
       </group>
 
       {/* ─── Lustre fer forgé (au-dessus de la table, ref salon-vue-entree-01) ── */}
-      <group position={[-0.5, 0, 0]}>
+      <group position={[-0.05, 0, 0]}>
         {/* Chaîne */}
         <mesh position={[0, 2.93, 0]}>
           <cylinderGeometry args={[0.018, 0.018, 0.55, 6]} />
@@ -956,27 +1329,32 @@ export function SalonRoom() {
           <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
           <Outlines thickness={0.014} color="black" />
         </mesh>
-        {/* Anneau */}
+        {/* Anneau (refs : couronne large, 6 bougies) */}
         <mesh position={[0, 2.52, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[0.42, 0.025, 8, 24]} />
+          <torusGeometry args={[0.55, 0.032, 8, 28]} />
           <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
           <Outlines thickness={0.014} color="black" />
         </mesh>
-        {/* 4 rayons + bougies sur l'anneau */}
-        {[0, Math.PI / 2, Math.PI, 3 * Math.PI / 2].map((a, i) => (
+        {/* 6 rayons + bougies sur l'anneau */}
+        {Array.from({ length: 6 }, (_, i) => (i * Math.PI) / 3).map((a, i) => (
           <group key={i} rotation={[0, a, 0]}>
-            <mesh position={[0.21, 2.52, 0]} rotation={[0, 0, Math.PI / 2]}>
-              <cylinderGeometry args={[0.012, 0.012, 0.42, 6]} />
+            <mesh position={[0.275, 2.52, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[0.014, 0.014, 0.55, 6]} />
               <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
             </mesh>
-            <mesh position={[0.42, 2.60, 0]}>
-              <cylinderGeometry args={[0.035, 0.030, 0.13, 8]} />
+            {/* Coupelle */}
+            <mesh position={[0.55, 2.545, 0]}>
+              <cylinderGeometry args={[0.05, 0.028, 0.03, 8]} />
+              <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+            </mesh>
+            <mesh position={[0.55, 2.63, 0]}>
+              <cylinderGeometry args={[0.038, 0.033, 0.15, 8]} />
               <meshToonMaterial color={C_CANDLE} gradientMap={toonGradient} />
               <Outlines thickness={0.012} color="black" />
             </mesh>
-            <mesh position={[0.42, 2.70, 0]}>
-              <sphereGeometry args={[0.028, 8, 8]} />
-              <meshToonMaterial color={C_FLAME} emissive={C_FLAME} emissiveIntensity={1.4} gradientMap={toonGradient} />
+            <mesh position={[0.55, 2.745, 0]}>
+              <sphereGeometry args={[0.032, 8, 8]} />
+              <meshToonMaterial color={C_FLAME} emissive={C_FLAME} emissiveIntensity={2.2} gradientMap={toonGradient} />
             </mesh>
           </group>
         ))}
@@ -984,7 +1362,7 @@ export function SalonRoom() {
 
       {/* ─── Plats de service (centre de table, entre les bougies) ─────────── */}
       {/* Plat de tamales */}
-      <group position={[-3.2, 0.84, 0]}>
+      <group position={[-2.75, 0.84, 0]}>
         <mesh scale={[1.4, 1, 1]}>
           <cylinderGeometry args={[0.24, 0.28, 0.05, 12]} />
           <meshToonMaterial color={C_CERAMIC} gradientMap={toonGradient} />
@@ -999,7 +1377,7 @@ export function SalonRoom() {
         ))}
       </group>
       {/* Marmite de mole */}
-      <group position={[-0.6, 0.82, 0]}>
+      <group position={[-0.15, 0.82, 0]}>
         <mesh position={[0, 0.06, 0]}>
           <cylinderGeometry args={[0.19, 0.14, 0.14, 12]} />
           <meshToonMaterial color="#B05038" gradientMap={toonGradient} />
@@ -1011,7 +1389,7 @@ export function SalonRoom() {
         </mesh>
       </group>
       {/* Corbeille d'oranges */}
-      <group position={[2.0, 0.83, 0]}>
+      <group position={[2.45, 0.83, 0]}>
         <mesh>
           <cylinderGeometry args={[0.20, 0.15, 0.09, 10]} />
           <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
@@ -1024,6 +1402,120 @@ export function SalonRoom() {
             <Outlines thickness={0.010} color="black" />
           </mesh>
         ))}
+      </group>
+
+      {/* ─── Festin complété (refs : la table est couverte de plats) ────────── */}
+      {/* Pile de tortillas + linge */}
+      <group position={[1.55, 0.84, 0.35]}>
+        <mesh>
+          <cylinderGeometry args={[0.16, 0.16, 0.015, 10]} />
+          <meshToonMaterial color={C_CERAMIC} gradientMap={toonGradient} />
+          <Outlines thickness={0.012} color="black" />
+        </mesh>
+        {[0.02, 0.045, 0.07].map((py, i) => (
+          <mesh key={i} position={[(i % 2) * 0.012, py, -(i % 2) * 0.01]}>
+            <cylinderGeometry args={[0.12 - i * 0.004, 0.12 - i * 0.004, 0.022, 10]} />
+            <meshToonMaterial color="#E9D8A8" gradientMap={toonGradient} />
+          </mesh>
+        ))}
+      </group>
+      {/* Bol de frijoles */}
+      <group position={[-1.45, 0.84, -0.35]}>
+        <mesh position={[0, 0.045, 0]}>
+          <cylinderGeometry args={[0.13, 0.09, 0.10, 12]} />
+          <meshToonMaterial color="#8A4A2A" gradientMap={toonGradient} />
+          <Outlines thickness={0.012} color="black" />
+        </mesh>
+        <mesh position={[0, 0.09, 0]}>
+          <cylinderGeometry args={[0.105, 0.105, 0.012, 12]} />
+          <meshToonMaterial color="#3A1C10" gradientMap={toonGradient} />
+        </mesh>
+      </group>
+      {/* Deux jarras (agua de jamaica) */}
+      {([[-3.55, 0.55], [3.35, -0.5]] as [number, number][]).map(([jx, jz], i) => (
+        <group key={i} position={[jx, 0.84, jz]}>
+          <mesh position={[0, 0.10, 0]}>
+            <cylinderGeometry args={[0.075, 0.055, 0.20, 10]} />
+            <meshToonMaterial color="#B05038" gradientMap={toonGradient} />
+            <Outlines thickness={0.012} color="black" />
+          </mesh>
+          <mesh position={[0, 0.215, 0]}>
+            <cylinderGeometry args={[0.05, 0.075, 0.035, 10]} />
+            <meshToonMaterial color="#B05038" gradientMap={toonGradient} />
+          </mesh>
+          <mesh position={[0.085, 0.12, 0]} rotation={[0, 0, -0.3]}>
+            <torusGeometry args={[0.045, 0.011, 6, 10, Math.PI]} />
+            <meshToonMaterial color="#B05038" gradientMap={toonGradient} />
+          </mesh>
+        </group>
+      ))}
+      {/* Corbeille de pan de muerto */}
+      <group position={[0.05, 0.84, 0.42]}>
+        <mesh>
+          <cylinderGeometry args={[0.17, 0.13, 0.07, 10]} />
+          <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+          <Outlines thickness={0.012} color="black" />
+        </mesh>
+        {([[-0.05, 0.04], [0.06, -0.03], [0.0, 0.09]] as [number, number][]).map(([bx, bz], i) => (
+          <group key={i} position={[bx, 0.065 + (i === 2 ? 0.05 : 0), bz]}>
+            <mesh>
+              <sphereGeometry args={[0.062, 9, 9]} />
+              <meshToonMaterial color="#C8893A" gradientMap={toonGradient} />
+              <Outlines thickness={0.010} color="black" />
+            </mesh>
+            <mesh position={[0, 0.045, 0]}>
+              <sphereGeometry args={[0.02, 7, 7]} />
+              <meshToonMaterial color="#B8792F" gradientMap={toonGradient} />
+            </mesh>
+          </group>
+        ))}
+      </group>
+
+      {/* ─── Vase de cempasúchil sur le buffet nord (ref vue-fenetre) ────────── */}
+      <group position={[3.3, 1.02, 5.35]}>
+        <mesh position={[0, 0.14, 0]}>
+          <cylinderGeometry args={[0.09, 0.06, 0.28, 10]} />
+          <meshToonMaterial color="#7A9AB8" gradientMap={toonGradient} />
+          <Outlines thickness={0.014} color="black" />
+        </mesh>
+        {([[0, 0.36, 0], [-0.09, 0.32, 0.04], [0.09, 0.33, -0.03], [-0.04, 0.30, -0.08], [0.05, 0.31, 0.08], [0, 0.42, -0.02]] as [number, number, number][]).map((p, i) => (
+          <mesh key={i} position={p}>
+            <sphereGeometry args={[0.045, 8, 8]} />
+            <meshToonMaterial color={i % 2 ? '#E8940A' : '#D97E08'} gradientMap={toonGradient} />
+            <Outlines thickness={0.010} color="black" />
+          </mesh>
+        ))}
+      </group>
+
+      {/* ─── Bougies murales nord sur consoles (ref vue-fenetre : lueurs sur le
+          mur droit) ─────────────────────────────────────────────────────────── */}
+      {([[0.3, 5.62], [4.9, 5.62]] as [number, number][]).map(([sx2, sz2], i) => (
+        <group key={i}>
+          <mesh position={[sx2, 1.94, sz2 + 0.09]}>
+            <boxGeometry args={[0.24, 0.03, 0.16]} />
+            <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+            <Outlines thickness={0.012} color="black" />
+          </mesh>
+          <AnimatedCandle position={[sx2, 1.955, sz2 + 0.09]} />
+        </group>
+      ))}
+
+      {/* ─── Tenture tissée (mur nord, à l'ouest de l'arche — ref) ───────────── */}
+      <group position={[-4.9, 2.0, 5.77]} rotation={[0, Math.PI, 0]}>
+        <mesh>
+          <planeGeometry args={[0.72, 1.0]} />
+          <meshToonMaterial color="#8A3A2A" gradientMap={toonGradient} />
+        </mesh>
+        {[-0.30, -0.10, 0.10, 0.30].map((ty, i) => (
+          <mesh key={i} position={[0, ty, 0.005]}>
+            <planeGeometry args={[0.72, 0.07]} />
+            <meshToonMaterial color={['#E8940A', '#27AE60', '#F1C40F', '#2980B9'][i]} gradientMap={toonGradient} />
+          </mesh>
+        ))}
+        <mesh position={[0, 0.54, 0.01]}>
+          <boxGeometry args={[0.82, 0.04, 0.03]} />
+          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+        </mesh>
       </group>
 
       {/* ─── Photos de famille posées sur le buffet ─────────────────────────── */}
@@ -1044,63 +1536,64 @@ export function SalonRoom() {
       {/* ─── Plantes feuillues : mur est + de part et d'autre de la fenêtre (ref) ── */}
       <PlanteFeuillue position={[6.5, 0, 1.2]} />
       <PlanteFeuillue position={[-6.35, 0, 2.35]} />
-      <PlanteFeuillue position={[-6.35, 0, -1.05]} />
+      <PlanteFeuillue position={[-6.4, 0, -1.6]} />
 
-      {/* ─── Lampe à abat-jour (coin canapé, halo chaud de la ref) ──────────── */}
-      <group position={[3.15, 0, -3.4]}>
-        <mesh position={[0, 0.02, 0]}>
-          <cylinderGeometry args={[0.16, 0.18, 0.04, 10]} />
-          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-          <Outlines thickness={0.014} color="black" />
+      {/* ─── Guéridon + lampe de chevet — entre le canapé et la télé, contre le
+          mur ouest (ref) ; halo discret, plus de grand lampadaire ───────────── */}
+      <group position={[-6.3, 0, -3.3]}>
+        {/* Guéridon : plateau carré + 4 pieds */}
+        <mesh position={[0, 0.50, 0]}>
+          <boxGeometry args={[0.42, 0.035, 0.42]} />
+          <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+          <Outlines thickness={0.012} color="black" />
         </mesh>
-        <mesh position={[0, 0.60, 0]}>
-          <cylinderGeometry args={[0.025, 0.032, 1.12, 8]} />
+        {([-0.17, 0.17] as number[]).flatMap(lx =>
+          ([-0.17, 0.17] as number[]).map((lz, j) => (
+            <mesh key={`${lx}-${j}`} position={[lx, 0.25, lz]}>
+              <boxGeometry args={[0.035, 0.50, 0.035]} />
+              <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+            </mesh>
+          ))
+        )}
+        {/* Lampe de chevet : socle + tige courte + petit abat-jour */}
+        <mesh position={[0, 0.535, 0]}>
+          <cylinderGeometry args={[0.06, 0.075, 0.03, 10]} />
+          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+          <Outlines thickness={0.010} color="black" />
+        </mesh>
+        <mesh position={[0, 0.63, 0]}>
+          <cylinderGeometry args={[0.014, 0.018, 0.16, 8]} />
           <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
         </mesh>
-        <mesh position={[0, 1.28, 0]}>
-          <cylinderGeometry args={[0.14, 0.21, 0.28, 12, 1, true]} />
-          <meshToonMaterial color="#E8C87A" emissive="#F0C060" emissiveIntensity={0.55} gradientMap={toonGradient} side={THREE.DoubleSide} />
-          <Outlines thickness={0.016} color="black" />
+        <mesh position={[0, 0.76, 0]}>
+          <cylinderGeometry args={[0.075, 0.11, 0.15, 12, 1, true]} />
+          <meshToonMaterial color="#E8C87A" emissive="#F0C060" emissiveIntensity={0.6} gradientMap={toonGradient} side={THREE.DoubleSide} />
+          <Outlines thickness={0.012} color="black" />
         </mesh>
       </group>
-      <pointLight position={[3.15, 1.3, 2.6]} intensity={0.5} color="#F5C87A" distance={3.5} decay={2} />
+      <pointLight position={[-6.3, 0.92, -3.3]} intensity={0.6} color="#F5C87A" distance={3} decay={2} />
 
-      {/* ─── Plinthes (bois sombre) ──────────────────────────────────────────── */}
-      {/* x/z légèrement décalés par rapport aux plans de murs pour éviter z-fighting */}
-      <mesh position={[0, 0.06, 4.952]}>
+      {/* ─── Plinthes (bois sombre) — collées aux murs réels (z=±5.8, x=±7) ──── */}
+      <mesh position={[0, 0.06, 5.772]}>
         <boxGeometry args={[14, 0.12, 0.055]} />
         <meshBasicMaterial color="#3A2008" />
       </mesh>
-      <mesh position={[0, 0.06, -4.952]}>
+      <mesh position={[0, 0.06, -5.772]}>
         <boxGeometry args={[14, 0.12, 0.055]} />
         <meshBasicMaterial color="#3A2008" />
       </mesh>
       <mesh position={[6.952, 0.06, 0]}>
-        <boxGeometry args={[0.055, 0.12, 10]} />
+        <boxGeometry args={[0.055, 0.12, 11.6]} />
         <meshBasicMaterial color="#3A2008" />
       </mesh>
       <mesh position={[-6.952, 0.06, 0]}>
-        <boxGeometry args={[0.055, 0.12, 10]} />
+        <boxGeometry args={[0.055, 0.12, 11.6]} />
         <meshBasicMaterial color="#3A2008" />
       </mesh>
 
-      {/* ─── Corniche (plâtre clair) ─────────────────────────────────────────── */}
-      <mesh position={[0, 3.16, 4.952]}>
-        <boxGeometry args={[14, 0.07, 0.06]} />
-        <meshBasicMaterial color="#E8D8C4" />
-      </mesh>
-      <mesh position={[0, 3.16, -4.952]}>
-        <boxGeometry args={[14, 0.07, 0.06]} />
-        <meshBasicMaterial color="#E8D8C4" />
-      </mesh>
-      <mesh position={[6.952, 3.16, 0]}>
-        <boxGeometry args={[0.06, 0.07, 10]} />
-        <meshBasicMaterial color="#D8C8B0" />
-      </mesh>
-      <mesh position={[-6.952, 3.16, 0]}>
-        <boxGeometry args={[0.06, 0.07, 10]} />
-        <meshBasicMaterial color="#D8C8B0" />
-      </mesh>
+      {/* (corniche supprimée : en meshBasicMaterial clair elle brillait comme
+          un néon dans la pénombre — les refs font rencontrer adobe et bois
+          sombre directement) */}
     </group>
   )
 }

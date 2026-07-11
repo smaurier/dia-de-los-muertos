@@ -1,8 +1,10 @@
 // src/App.tsx
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas, useThree, useFrame } from '@react-three/fiber'
+import type * as THREE from 'three'
 import { KeyboardControls } from '@react-three/drei'
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
-import { Suspense, useState, useEffect } from 'react'
+import { EffectComposer, Bloom, Vignette, Noise } from '@react-three/postprocessing'
+import { BlendFunction } from 'postprocessing'
+import { Suspense, useState, useEffect, useRef } from 'react'
 import { Player } from './scene/Player'
 import { Salon } from './scene/salon/Salon'
 import { Subtitles } from './scene/ui/Subtitles'
@@ -14,9 +16,10 @@ const TOON_RICHE = {
   fogColor: '#26140b',   // brun profond, prolonge le fond #1a0e07
   fogNear: 7,            // resserré : les fonds de pièce fondent dans la pénombre (palier 2)
   fogFar: 24,
-  bloomThreshold: 0.85,  // seules les sources vives (bougies, lustre) fleurissent
-  bloomIntensity: 0.45,
+  bloomThreshold: 0.75,  // halo peint : les sources chaudes fleurissent plus tôt
+  bloomIntensity: 0.55,
   vignetteDarkness: 0.35,
+  grainOpacity: 0.055,   // grain de papier — rendu gouache des refs
 }
 
 const CONTROLS_MAP = [
@@ -38,6 +41,24 @@ const PHOTO = (() => {
   const nums = raw.split(',').map(Number)
   return nums.length === 6 && nums.every(n => !Number.isNaN(n)) ? nums : null
 })()
+
+// Les réflecteurs drei (sol, vitre) rendent leur passe dans useFrame (prio 0) :
+// la caméra virtuelle, mirroir de la nôtre, voit le joueur 2× plus loin et le
+// fog l'avale (on « disparaît » du reflet en reculant). Un vrai reflet ne
+// prend pas le fog en double → fog coupé pendant les passes réflecteur,
+// restauré avant le rendu principal.
+function ReflectionsSansFog() {
+  const scene = useThree(s => s.scene)
+  const saved = useRef<THREE.Scene['fog']>(null)
+  useFrame(() => {
+    saved.current = scene.fog
+    scene.fog = null
+  }, -1)
+  useFrame(() => {
+    scene.fog = saved.current
+  }, 1)
+  return null
+}
 
 function PhotoCamera({ conf }: { conf: number[] }) {
   const { camera } = useThree()
@@ -80,6 +101,7 @@ export default function App() {
           {TOON_RICHE.enabled && (
             <fog attach="fog" args={[TOON_RICHE.fogColor, TOON_RICHE.fogNear, TOON_RICHE.fogFar]} />
           )}
+          <ReflectionsSansFog />
           <Suspense fallback={null}>
             {PHOTO ? <PhotoCamera conf={PHOTO} /> : <Player />}
             <Salon />
@@ -93,6 +115,7 @@ export default function App() {
                   intensity={TOON_RICHE.bloomIntensity}
                   mipmapBlur
                 />
+                <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={TOON_RICHE.grainOpacity} />
                 <Vignette darkness={TOON_RICHE.vignetteDarkness} />
               </EffectComposer>
             )}

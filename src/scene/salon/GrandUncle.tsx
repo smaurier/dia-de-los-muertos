@@ -11,7 +11,7 @@ import { shouldTurnTowardPlayer, pickScenario } from '../../game/systems/npcSyst
 import type { Scenario } from '../../game/systems/npcSystem'
 
 const GRAND_UNCLE_POSITIONS: Record<string, [number, number, number]> = {
-  couch: [5, 0, -3.3],      // coin salon au sud (ref vue-entrée : à droite en entrant)
+  couch: [-3.2, 0, -4.2],   // canapé d'angle sud-ouest, face à la TV dans l'angle (refs)
   buffet: [3.2, 0, 4.6],    // buffet au mur nord
   window: [-6, 0, 2],
 }
@@ -21,8 +21,8 @@ const GRAND_UNCLE_POSITIONS: Record<string, [number, number, number]> = {
 const MODEL_URL = '/models/characters/grand-oncle.glb'
 const MODEL_TUNING = {
   scale: 1,                                         // échelle native OK (1.83m debout)
-  offset: [0, 0, 0.15] as [number, number, number], // origine modèle = hanches → hanches sur le coussin
-  rotationY: 0,                                     // face au repose-pied (sud)
+  offset: [0.15, 0, 0] as [number, number, number], // origine modèle = hanches → hanches sur le coussin (dossier à l'est)
+  rotationY: -Math.PI / 2,                          // face à la TV (ouest) — le modèle regarde +z par défaut
   color: '#EDE8DE',                                 // guayabera ivoire (une seule couleur, pas d'UV)
 }
 

@@ -222,56 +222,56 @@ export const familyConfig: NPCConfig[] = [
   // ── Tier 2 — semi-actifs (exécutent scénarios, démarrent à leur chaise) ──────
   {
     id: 'maman', name: 'Mamá', tier: 2,
-    startPosition: [-3.5, 0, 1.60],   // table-chair-1
+    startPosition: [-3.05, 0, 1.60],  // table-chair-1
     waypoints: [],
     scenarios: mamanScenarios,
     meshColor: '#c8956c',
   },
   {
     id: 'papa', name: 'Papá', tier: 2,
-    startPosition: [-2.5, 0, 1.60],   // table-chair-2
+    startPosition: [-2.05, 0, 1.60],  // table-chair-2
     waypoints: [],
     scenarios: papaScenarios,
     meshColor: '#8B6543',
   },
   {
     id: 'oncle1', name: 'Tío Carlos', tier: 2,
-    startPosition: [-1.5, 0, 1.60],   // table-chair-3 (nord)
+    startPosition: [-1.05, 0, 1.60],  // table-chair-3 (nord)
     waypoints: [],
     scenarios: oncleScenarios,
     meshColor: '#7A5533',
   },
   {
     id: 'oncle2', name: 'Tío Roberto', tier: 2,
-    startPosition: [-1.5, 0, -1.60],  // sud, symétrique de chair-3
+    startPosition: [-1.05, 0, -1.60], // sud, symétrique de chair-3
     waypoints: [],
     scenarios: oncleScenarios,
     meshColor: '#6B4423',
   },
   {
     id: 'oncle3', name: 'Tío Miguel', tier: 2,
-    startPosition: [0.5, 0, -1.60],   // sud
+    startPosition: [0.95, 0, -1.60],  // sud
     waypoints: [],
     scenarios: oncleScenarios,
     meshColor: '#8B6040',
   },
   {
     id: 'tante1', name: 'Tía Rosa', tier: 2,
-    startPosition: [-0.5, 0, -1.60],  // table-chair-4
+    startPosition: [-0.05, 0, -1.60], // table-chair-4
     waypoints: [],
     scenarios: tanteScenarios,
     meshColor: '#C27B5A',
   },
   {
     id: 'tante2', name: 'Tía Elena', tier: 2,
-    startPosition: [-2.5, 0, -1.60],  // sud
+    startPosition: [-2.05, 0, -1.60], // sud
     waypoints: [],
     scenarios: tanteScenarios,
     meshColor: '#B8705A',
   },
   {
     id: 'enfant4', name: 'Niño', tier: 2,
-    startPosition: [-0.5, 0, 1.60],   // table-chair-5
+    startPosition: [-0.05, 0, 1.60],  // table-chair-5
     waypoints: [],
     scenarios: [{ id: 'enfant4_sage', weight: 1, duration: [20, 30], steps: [{ type: 'sit', targetId: 'table-chair-5' }, { type: 'idle', duration: 20 }] }],
     meshColor: '#D4956A',
@@ -336,28 +336,28 @@ export const familyConfig: NPCConfig[] = [
   // ── Tier 3 — statiques, y=-0.45 dans startPosition = assis dès le spawn ───────
   {
     id: 'soeur1', name: 'Hermana', tier: 3,
-    startPosition: [1.5, -0.45, -1.60],   // sud, assise
+    startPosition: [1.95, -0.45, -1.60],  // sud, assise
     waypoints: [],
     scenarios: [],
     meshColor: '#E0A888',
   },
   {
     id: 'soeur2', name: 'Hermana', tier: 3,
-    startPosition: [2.5, -0.45, -1.60],   // sud, assise
+    startPosition: [2.95, -0.45, -1.60],  // sud, assise
     waypoints: [],
     scenarios: [],
     meshColor: '#E8B090',
   },
   {
     id: 'grande-tante', name: 'Tía Abuela', tier: 3,
-    startPosition: [-6.1, -0.45, -3.1],   // chaise coin buffet, assise
+    startPosition: [-2.0, -0.45, -5.35],  // chaise d'appoint mur sud, assise face à la TV
     waypoints: [],
     scenarios: [],
     meshColor: '#A88068',
   },
   {
     id: 'bebe', name: 'Bebé', tier: 3,
-    startPosition: [1.5, 0, 1.60],         // nord, debout (trop petit pour offset adulte)
+    startPosition: [1.95, 0, 1.60],        // nord, debout (trop petit pour offset adulte)
     waypoints: [],
     scenarios: [],
     meshColor: '#F0C0A0',

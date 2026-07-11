@@ -1,11 +1,21 @@
 import * as THREE from 'three'
 
-// 5 bandes : ombre / pénombre / mi-teinte / lumière / highlight.
-// Plancher relevé (35 → 60) : l'ombre la plus profonde reste colorée — la teinte
-// vient des lumières de remplissage chaudes (gradientMap ne lit que le canal R,
-// impossible de teinter ici).
-const colors = new Uint8Array([60, 100, 150, 210, 255])
-export const toonGradient = new THREE.DataTexture(colors, 5, 1, THREE.RedFormat)
-toonGradient.magFilter = THREE.NearestFilter
-toonGradient.minFilter = THREE.NearestFilter
+// Rampe « peinture » : la structure 5 bandes demeure (ombre / pénombre /
+// mi-teinte / lumière / highlight) mais chaque frontière a un épaulement de
+// 1-2 texels et le filtrage est linéaire → les transitions fondent comme un
+// lavis gouache (refs salon) au lieu de casser net (rendu plastique).
+// Plancher relevé (min 60) : l'ombre la plus profonde reste colorée — la
+// teinte vient des lumières de remplissage chaudes (gradientMap ne lit que
+// le canal R, impossible de teinter ici).
+const ramp = [
+  60, 62, 70,          // ombre
+  95, 100, 112,        // pénombre
+  140, 150, 165,       // mi-teinte
+  195, 210, 222,       // lumière
+  240, 250, 255, 255,  // highlight
+]
+const colors = new Uint8Array(ramp)
+export const toonGradient = new THREE.DataTexture(colors, ramp.length, 1, THREE.RedFormat)
+toonGradient.magFilter = THREE.LinearFilter
+toonGradient.minFilter = THREE.LinearFilter
 toonGradient.needsUpdate = true
