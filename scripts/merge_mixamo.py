@@ -2,6 +2,7 @@
 # texture baseColor réappliquée (Mixamo la perd), metallic 0.
 # Usage :
 #   blender --background --python scripts/merge_mixamo.py -- base.fbx anim1.fbx [anim2.fbx ...] texture.png output.glb
+#   [--height 1.15] [--fix-dress 0.05:0.75]  (0.05:0.75 = fractions de hauteur pour la zone jupe)
 import os
 import re
 import sys
@@ -10,12 +11,21 @@ import bpy
 
 argv = sys.argv[sys.argv.index("--") + 1 :]
 if len(argv) < 3:
-    raise SystemExit("Usage: merge_mixamo.py -- base.fbx [anims...] texture.png output.glb [--height 1.15]")
+    raise SystemExit("Usage: merge_mixamo.py -- base.fbx [anims...] texture.png output.glb [--height 1.15] [--fix-dress 0.05:0.75]")
 
 HEIGHT = 1.15
 if "--height" in argv:
     i = argv.index("--height")
     HEIGHT = float(argv[i + 1])
+    argv = argv[:i] + argv[i + 2 :]
+
+# --fix-dress lo:hi : fractions de la hauteur totale définissant la zone jupe
+# ex: 0.05:0.75 = de 5% à 75% de la hauteur -> redirige poids jambes vers Hips
+FIX_DRESS: tuple[float, float] | None = None
+if "--fix-dress" in argv:
+    i = argv.index("--fix-dress")
+    lo, hi = argv[i + 1].split(":")
+    FIX_DRESS = (float(lo), float(hi))
     argv = argv[:i] + argv[i + 2 :]
 
 base_fbx = argv[0]
@@ -145,6 +155,55 @@ for c in mesh.bound_box:
     zmin = min(zmin, w.z)
 root.location.z -= zmin
 print(f"[merge] height {height:.3f} -> scale {s:.4f}, ground offset {-zmin:.3f}")
+
+# ── Fix robe/jupe : redistribue les poids des bones de jambe vers Hips ────────
+# Évite le stretching de la jupe pendant walk / stand-to-sit.
+# Principe : dans la zone jupe (fraction de hauteur configurable), tous les
+# vertex dont les bones de jambe représentent > 1% du poids voient ce poids
+# transféré vers mixamorig:Hips. Les jambes sous la robe se déforment alors
+# "librement" mais sont masquées par le tissu.
+if FIX_DRESS is not None:
+    LEG_BONES = {
+        "mixamorig:LeftUpLeg", "mixamorig:RightUpLeg",
+        "mixamorig:LeftLeg",   "mixamorig:RightLeg",
+        "mixamorig:LeftFoot",  "mixamorig:RightFoot",
+        "mixamorig:LeftToeBase", "mixamorig:RightToeBase",
+    }
+    HIPS_NAME = "mixamorig:Hips"
+
+    vgs = mesh.vertex_groups
+    leg_idx  = {vg.index for vg in vgs if vg.name in LEG_BONES}
+    hips_vg  = next((vg for vg in vgs if vg.name == HIPS_NAME), None)
+    if hips_vg is None:
+        print(f"[fix-dress] WARN: bone {HIPS_NAME!r} introuvable, skip")
+    else:
+        bpy.context.view_layer.update()
+        # Hauteur effective après normalisation
+        import mathutils as _mu
+        mins2 = _mu.Vector((1e9,)*3); maxs2 = _mu.Vector((-1e9,)*3)
+        for c in mesh.bound_box:
+            w = mesh.matrix_world @ _mu.Vector(c)
+            mins2 = _mu.Vector(map(min, mins2, w))
+            maxs2 = _mu.Vector(map(max, maxs2, w))
+        h_total = maxs2.z - mins2.z
+        z_lo = mins2.z + FIX_DRESS[0] * h_total
+        z_hi = mins2.z + FIX_DRESS[1] * h_total
+
+        fixed = 0
+        for vert in mesh.data.vertices:
+            wco = mesh.matrix_world @ vert.co
+            if not (z_lo <= wco.z <= z_hi):
+                continue
+            leg_w = sum(ge.weight for ge in vert.groups if ge.group in leg_idx)
+            if leg_w < 0.01:
+                continue
+            for ge in vert.groups:
+                if ge.group in leg_idx:
+                    vgs[ge.group].remove([vert.index])
+            hips_w = next((ge.weight for ge in vert.groups if ge.group == hips_vg.index), 0.0)
+            hips_vg.add([vert.index], min(1.0, hips_w + leg_w), "REPLACE")
+            fixed += 1
+        print(f"[fix-dress] {fixed} vertex(s) redirigés vers Hips (zone z [{z_lo:.3f}, {z_hi:.3f}])")
 
 bpy.ops.export_scene.gltf(
     filepath=output_glb,
