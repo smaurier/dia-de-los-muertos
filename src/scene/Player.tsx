@@ -1,9 +1,10 @@
 // src/scene/Player.tsx
-import { useRef } from 'react'
+import { useLayoutEffect, useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { useKeyboardControls, PointerLockControls, Outlines } from '@react-three/drei'
+import { useKeyboardControls, PointerLockControls, useGLTF, useAnimations } from '@react-three/drei'
 import * as THREE from 'three'
 import { toonGradient } from './shared/toonGradient'
+import { makeFaceTextures } from './shared/blinkTexture'
 import { usePlayerStore } from '../game/store/playerStore'
 import { canMove, cameraBackDistance, clampCameraToRoom } from './salon/salonCollision'
 import { npcPositions } from './salon/npcRegistry'
@@ -11,7 +12,32 @@ import { npcPositions } from './salon/npcRegistry'
 const SPEED = 3
 const CAM_BACK = 1.2      // metres derriere le garçon
 const CAM_UP = 1.3        // hauteur camera
-const BOY_HIDE_DIST = 0.35 // caméra plus proche → garçon masqué (sa coque Outlines remplirait l'écran)
+const BOY_HIDE_DIST = 0.35 // caméra plus proche → garçon masqué
+
+// Héros texturé (pipeline Hunyuan → Mixamo, 5 clips).
+const HERO_URL = '/models/characters/heros.glb'
+const HERO_HEIGHT = 1.15  // enfant ~1,15 m (le modèle sort à ~2 m)
+// Clips par état ; le crossfade lisse les transitions.
+const CLIP_IDLE = 'standing-idle'
+const CLIP_WALK = 'walking'
+const CLIP_HIDE = 'crouching-idle'
+const FADE = 0.22
+
+// Clignement : variante de texture aux paupières peintes, générée en mémoire
+// depuis la texture du GLB (pas de blendshapes sur un mesh Hunyuan — technique
+// toon du swap de map). Coordonnées atlas des yeux, propres à chaque perso.
+const HERO_EYES = [
+  { x: 385, y: 410, r: 42 },
+  { x: 1500, y: 1628, r: 42 },
+]
+// ?blinktest : clignement lent et fréquent pour la validation visuelle
+const BLINK_TEST = new URLSearchParams(window.location.search).has('blinktest')
+const BLINK_DURATION = BLINK_TEST ? 1.0 : 0.15
+const blinkDelay = () => (BLINK_TEST ? 0.9 : 2.2 + Math.random() * 3.4)
+// Micro-saccades : le regard tient 0,7-2,4 s puis SAUTE sur une autre
+// variante (biais fort vers le regard centré, index 0)
+const saccadeDelay = () => 0.7 + Math.random() * 1.7
+const pickGaze = (count: number) => (Math.random() < 0.45 ? 0 : 1 + Math.floor(Math.random() * (count - 1)))
 
 export function Player() {
   const boyRef = useRef<THREE.Group>(null)
@@ -20,6 +46,60 @@ export function Player() {
   const setPosition = usePlayerStore(s => s.setPosition)
   const setLastMoveTime = usePlayerStore(s => s.setLastMoveTime)
   const setHidden = usePlayerStore(s => s.setHidden)
+
+  const { scene: heroScene, animations } = useGLTF(HERO_URL)
+  const { actions, mixer } = useAnimations(animations, boyRef)
+  const currentClip = useRef<string | null>(null)
+
+  // Échelle enfant + pieds au sol : bakés dans le GLB par merge_mixamo.py.
+  // Ici : matériaux toon (map + gradientMap), frustum culling off (la bbox
+  // d'un skinned mesh animé est fausse → disparitions), et génération de la
+  // texture « yeux fermés » depuis la texture source du GLB.
+  const face = useMemo(() => {
+    const mats: THREE.MeshToonMaterial[] = []
+    let baseMap: THREE.Texture | null = null
+    heroScene.traverse(child => {
+      if (child instanceof THREE.Mesh) {
+        const old = child.material as THREE.MeshStandardMaterial
+        const mat = new THREE.MeshToonMaterial({
+          map: old.map,
+          gradientMap: toonGradient,
+        })
+        child.material = mat
+        child.frustumCulled = false
+        if (old.map) {
+          mats.push(mat)
+          baseMap = old.map
+        }
+      }
+    })
+    const faceSet = baseMap ? makeFaceTextures(baseMap, HERO_EYES) : null
+    return { baseMap: baseMap as THREE.Texture | null, faceSet }
+  }, [heroScene])
+
+  // Clignement : yeux fermés BLINK_DURATION toutes les 2-6 s.
+  // Saccades : variante de regard tirée toutes les 0,7-2,4 s.
+  const blinkAt = useRef(blinkDelay())
+  const saccadeAt = useRef(saccadeDelay())
+  const gazeIdx = useRef(0)
+  const clock = useRef(0)
+
+  // Anti T-pose : idle lancé AVANT le premier paint (useLayoutEffect, pas
+  // useEffect qui laisse passer quelques frames de bind pose) et pose
+  // appliquée immédiatement au squelette (mixer.update(0)). Le cleanup
+  // réarme currentClip : en double montage StrictMode, drei stoppe toutes
+  // les actions au démontage — sans ça le garde-fou bloquait la relance.
+  useLayoutEffect(() => {
+    const idle = actions[CLIP_IDLE]
+    if (idle && !currentClip.current) {
+      idle.play()
+      mixer.update(0)
+      currentClip.current = CLIP_IDLE
+    }
+    return () => {
+      currentClip.current = null
+    }
+  }, [actions, mixer])
 
   const boyPos = useRef(new THREE.Vector3(0, 0, 3))
   const direction = useRef(new THREE.Vector3())
@@ -107,25 +187,55 @@ export function Player() {
       prevHide.current = hide
       setHidden(hide)
     }
+
+    // Vie du visage : clignement + micro-saccades, par swap de texture.
+    // On mute le matériau ACTUELLEMENT porté par le mesh (traverse) : en
+    // StrictMode le double rendu crée deux matériaux et une référence capturée
+    // peut pointer sur l'orphelin non rendu — swap sans effet visible.
+    clock.current += delta
+    if (face.faceSet) {
+      let closed = clock.current > blinkAt.current
+      if (closed && clock.current > blinkAt.current + BLINK_DURATION) {
+        blinkAt.current = clock.current + blinkDelay()
+        closed = false
+      }
+      if (clock.current > saccadeAt.current) {
+        saccadeAt.current = clock.current + saccadeDelay()
+        gazeIdx.current = pickGaze(face.faceSet.gaze.length)
+      }
+      const want = closed ? face.faceSet.blink : face.faceSet.gaze[gazeIdx.current]
+      heroScene.traverse(child => {
+        if (child instanceof THREE.Mesh) {
+          const mat = child.material as THREE.MeshToonMaterial
+          if (mat?.map && mat.map !== want) mat.map = want
+        }
+      })
+      // Témoin de synchro (?blinktest) : l'état des yeux dans le titre d'onglet
+      if (BLINK_TEST) document.title = closed ? '👁 YEUX FERMÉS' : 'yeux ouverts'
+    }
+
+    // Machine à états d'animation : caché > marche > idle, crossfade doux.
+    const target = hide ? CLIP_HIDE : moving ? CLIP_WALK : CLIP_IDLE
+    if (target !== currentClip.current) {
+      if (currentClip.current) actions[currentClip.current]?.fadeOut(FADE)
+      const next = actions[target]
+      if (next) {
+        next.reset().fadeIn(FADE).play()
+        // Marche calée sur SPEED (clip Mixamo ~1,5 m/s, enfant réduit → accélérer)
+        next.timeScale = target === CLIP_WALK ? 1.5 : 1
+      }
+      currentClip.current = target
+    }
   })
 
   return (
     <>
       <PointerLockControls />
       <group ref={boyRef}>
-        {/* Corps */}
-        <mesh position={[0, 0.6, 0]}>
-          <capsuleGeometry args={[0.18, 0.7, 4, 8]} />
-          <meshToonMaterial color="#8B5E3C" gradientMap={toonGradient} />
-          <Outlines thickness={0.032} color="black" />
-        </mesh>
-        {/* Tête */}
-        <mesh position={[0, 1.15, 0]}>
-          <sphereGeometry args={[0.13, 8, 8]} />
-          <meshToonMaterial color="#c8956c" gradientMap={toonGradient} />
-          <Outlines thickness={0.032} color="black" />
-        </mesh>
+        <primitive object={heroScene} />
       </group>
     </>
   )
 }
+
+useGLTF.preload(HERO_URL)
