@@ -1,5 +1,6 @@
 // src/App.tsx
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
+import { useProgress } from '@react-three/drei'
 import type * as THREE from 'three'
 import { KeyboardControls } from '@react-three/drei'
 import { EffectComposer, Bloom, Vignette, Noise } from '@react-three/postprocessing'
@@ -60,6 +61,34 @@ function ReflectionsSansFog() {
   return null
 }
 
+// Fondu d'ouverture : couvre le chargement des assets. Sans lui, les
+// premières frames rendent AVANT le montage de l'EffectComposer (qui vit dans
+// le Suspense) → couleurs brûlées sans tone mapping ni vignette, puis saut
+// visuel quand le composer arrive. Le noir reste 400 ms après la fin du
+// chargement (le temps que le composer s'installe) puis fond en 900 ms.
+function FadeIn() {
+  const { active } = useProgress()
+  const [gone, setGone] = useState(false)
+  const [fading, setFading] = useState(false)
+
+  useEffect(() => {
+    if (!active && !fading) {
+      const t1 = setTimeout(() => setFading(true), 400)
+      const t2 = setTimeout(() => setGone(true), 1700)
+      return () => { clearTimeout(t1); clearTimeout(t2) }
+    }
+  }, [active, fading])
+
+  if (gone) return null
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 20, background: '#000',
+      opacity: fading ? 0 : 1, transition: 'opacity 900ms ease',
+      pointerEvents: 'none',
+    }} />
+  )
+}
+
 function PhotoCamera({ conf }: { conf: number[] }) {
   const { camera } = useThree()
   useEffect(() => {
@@ -92,6 +121,7 @@ export default function App() {
           <div style={{ fontSize: '18px', color: '#c9a87c' }}>WASD · souris · E pour se cacher</div>
         </div>
       )}
+      <FadeIn />
       <Subtitles />
       <KeyboardControls map={CONTROLS_MAP}>
         <Canvas

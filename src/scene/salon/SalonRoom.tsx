@@ -87,8 +87,8 @@ const CHAIRS: ChairCfg[] = [
   { pos: [-4.55, 0,  0.4], rot:  Math.PI / 2 },
   { pos: [ 4.65, 0, -0.4], rot: -Math.PI / 2 }, // est — face à -x (table)
   { pos: [ 4.65, 0,  0.4], rot: -Math.PI / 2 },
-  { pos: [-2.0, 0, -5.35], rot: -Math.PI / 2 }, // sièges d'appoint mur sud, tournés vers la TV (coin SW)
-  { pos: [-1.2, 0, -5.35], rot: -Math.PI / 2 },
+  // (les 2 chaises d'appoint derrière le canapé ont été retirées — la
+  // grande-tante s'assoit sur le retour d'angle du canapé)
 ]
 
 const TABLE_LEG_X = [-3.55, -0.05, 3.45]
@@ -917,10 +917,14 @@ export function SalonRoom() {
         <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
         <Outlines thickness={0.022} color="black" />
       </mesh>
-      {/* 3 coussins d'assise — RoundedBox */}
+      {/* 3 coussins d'assise — RoundedBox. Le coussin CENTRAL (dx=0) porte le
+          grand-oncle : écrasé de 35 % et légèrement élargi (le tissu chasse
+          sur les côtés) — la déformation statique vend le moelleux sans
+          simulation. */}
       {([-0.92, 0, 0.92] as number[]).map((dx, i) => (
         <RoundedBox key={i} args={[0.83, 0.18, 0.82]} radius={0.04} smoothness={3}
-          position={[5 + dx, 0.35, -2.52]}>
+          position={[5 + dx, dx === 0 ? 0.33 : 0.35, -2.52]}
+          scale={dx === 0 ? [1.06, 0.78, 1.03] : [1, 1, 1]}>
           <meshToonMaterial color={C_UPHOLSTERY} gradientMap={toonGradient} />
           <Outlines thickness={0.022} color="black" />
         </RoundedBox>
@@ -931,14 +935,22 @@ export function SalonRoom() {
         <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
         <Outlines thickness={0.022} color="black" />
       </mesh>
-      {/* 3 coussins dossier — RoundedBox */}
+      {/* 3 coussins dossier — le central, dans le dos du grand-oncle, est
+          NETTEMENT écrasé : moitié moins épais, élargi (le rembourrage chasse
+          sur les côtés), creusé au centre par une gorge horizontale sombre. */}
       {([-0.92, 0, 0.92] as number[]).map((dx, i) => (
         <RoundedBox key={i} args={[0.81, 0.45, 0.12]} radius={0.03} smoothness={3}
-          position={[5 + dx, 0.70, -2.15]}>
+          position={[5 + dx, 0.70, dx === 0 ? -2.13 : -2.15]}
+          scale={dx === 0 ? [1.08, 1.02, 0.5] : [1, 1, 1]}>
           <meshToonMaterial color={C_UPHOLSTERY} gradientMap={toonGradient} />
           <Outlines thickness={0.020} color="black" />
         </RoundedBox>
       ))}
+      {/* Gorge d'écrasement au centre du coussin dossier central */}
+      <mesh position={[5, 0.72, -2.165]} rotation={[0.12, 0, 0]}>
+        <boxGeometry args={[0.62, 0.16, 0.04]} />
+        <meshToonMaterial color="#3A2314" gradientMap={toonGradient} />
+      </mesh>
       {/* Accoudoir gauche */}
       <mesh position={[3.58, 0.62, -2.5]}>
         <boxGeometry args={[0.17, 0.54, 0.95]} />

@@ -350,7 +350,7 @@ export const familyConfig: NPCConfig[] = [
   },
   {
     id: 'grande-tante', name: 'Tía Abuela', tier: 3,
-    startPosition: [-2.0, -0.45, -5.35],  // chaise d'appoint mur sud, assise face à la TV
+    startPosition: [-4.45, -0.48, -5.1],  // retour d'angle du canapé, assise face au nord
     waypoints: [],
     scenarios: [],
     meshColor: '#A88068',

@@ -23,7 +23,6 @@ export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
   [-6.6, -5.6,  4.3,  5.1 ],  // cactus coin nord-ouest
   [-6.6, -6.1,  2.1,  2.6 ],  // plante fenêtre nord
   [-6.65, -6.15, -1.85, -1.35],  // plante fenêtre sud (décalée : place du fauteuil)
-  [-2.5, -0.7, -5.75, -4.95],  // chaises d'appoint mur sud (grande-tante)
   [ 5.2,  6.4,  5.15, 5.75],  // vaisselier coin nord-est
 ]
 
