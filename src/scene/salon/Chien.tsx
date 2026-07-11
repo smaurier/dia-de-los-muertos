@@ -14,11 +14,12 @@ const MODEL_URL = '/models/characters/chien.glb'
 const POSITION: [number, number, number] = [3.5, 0, -3.8]
 const ROTATION_Y = Math.PI * 0.75   // orienté vers la pièce
 
-const CLIP_IDLE = 'walksent'  // reniflage en marchant = plus vivant qu'iddle statique
+const CLIP_IDLE = 'iddle'
 
 export function Chien() {
   const groupRef = useRef<THREE.Group>(null)
   const neckBoneRef = useRef<THREE.Object3D | null>(null)
+  const clockRef = useRef(0)
   const { camera } = useThree()
 
   const { scene, animations } = useGLTF(MODEL_URL)
@@ -47,12 +48,16 @@ export function Chien() {
   }, [actions, names])
 
   useFrame((_, delta) => {
-    const bone = neckBoneRef.current
-    if (!bone) return
     const group = groupRef.current
     if (!group) return
+    clockRef.current += delta
+
+    // Respiration : micro-oscillation Y lente (0.008 m d'amplitude, ~3 s/cycle)
+    group.position.y = POSITION[1] + Math.sin(clockRef.current * 2.1) * 0.008
 
     // Regard passif vers la caméra si proche (<4 m)
+    const bone = neckBoneRef.current
+    if (!bone) return
     const dx = camera.position.x - group.position.x
     const dz = camera.position.z - group.position.z
     const dist = Math.sqrt(dx * dx + dz * dz)
