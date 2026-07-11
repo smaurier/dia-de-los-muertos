@@ -4,6 +4,7 @@ import { useFrame } from '@react-three/fiber'
 import { SalonRoom } from './SalonRoom'
 import { GrandUncle } from './GrandUncle'
 import { Mama } from './Mama'
+import { Chien } from './Chien'
 import { FamilyMember } from './FamilyMember'
 import { familyConfig } from './familyConfig'
 import { useGameStore } from '../../game/store/gameStore'
@@ -34,6 +35,7 @@ export function Salon() {
       <SalonRoom />
       <GrandUncle />
       <Mama />
+      <Chien />
       {familyConfig.filter(c => c.id !== 'maman').map(config => (
         <FamilyMember
           key={config.id}
