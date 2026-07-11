@@ -38,7 +38,7 @@ const GRAND_UNCLE_SCENARIOS: Scenario[] = [
     id: 'laugh_at_tv', weight: 2, duration: [3, 5],
     steps: [
       { type: 'idle', duration: 1 },
-      { type: 'dialogue', text: '¡Ja ja ja!', speakerName: 'Tío Abuelo' },
+      { type: 'dialogue', text: '¡Ja ja ja!', speakerName: 'Tío Abuelo Aurelio' },
       { type: 'idle', duration: 2 },
     ],
   },
