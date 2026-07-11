@@ -948,7 +948,7 @@ export function SalonRoom() {
           déjà dans la géométrie Hunyuan, zéro prop à positionner. */}
       <Prop
         url="/models/props/canape.glb"
-        position={[-3.35, 0, -3.9]}
+        position={[-3.15, 0, -3.9]}
         rotationY={-Math.PI / 2}
         targetLength={3.6}
       />
@@ -1415,40 +1415,74 @@ export function SalonRoom() {
       <PlanteFeuillue position={[-6.35, 0, 2.35]} />
       <PlanteFeuillue position={[-6.4, 0, -1.6]} />
 
-      {/* ─── Guéridon + lampe de chevet — entre le canapé et la télé, contre le
-          mur ouest (ref) ; halo discret, plus de grand lampadaire ───────────── */}
-      <group position={[-6.3, 0, -3.3]}>
-        {/* Guéridon : plateau carré + 4 pieds */}
-        <mesh position={[0, 0.50, 0]}>
-          <boxGeometry args={[0.42, 0.035, 0.42]} />
-          <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+      {/* ─── Petite commode + lampe de chevet + mini plante — ENTRE le bout du
+          retour du canapé et la TV, contre le mur sud (position B validée) ──── */}
+      <group position={[-5.0, 0, -5.45]} rotation={[0, -Math.PI / 2, 0]}>
+        {/* Commode : caisson bois, 2 tiroirs à boutons, 4 pieds courts */}
+        <mesh position={[0, 0.34, 0]}>
+          <boxGeometry args={[0.44, 0.44, 0.55]} />
+          <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
+          <Outlines thickness={0.016} color="black" />
+        </mesh>
+        <mesh position={[0, 0.575, 0]}>
+          <boxGeometry args={[0.48, 0.035, 0.59]} />
+          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
           <Outlines thickness={0.012} color="black" />
         </mesh>
-        {([-0.17, 0.17] as number[]).flatMap(lx =>
-          ([-0.17, 0.17] as number[]).map((lz, j) => (
-            <mesh key={`${lx}-${j}`} position={[lx, 0.25, lz]}>
-              <boxGeometry args={[0.035, 0.50, 0.035]} />
+        {[0.24, 0.44].map((ty, i) => (
+          <group key={i}>
+            <mesh position={[0.225, ty, 0]}>
+              <boxGeometry args={[0.015, 0.155, 0.46]} />
               <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+            </mesh>
+            <mesh position={[0.235, ty, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[0.016, 0.016, 0.02, 8]} />
+              <meshToonMaterial color={C_GOLD} gradientMap={toonGradient} />
+            </mesh>
+          </group>
+        ))}
+        {([-0.16, 0.16] as number[]).flatMap(lx =>
+          ([-0.22, 0.22] as number[]).map((lz, j) => (
+            <mesh key={`${lx}-${j}`} position={[lx, 0.06, lz]}>
+              <cylinderGeometry args={[0.02, 0.024, 0.12, 6]} />
+              <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
             </mesh>
           ))
         )}
+        {/* Mini plante en pot (quelques centimètres, à côté de la lampe) */}
+        <group position={[0.02, 0.59, 0.17]}>
+          <mesh position={[0, 0.035, 0]}>
+            <cylinderGeometry args={[0.035, 0.026, 0.07, 8]} />
+            <meshToonMaterial color={C_POT} gradientMap={toonGradient} />
+            <Outlines thickness={0.008} color="black" />
+          </mesh>
+          {([[0, 0.1, 0, 0.045], [-0.03, 0.085, 0.02, 0.03], [0.03, 0.09, -0.015, 0.032]] as [number, number, number, number][]).map(([px, py, pz, r], i) => (
+            <mesh key={i} position={[px, py, pz]} scale={[1, 1.4, 1]}>
+              <sphereGeometry args={[r, 7, 7]} />
+              <meshToonMaterial color={C_LEAF} gradientMap={toonGradient} />
+              <Outlines thickness={0.006} color="black" />
+            </mesh>
+          ))}
+        </group>
         {/* Lampe de chevet : socle + tige courte + petit abat-jour */}
-        <mesh position={[0, 0.535, 0]}>
-          <cylinderGeometry args={[0.06, 0.075, 0.03, 10]} />
-          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-          <Outlines thickness={0.010} color="black" />
-        </mesh>
-        <mesh position={[0, 0.63, 0]}>
-          <cylinderGeometry args={[0.014, 0.018, 0.16, 8]} />
-          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-        </mesh>
-        <mesh position={[0, 0.76, 0]}>
-          <cylinderGeometry args={[0.075, 0.11, 0.15, 12, 1, true]} />
-          <meshToonMaterial color="#E8C87A" emissive="#F0C060" emissiveIntensity={0.6} gradientMap={toonGradient} side={THREE.DoubleSide} />
-          <Outlines thickness={0.012} color="black" />
-        </mesh>
+        <group position={[0.02, 0.075, -0.14]}>
+          <mesh position={[0, 0.535, 0]}>
+            <cylinderGeometry args={[0.06, 0.075, 0.03, 10]} />
+            <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+            <Outlines thickness={0.010} color="black" />
+          </mesh>
+          <mesh position={[0, 0.63, 0]}>
+            <cylinderGeometry args={[0.014, 0.018, 0.16, 8]} />
+            <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+          </mesh>
+          <mesh position={[0, 0.76, 0]}>
+            <cylinderGeometry args={[0.075, 0.11, 0.15, 12, 1, true]} />
+            <meshToonMaterial color="#E8C87A" emissive="#F0C060" emissiveIntensity={0.6} gradientMap={toonGradient} side={THREE.DoubleSide} />
+            <Outlines thickness={0.012} color="black" />
+          </mesh>
+        </group>
       </group>
-      <pointLight position={[-6.3, 0.92, -3.3]} intensity={0.6} color="#F5C87A" distance={3} decay={2} />
+      <pointLight position={[-4.86, 1.0, -5.43]} intensity={0.6} color="#F5C87A" distance={3} decay={2} />
 
       {/* ─── Plinthes (bois sombre) — collées aux murs réels (z=±5.8, x=±7) ──── */}
       <mesh position={[0, 0.06, 5.772]}>

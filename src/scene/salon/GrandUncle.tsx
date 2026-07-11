@@ -11,7 +11,7 @@ import { shouldTurnTowardPlayer, pickScenario } from '../../game/systems/npcSyst
 import type { Scenario } from '../../game/systems/npcSystem'
 
 const GRAND_UNCLE_POSITIONS: Record<string, [number, number, number]> = {
-  couch: [-2.82, 0, -3.7],  // hanches à x≈-2.74 : fond de l'assise (plateau mesuré -3.17..-2.63)
+  couch: [-2.62, 0, -3.7],  // fond de l'assise, interpolé avec le recul du canapé (+0.2)
   buffet: [3.2, 0, 4.6],    // buffet au mur nord
   window: [-6, 0, 2],
 }

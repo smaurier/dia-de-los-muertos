@@ -12,14 +12,14 @@ export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
   [-4.85, 4.95,  -1.45, 1.45],
   // Coin salon SUD-OUEST (refs) : canapé face à l'ouest, TV au mur ouest près
   // de la fenêtre, repose-pied entre les deux, lampe derrière le canapé.
-  [-3.25, -2.00, -5.70, -2.10],  // canapé model (bbox mesurée) : segment principal
-  [-4.75, -3.20, -5.75, -4.40],  // canapé model : retour d'angle
+  [-3.05, -1.80, -5.70, -2.10],  // canapé model (bbox mesurée, recul +0.2) : segment principal
+  [-4.55, -3.00, -5.75, -4.40],  // canapé model : retour d'angle (recul +0.2)
   [-4.85, -4.25, -4.75, -3.15],  // repose-pied (ottoman)
   [-6.90, -5.95, -1.10, -0.10],  // fauteuil (dossier contre le bas de la fenêtre, face est)
   [ 2.2, 4.5,   5.0,  5.7 ],  // buffet mur nord (photos/vase/bougies)
   [-6.90, -5.75, -2.75, -1.55],  // TV CRT + meuble (mur ouest, écran vers l'est)
   [ 6.1, 6.7,   0.85, 1.55],  // plante en pot mur est
-  [-6.55, -6.05, -3.55, -3.05],  // guéridon + lampe de chevet (mur ouest, entre TV et fauteuil)
+  [-5.32, -4.68, -5.78, -5.12],  // commode + lampe + mini plante (mur sud, entre retour et TV)
   [-6.6, -5.6,  4.3,  5.1 ],  // cactus coin nord-ouest
   [-6.6, -6.1,  2.1,  2.6 ],  // plante fenêtre nord
   [-6.65, -6.15, -1.85, -1.35],  // plante fenêtre sud (décalée : place du fauteuil)
