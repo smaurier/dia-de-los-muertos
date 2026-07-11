@@ -14,7 +14,7 @@ const MODEL_URL = '/models/characters/chien.glb'
 const POSITION: [number, number, number] = [3.5, 0, -3.8]
 const ROTATION_Y = Math.PI * 0.75   // orienté vers la pièce
 
-const CLIP_IDLE = 'iddle'
+const CLIP_IDLE = 'walksent'  // reniflage en marchant = plus vivant qu'iddle statique
 
 export function Chien() {
   const groupRef = useRef<THREE.Group>(null)
@@ -28,8 +28,10 @@ export function Chien() {
     scene.traverse(obj => {
       if (!(obj as THREE.Mesh).isMesh) return
       const mesh = obj as THREE.Mesh
+      const old = mesh.material as THREE.MeshStandardMaterial
       mesh.material = new THREE.MeshToonMaterial({
-        color: '#C4824A',   // brun bâtard
+        map: old.map ?? null,
+        color: old.map ? '#ffffff' : '#C4824A',
         gradientMap: toonGradient,
       })
       mesh.frustumCulled = false
