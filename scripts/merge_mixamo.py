@@ -10,7 +10,13 @@ import bpy
 
 argv = sys.argv[sys.argv.index("--") + 1 :]
 if len(argv) < 3:
-    raise SystemExit("Usage: merge_mixamo.py -- base.fbx [anims...] texture.png output.glb")
+    raise SystemExit("Usage: merge_mixamo.py -- base.fbx [anims...] texture.png output.glb [--height 1.15]")
+
+HEIGHT = 1.15
+if "--height" in argv:
+    i = argv.index("--height")
+    HEIGHT = float(argv[i + 1])
+    argv = argv[:i] + argv[i + 2 :]
 
 base_fbx = argv[0]
 texture_png = argv[-2]
@@ -58,7 +64,7 @@ for fbx in anim_fbxs:
 # on supprime la translation de voyage : sur les fcurves location des Hips,
 # on retire l'axe au drift net maximal (l'axe d'avance), on garde le reste
 # (rebond vertical, balancement).
-IN_PLACE = {"walking", "start-walking"}
+IN_PLACE = {"walking", "start-walking", "happy-walk"}
 
 
 def iter_fcurves(action):
@@ -117,7 +123,7 @@ for mat in mesh.data.materials:
 # armature (transform NON appliqué : les translations d'animation des bones
 # vivent dans l'espace local et suivent l'échelle du node — three.js applique
 # le tout uniformément).
-TARGET_HEIGHT = 1.15  # enfant
+TARGET_HEIGHT = HEIGHT  # --height (défaut 1,15 enfant ; hauteur BIND pose = T-pose)
 
 bpy.context.view_layer.update()
 import mathutils

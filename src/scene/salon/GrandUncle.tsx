@@ -16,14 +16,17 @@ const GRAND_UNCLE_POSITIONS: Record<string, [number, number, number]> = {
   window: [-6, 0, 2],
 }
 
-// Modèle 3D (pipeline Hunyuan3D → Mixamo). Mesh sans UV → couleur unie toon.
-// TODO : clip standing pour les positions buffet/window (sitting partout en attendant).
+// Modèle 3D v2 (Hunyuan texturé + visage projeté + moustache 3D → Mixamo).
+// Origine aux pieds, 1,75 m, texture 2048 embarquée. 7 clips : sitting-idle,
+// sit-to-stand, stand-to-sit, sitting-clap, sitting-disbelief, standing-idle,
+// happy-walk (in-place).
 const MODEL_URL = '/models/characters/grand-oncle.glb'
+const CLIP_SIT = 'sitting-idle'
 const MODEL_TUNING = {
-  scale: 1,                                         // échelle native OK (1.83m debout)
-  offset: [0.15, 0, 0] as [number, number, number], // origine modèle = hanches → hanches sur le coussin (dossier à l'est)
+  scale: 1,                                        // normalisé au merge (1,75 m)
+  offset: [0.08, 0, 0] as [number, number, number], // hanches sur le coussin, chaussures devant la base (dossier à l'est)
   rotationY: -Math.PI / 2,                          // face à la TV (ouest) — le modèle regarde +z par défaut
-  color: '#EDE8DE',                                 // guayabera ivoire (une seule couleur, pas d'UV)
+  color: '#EDE8DE',                                 // repli si un mesh n'a pas de texture
 }
 
 const GRAND_UNCLE_SCENARIOS: Scenario[] = [
@@ -63,21 +66,30 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
   const { scene, animations } = useGLTF(MODEL_URL)
   const { actions, names } = useAnimations(animations, ref)
 
-  // Matériau toon uni sur tout le mesh (pas d'UV → pas de texture) + repère le bone tête
+  // Matériaux toon : texture du GLB quand elle existe (corps), couleur du
+  // matériau source sinon (moustache 3D) + repère le bone tête
   useEffect(() => {
     scene.traverse(obj => {
       if ((obj as THREE.Mesh).isMesh) {
         const mesh = obj as THREE.Mesh
-        mesh.material = new THREE.MeshToonMaterial({ color: MODEL_TUNING.color, gradientMap: toonGradient })
+        const old = mesh.material as THREE.MeshStandardMaterial
+        mesh.material = new THREE.MeshToonMaterial({
+          map: old.map ?? null,
+          color: old.map ? '#ffffff' : (old.color ?? new THREE.Color(MODEL_TUNING.color)),
+          gradientMap: toonGradient,
+        })
         mesh.frustumCulled = false // skinned mesh : bounds de repos faux une fois assis
       }
     })
-    headBoneRef.current = scene.getObjectByName('mixamorigHead') ?? null
+    headBoneRef.current =
+      scene.getObjectByName('mixamorigHead') ??
+      scene.getObjectByName('mixamorig:Head') ??
+      null
   }, [scene])
 
-  // Sitting idle en boucle
+  // Sitting idle en boucle (par NOM — names[0] est alphabétique, plus fiable)
   useEffect(() => {
-    const action = actions[names[0]]
+    const action = actions[CLIP_SIT] ?? actions[names[0]]
     action?.reset().setLoop(THREE.LoopRepeat, Infinity).play()
     return () => { action?.stop() }
   }, [actions, names])
