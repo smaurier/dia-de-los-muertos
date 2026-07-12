@@ -1,6 +1,6 @@
 // src/scene/salon/Chien.tsx
-// Chien bâtard — asset Sketchfab low-poly, 6 clips (iddle/walk/run/walksent/jump/attack1).
-// Phase salon sandbox : idle sous la table côté TV, head-look vers Aurelio (DEF-spine.011).
+// Chiot Sketchfab — rig complet Dog_*SHJnt, 1 clip 'Animation'.
+// Phase salon sandbox : à côté de la table côté TV, head-look passif vers la caméra.
 
 import { useRef, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
@@ -8,13 +8,12 @@ import * as THREE from 'three'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 
-const MODEL_URL = '/models/characters/chien.glb'
+const MODEL_URL = '/models/characters/chien-puppy.glb'
 
-// À côté de la table (côté TV, extrémité nord-est) — visible, pas sous la nappe
 const POSITION: [number, number, number] = [3.5, 0, -3.8]
-const ROTATION_Y = Math.PI * 0.75   // orienté vers la pièce
+const ROTATION_Y = Math.PI * 0.75
 
-const CLIP_IDLE = 'iddle'
+const NECK_BONE = 'Dog_Neck_TopSHJnt'
 
 export function Chien() {
   const groupRef = useRef<THREE.Group>(null)
@@ -36,18 +35,14 @@ export function Chien() {
         gradientMap: toonGradient,
       })
       mesh.frustumCulled = false
+      mesh.geometry.computeVertexNormals()
     })
-    // DEF-spine.011 = bout de chaîne dorsale → cou/tête chez ce quadrupède
-    neckBoneRef.current = scene.getObjectByName('DEF-spine.011') ?? null
+    neckBoneRef.current = scene.getObjectByName(NECK_BONE) ?? null
   }, [scene])
 
   useEffect(() => {
-    const action = actions[CLIP_IDLE] ?? actions[names[0]]
-    if (action) {
-      action.reset().play()
-      action.time = 0.37   // freeze au point bas du squat → posture basse/couchée
-      action.paused = true
-    }
+    const action = actions['Animation'] ?? actions[names[0]]
+    action?.reset().setLoop(THREE.LoopRepeat, Infinity).play()
     return () => { action?.stop() }
   }, [actions, names])
 
@@ -82,3 +77,4 @@ export function Chien() {
 }
 
 useGLTF.preload(MODEL_URL)
+// Ancien asset (conservé pour rollback) : /models/characters/chien.glb
