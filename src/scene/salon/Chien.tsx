@@ -12,6 +12,7 @@ const MODEL_URL = '/models/characters/chien-puppy2.glb'
 
 const POSITION: [number, number, number] = [3.5, 0, -3.8]
 const ROTATION_Y = Math.PI * 0.75
+const SCALE = 1.6   // 1.0 = chiot (0.37m), 1.6 = chien moyen, 2.2 = grand chien
 
 const CLIP_IDLE = 'Armature|PuppyALL_IdleLayDown'
 const HEAD_BONE = 'Bip01_Head'
@@ -19,7 +20,6 @@ const HEAD_BONE = 'Bip01_Head'
 export function Chien() {
   const groupRef = useRef<THREE.Group>(null)
   const neckBoneRef = useRef<THREE.Object3D | null>(null)
-  const clockRef = useRef(0)
   const { camera } = useThree()
 
   const { scene, animations } = useGLTF(MODEL_URL)
@@ -50,10 +50,6 @@ export function Chien() {
   useFrame((_, delta) => {
     const group = groupRef.current
     if (!group) return
-    clockRef.current += delta
-
-    // Respiration : micro-oscillation Y lente (0.008 m d'amplitude, ~3 s/cycle)
-    group.position.y = POSITION[1] + Math.sin(clockRef.current * 2.1) * 0.008
 
     // Regard passif vers la caméra si proche (<4 m)
     const bone = neckBoneRef.current
@@ -71,7 +67,7 @@ export function Chien() {
   })
 
   return (
-    <group ref={groupRef} position={POSITION} rotation={[0, ROTATION_Y, 0]}>
+    <group ref={groupRef} position={POSITION} rotation={[0, ROTATION_Y, 0]} scale={SCALE}>
       <primitive object={scene} />
     </group>
   )
