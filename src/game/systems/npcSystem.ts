@@ -28,6 +28,11 @@ export type NPCConfig = {
   scenarios: Scenario[]
   meshColor: string
   excludeFromSocialGraph?: boolean
+  // GLB model (optional — falls back to placeholder geometry when absent)
+  modelUrl?: string
+  clipIdle?: string
+  rotationY?: number
+  headBoneName?: string
 }
 
 export function pickScenario(scenarios: Scenario[], seed: number): Scenario {

@@ -1,4 +1,5 @@
 // src/scene/salon/FamilyMember.tsx
+import { FamilyMemberGLB } from './FamilyMemberGLB'
 import { useRef, useEffect, useMemo } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
@@ -28,6 +29,11 @@ interface FamilyMemberProps {
 }
 
 export function FamilyMember({ config }: FamilyMemberProps) {
+  if (config.modelUrl) return <FamilyMemberGLB config={config} />
+  return <FamilyMemberGeometry config={config} />
+}
+
+function FamilyMemberGeometry({ config }: FamilyMemberProps) {
   const groupRef = useRef<THREE.Group>(null)
   const headRef = useRef<THREE.Mesh>(null)
   const { camera } = useThree()
