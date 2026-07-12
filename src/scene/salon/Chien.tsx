@@ -1,6 +1,6 @@
 // src/scene/salon/Chien.tsx
-// Chiot Sketchfab — rig complet Dog_*SHJnt, 1 clip 'Animation'.
-// Phase salon sandbox : à côté de la table côté TV, head-look passif vers la caméra.
+// Chiot stylisé (Sketchfab) — 5 clips : IdleLayDown / IdleEnergetic / Walk / Run / TPOSE.
+// Phase salon sandbox : couché à côté de la table côté TV, head-look passif.
 
 import { useRef, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
@@ -8,12 +8,13 @@ import * as THREE from 'three'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 
-const MODEL_URL = '/models/characters/chien-puppy.glb'
+const MODEL_URL = '/models/characters/chien-puppy2.glb'
 
 const POSITION: [number, number, number] = [3.5, 0, -3.8]
 const ROTATION_Y = Math.PI * 0.75
 
-const NECK_BONE = 'Dog_Neck_TopSHJnt'
+const CLIP_IDLE = 'Armature|PuppyALL_IdleLayDown'
+const HEAD_BONE = 'Bip01_Head'
 
 export function Chien() {
   const groupRef = useRef<THREE.Group>(null)
@@ -37,11 +38,11 @@ export function Chien() {
       mesh.frustumCulled = false
       mesh.geometry.computeVertexNormals()
     })
-    neckBoneRef.current = scene.getObjectByName(NECK_BONE) ?? null
+    neckBoneRef.current = scene.getObjectByName(HEAD_BONE) ?? null
   }, [scene])
 
   useEffect(() => {
-    const action = actions['Animation'] ?? actions[names[0]]
+    const action = actions[CLIP_IDLE] ?? actions[names[0]]
     action?.reset().setLoop(THREE.LoopRepeat, Infinity).play()
     return () => { action?.stop() }
   }, [actions, names])
@@ -77,4 +78,3 @@ export function Chien() {
 }
 
 useGLTF.preload(MODEL_URL)
-// Ancien asset (conservé pour rollback) : /models/characters/chien.glb
