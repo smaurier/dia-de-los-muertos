@@ -1,45 +1,59 @@
 // src/scene/salon/FamilyMemberGLB.tsx
 // GLB-based NPC renderer. Used by FamilyMember when config.modelUrl is set.
-// No movement logic: GLB characters use idle animation only until animations are wired.
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useMemo } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useGLTF, useAnimations } from '@react-three/drei'
+import { SkeletonUtils } from 'three-stdlib'
 import { toonGradient } from '../shared/toonGradient'
 import { shouldTurnTowardPlayer } from '../../game/systems/npcSystem'
 import type { NPCConfig } from '../../game/systems/npcSystem'
 
 interface Props { config: NPCConfig }
 
-export function FamilyMemberGLB({ config }: Props) {
-  const groupRef  = useRef<THREE.Group>(null)
-  const headBoneRef = useRef<THREE.Object3D | null>(null)
-  const { camera } = useThree()
-  const dirRef = useRef(new THREE.Vector3())
-
-  const { scene, animations } = useGLTF(config.modelUrl!)
-  const { actions, names }    = useAnimations(animations, groupRef)
-
-  useEffect(() => {
-    scene.traverse(obj => {
-      if (!(obj as THREE.Mesh).isMesh) return
-      const mesh = obj as THREE.Mesh
-      const old = mesh.material as THREE.MeshStandardMaterial
-      mesh.material = new THREE.MeshToonMaterial({
-        map:         old.map ?? null,
-        color:       old.map ? '#ffffff' : config.meshColor,
+function applyToon(scene: THREE.Object3D, meshColor: string) {
+  scene.traverse(obj => {
+    if (!(obj as THREE.Mesh).isMesh) return
+    const mesh = obj as THREE.Mesh
+    // Handle both single material and material array
+    const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
+    mesh.material = mats.map(m => {
+      const std = m as THREE.MeshStandardMaterial
+      return new THREE.MeshToonMaterial({
+        map:         std.map ?? null,
+        color:       std.map ? '#ffffff' : meshColor,
         gradientMap: toonGradient,
       })
-      mesh.frustumCulled = false
-      mesh.geometry.computeVertexNormals()
     })
+    if ((mesh.material as THREE.Material[]).length === 1) {
+      mesh.material = (mesh.material as THREE.Material[])[0]
+    }
+    mesh.frustumCulled = false
+    mesh.geometry.computeVertexNormals()
+  })
+}
+
+export function FamilyMemberGLB({ config }: Props) {
+  const groupRef    = useRef<THREE.Group>(null)
+  const headBoneRef = useRef<THREE.Object3D | null>(null)
+  const { camera }  = useThree()
+  const dirRef      = useRef(new THREE.Vector3())
+
+  const { scene: originalScene, animations } = useGLTF(config.modelUrl!)
+  // Clone per instance so shared GLBs (base-01 used by 3 NPCs) don't share the same scene graph
+  const clonedScene = useMemo(() => SkeletonUtils.clone(originalScene), [originalScene])
+
+  const { actions, names } = useAnimations(animations, groupRef)
+
+  useEffect(() => {
+    applyToon(clonedScene, config.meshColor)
 
     const boneName = config.headBoneName ?? 'mixamorigHead'
     headBoneRef.current =
-      scene.getObjectByName(boneName) ??
-      scene.getObjectByName('mixamorig:Head') ??
+      clonedScene.getObjectByName(boneName) ??
+      clonedScene.getObjectByName('mixamorig:Head') ??
       null
-  }, [scene, config.meshColor, config.headBoneName])
+  }, [clonedScene, config.meshColor, config.headBoneName])
 
   useEffect(() => {
     const clip   = config.clipIdle ?? names[0]
@@ -67,7 +81,7 @@ export function FamilyMemberGLB({ config }: Props) {
 
   return (
     <group ref={groupRef} position={config.startPosition}>
-      <primitive object={scene} rotation={[0, rotY, 0]} scale={100} />
+      <primitive object={clonedScene} rotation={[0, rotY, 0]} scale={100} />
     </group>
   )
 }
