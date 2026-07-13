@@ -56,7 +56,7 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [ 4.55, 5.45, 10.05, 11.95], // lit Sofía
   [ 2.85, 3.45, 11.45, 11.95], // table de chevet + veilleuse
   [ 6.35, 7.0, 8.45, 9.75],   // armoire (mur est)
-  [ 5.7, 6.7, 7.75, 8.4],     // coffre à jouets
+  [ 5.05, 6.05, 7.75, 8.4],   // coffre à jouets (près de la porte)
   // fond z=12 : porte OUVRABLE vers le cellier x∈[-6.3,-5.3]
   [-7.2, -6.3, 11.8, 12.2],   // fond cuisine, segment ouest
   [-5.3, -0.45, 11.8, 12.2],  // fond cuisine, segment est

@@ -235,8 +235,9 @@ export function Chambre1() {
         )}
       </group>
 
-      {/* ── Coffre à jouets contre le mur sud (à l'est de la porte) ── */}
-      <group position={[6.2, 0, 8.12]}>
+      {/* ── Coffre à jouets contre le mur sud, juste à l'est de la porte
+          (hors de l'arc du battant, qui balaye jusqu'à x≈4.97) ── */}
+      <group position={[5.55, 0, 8.12]}>
         <mesh position={[0, 0.26, 0]}>
           <boxGeometry args={[0.9, 0.52, 0.48]} />
           <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
@@ -277,13 +278,14 @@ export function Chambre1() {
       ))}
 
       {/* ── Murs : croix au-dessus de la fenêtre, cadres (dessins d'enfants) ── */}
+      {/* (mur le long de x → la traverse s'étend en x, pas en z) */}
       <mesh position={[3.0, 2.55, 11.96]}>
-        <boxGeometry args={[0.04, 0.34, 0.06]} />
+        <boxGeometry args={[0.05, 0.34, 0.04]} />
         <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
         <Outlines thickness={0.010} color="black" />
       </mesh>
       <mesh position={[3.0, 2.62, 11.96]}>
-        <boxGeometry args={[0.04, 0.06, 0.2]} />
+        <boxGeometry args={[0.2, 0.06, 0.04]} />
         <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
       </mesh>
       <PhotoFrame position={[6.97, 1.9, 10.9]} rotY={-Math.PI / 2} />
