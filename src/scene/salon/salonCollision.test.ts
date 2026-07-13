@@ -69,8 +69,8 @@ describe('cameraBackDistance', () => {
   })
 
   it('raccourcit le recul devant un meuble (AABB élargie de la marge caméra)', () => {
-    // Garçon à z=2 dos à la table (bord z=1.45 + marge 0.15 = 1.6) → recul 0.4.
-    expect(cameraBackDistance(0, 2, 0, -1, MAX_BACK)).toBeCloseTo(0.4, 5)
+    // Garçon à z=3.1, caméra vers sud, bord table z=2.55+marge 0.15=2.70 → recul 0.4.
+    expect(cameraBackDistance(0, 3.1, 0, -1, MAX_BACK)).toBeCloseTo(0.4, 5)
   })
 
   it('rend 0 quand le point de départ touche déjà la zone élargie', () => {
@@ -103,8 +103,8 @@ describe('canMove', () => {
   })
 
   it("bloque l'entrée dans un obstacle depuis l'extérieur", () => {
-    // Table AABB z max 1.45 : entrer depuis z=1.5 vers z=1.4 → refusé.
-    expect(canMove(0, 1.5, 0, 1.4)).toBe(false)
+    // Table AABB z max 2.55 : entrer depuis z=2.6 (dehors) vers z=2.4 (dedans) → refusé.
+    expect(canMove(0, 2.6, 0, 2.4)).toBe(false)
   })
 
   it("autorise la sortie d'un obstacle depuis l'intérieur", () => {
@@ -116,8 +116,12 @@ describe('canMove', () => {
     expect(canMove(0, 1.0, 0.2, 1.1)).toBe(true)
   })
 
-  it('bloque toujours la sortie de la pièce', () => {
-    expect(canMove(0, 5.5, 0, 5.7)).toBe(false)
-    expect(canMove(6.6, 0, 6.8, 0)).toBe(false)
+  it('bloque toujours la sortie de la pièce (hors arches)', () => {
+    // Mur nord plein côté est (arche cuisine est à x≈-2.5, x=4 est un mur plein)
+    expect(canMove(4, 5.5, 4, 5.7)).toBe(false)
+    // Arche zaguán (z=0) est ouverte → passage autorisé
+    expect(canMove(6.6, 0, 6.8, 0)).toBe(true)
+    // Mur est plein au nord de l'arche (z=3 hors ouverture z∈[-0.9,0.9])
+    expect(canMove(6.6, 3, 6.8, 3)).toBe(false)
   })
 })

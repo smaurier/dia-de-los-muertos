@@ -5,6 +5,7 @@
 // dans cette zone. Les NPCs "à table" spawnent à z=±1.5 → AABB z max = 1.45 (strict
 // inequality : 1.5 > 1.45 → outside → ils peuvent se placer et bouger librement).
 
+// Obstacles mobilier uniquement — utilisés par cameraBackDistance ET canMove.
 export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
   // Table x[-4.75,3.75] z[-0.05,1.95] (centre z=1.0) + sièges.
   // z=[-0.55, 2.55] : couvre sièges (nord z=2.60, sud z=-0.60), NPCs à ces positions = extérieurs.
@@ -26,9 +27,33 @@ export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
   [ 5.2,  6.4,  5.15, 5.75],  // vaisselier coin nord-est
 ]
 
-// Murs du salon (pièce élargie : z=±5.8 — l'arche sud reste infranchissable
-// tant que la cuisine n'est pas jouable)
+// Sections de mur physiques — utilisées par canMove uniquement (pas caméra).
+// Les arches = gaps dans ces sections → passage libre.
+const ROOM_WALLS: readonly [number, number, number, number][] = [
+  // ── Mur nord z=5.8 : arche cuisine ouverte x∈[-3.4,-1.6] ──────────────────
+  [-7.2, -3.45, 5.55, 6.2],   // section ouest du mur nord
+  [-1.55,  7.2, 5.55, 6.2],   // section est (arche NE supprimée → plein)
+  // ── Cuisine (z∈[5.8,8.6], x∈[-4.4,-0.6]) ─────────────────────────────────
+  [-4.55, -4.15, 5.8, 8.65],  // mur ouest cuisine
+  [-0.85, -0.45, 5.8, 8.65],  // mur est cuisine
+  [-4.55, -0.45, 8.45, 8.75], // mur fond cuisine
+  // ── Mur est x=7 : arche zaguán ouverte z∈[-0.9,0.9] ──────────────────────
+  // x=6.75 (< 7) : obstacle commence avant le mur plan pour que x=6.8 soit dedans (strict >).
+  [ 6.75,  7.2,  0.95, 5.85],  // section nord du mur est
+  [ 6.75,  7.2, -5.85, -0.95], // section sud du mur est
+  // ── Zaguán (x∈[7,10], z∈[-2,2]) ──────────────────────────────────────────
+  [ 7.0, 10.2,  1.85,  2.2 ], // mur nord zaguán
+  [ 7.0, 10.2, -2.2,  -1.85], // mur sud zaguán
+  [ 9.85, 10.2, -1.85, 1.85], // mur est zaguán (porte ext. bloquée pour l'instant)
+]
+
+// Bounds du salon uniquement — utilisés par la caméra et les tests.
 export const SALON_BOUNDS = { minX: -6.7, maxX: 6.7, minZ: -5.6, maxZ: 5.6 }
+
+// Bounds de navigation totaux — couvre salon + cuisine (nord) + zaguán (est).
+// L'arche sud est supprimée → minZ = -5.7 (mur plein).
+// canMove utilise NAV_BOUNDS ; la caméra reste dans SALON_BOUNDS.
+export const NAV_BOUNDS = { minX: -6.7, maxX: 10.0, minZ: -5.7, maxZ: 8.55 }
 
 // Murs physiques du salon (plans à x=±7, z=±5.8) et marge caméra.
 // CAM_MARGIN > near plane (0.1) : la caméra clampée ne coupe jamais un mur.
@@ -102,9 +127,10 @@ export function cameraBackDistance(
 // personnage déjà à l'intérieur (NPC assis à sa chaise, spawn limite) peut
 // toujours en sortir au lieu de geler sur place.
 export function canMove(fromX: number, fromZ: number, toX: number, toZ: number): boolean {
-  if (toX < SALON_BOUNDS.minX || toX > SALON_BOUNDS.maxX) return false
-  if (toZ < SALON_BOUNDS.minZ || toZ > SALON_BOUNDS.maxZ) return false
-  return !SALON_OBSTACLES.some(([mx, Mx, mz, Mz]) => {
+  if (toX < NAV_BOUNDS.minX || toX > NAV_BOUNDS.maxX) return false
+  if (toZ < NAV_BOUNDS.minZ || toZ > NAV_BOUNDS.maxZ) return false
+  const allObstacles = (SALON_OBSTACLES as readonly [number,number,number,number][]).concat(ROOM_WALLS as unknown as [number,number,number,number][])
+  return !allObstacles.some(([mx, Mx, mz, Mz]) => {
     const toInside = toX > mx && toX < Mx && toZ > mz && toZ < Mz
     if (!toInside) return false
     const fromInside = fromX > mx && fromX < Mx && fromZ > mz && fromZ < Mz
