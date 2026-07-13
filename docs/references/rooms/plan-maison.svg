@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Plan de la maison — Día de Muertos
+  Échelle : 20px = 1m
+  Repère 3D → SVG :
+    svg_x = 160 + (3d_x + 7) * 20   [salon : x∈[-7,7] → svg 160→440]
+    svg_y = 520 - (3d_z + 5.8) * 20  [salon : z∈[-5.8,5.8] → svg 520→320]
+  Murs pleins = existant dans SalonRoom.tsx
+  Murs pointillés = à implémenter (chapitres futurs)
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="760" viewBox="0 0 900 760">
+
+  <!-- ═══════════ BACKGROUND ═══════════ -->
+  <rect width="900" height="760" fill="#ede8de"/>
+
+  <!-- ═══════════ TITLE ═══════════ -->
+  <text x="450" y="30" text-anchor="middle"
+        font-family="Georgia, serif" font-size="17" font-weight="bold" fill="#2a1a0a">
+    Día de Muertos — Plan de la maison
+  </text>
+  <text x="450" y="50" text-anchor="middle"
+        font-family="sans-serif" font-size="10" fill="#888">
+    Échelle 1:50 · 20 px = 1 m · Coordonnées salon issues de SalonRoom.tsx
+  </text>
+
+  <!-- ═══════════ ROOM FILLS ═══════════ -->
+
+  <!-- Patio / Ofrenda (extérieur, à implémenter) -->
+  <rect x="130" y="68" width="340" height="132" fill="#c4dfb0" stroke="none" rx="4"/>
+
+  <!-- Cuisine (ch.2) -->
+  <rect x="140" y="200" width="170" height="120" fill="#f5ddb0"/>
+
+  <!-- Couloir NE — implémenté -->
+  <rect x="370" y="236" width="70" height="84" fill="#e8d5f0"/>
+
+  <!-- Salon (ch.1 / ch.4) — pièce principale -->
+  <rect x="160" y="320" width="280" height="200" fill="#fef3dd"/>
+
+  <!-- Zaguán (entrée est) — implémenté -->
+  <rect x="440" y="364" width="80" height="80" fill="#e8e0c8"/>
+
+  <!-- Couloir sud — implémenté (petit) -->
+  <rect x="200" y="520" width="60" height="54" fill="#d5e8f5"/>
+
+  <!-- Aile privée sud (à implémenter) — fond plus sombre -->
+  <rect x="108" y="574" width="252" height="126" fill="#ddd8cc" rx="2"/>
+
+  <!-- ═══════════ FURNITURE / PROPS ═══════════ -->
+
+  <!-- Table repas (8.5m E-O, centre 3D x=-0.05 z=1.0 → svg 299,384) -->
+  <rect x="214" y="363" width="170" height="42" fill="#c8a870" rx="2"/>
+  <text x="299" y="389" text-anchor="middle"
+        font-family="sans-serif" font-size="8" fill="#4a2a00">Table (20 couverts)</text>
+
+  <!-- Chaises adultes (rangée nord, z=2.60 → svg_y=352) -->
+  <rect x="218" y="349" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="234" y="349" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="250" y="349" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="266" y="349" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="282" y="349" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="298" y="349" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="314" y="349" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="330" y="349" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="346" y="349" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="362" y="349" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <text x="299" y="345" text-anchor="middle"
+        font-family="sans-serif" font-size="7" fill="#777">adultes →</text>
+
+  <!-- Chaises enfants (rangée sud, z=-0.60 → svg_y=416) -->
+  <rect x="218" y="408" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="234" y="408" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="250" y="408" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="266" y="408" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="282" y="408" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="298" y="408" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="314" y="408" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="330" y="408" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="346" y="408" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <rect x="362" y="408" width="12" height="9" fill="#9a6a40" rx="1"/>
+  <text x="299" y="427" text-anchor="middle"
+        font-family="sans-serif" font-size="7" fill="#777">enfants →</text>
+
+  <!-- Canapé L + TV (coin SO du salon) -->
+  <!-- Bras est-ouest le long du mur sud -->
+  <rect x="168" y="494" width="56" height="18" fill="#7a5f3a" rx="2"/>
+  <!-- Bras nord-sud le long du mur ouest -->
+  <rect x="168" y="464" width="18" height="48" fill="#7a5f3a" rx="2"/>
+  <!-- TV (mur ouest) -->
+  <rect x="161" y="490" width="4" height="22" fill="#222" rx="1"/>
+  <text x="170" y="460" font-family="sans-serif" font-size="7" fill="#5a3a10">Canapé + TV</text>
+  <text x="170" y="470" font-family="sans-serif" font-size="7" fill="#5a3a10">Grand-oncle</text>
+
+  <!-- Fauteuil grande-tante (x=-6.42, z=-0.6 → svg 131,432) -->
+  <rect x="168" y="426" width="16" height="16" fill="#7a5f3a" rx="2"/>
+  <text x="187" y="436" font-family="sans-serif" font-size="7" fill="#5a3a10">Fauteuil</text>
+
+  <!-- Buffet (mur ouest nord) -->
+  <rect x="162" y="330" width="14" height="40" fill="#8b6a3a" rx="1"/>
+
+  <!-- Ofrenda altar dans le patio -->
+  <rect x="210" y="92" width="68" height="46" fill="#c07848" rx="3"/>
+  <text x="244" y="111" text-anchor="middle" font-family="Georgia, serif" font-size="9" fill="#fff">Ofrenda</text>
+  <text x="244" y="124" text-anchor="middle" font-family="Georgia, serif" font-size="9" fill="#fff">ch. 8</text>
+
+  <!-- Chien dans cuisine -->
+  <text x="198" y="284" font-family="sans-serif" font-size="20">🐕</text>
+
+  <!-- Miroir dans couloir sud -->
+  <rect x="226" y="530" width="22" height="7" fill="#a0c4e0" rx="1" stroke="#6090b0" stroke-width="1"/>
+  <text x="237" y="548" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#1a4a6a">Miroir</text>
+
+  <!-- ═══════════ WALLS (existants = trait plein 3px) ═══════════ -->
+
+  <!-- ── SALON mur NORD (y=320) ── -->
+  <!-- Segment 1 : x=160→230 -->
+  <line x1="160" y1="320" x2="230" y2="320" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <!-- Arche cuisine : x=230→270, courbe vers le nord (cuisine) -->
+  <path d="M 230 320 Q 250 306 270 320" fill="none" stroke="#444" stroke-width="1.5"/>
+  <!-- Segment 2 : x=270→370 -->
+  <line x1="270" y1="320" x2="370" y2="320" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <!-- Arche couloir NE : x=370→410 -->
+  <path d="M 370 320 Q 390 306 410 320" fill="none" stroke="#444" stroke-width="1.5"/>
+  <!-- Segment 3 : x=410→440 -->
+  <line x1="410" y1="320" x2="440" y2="320" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+
+  <!-- ── SALON mur SUD (y=520) ── -->
+  <!-- Segment 1 : x=160→210 -->
+  <line x1="160" y1="520" x2="210" y2="520" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <!-- Arche sud : x=210→250, courbe vers le sud -->
+  <path d="M 210 520 Q 230 534 250 520" fill="none" stroke="#444" stroke-width="1.5"/>
+  <!-- Segment 2 : x=250→440 -->
+  <line x1="250" y1="520" x2="440" y2="520" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+
+  <!-- ── SALON mur OUEST (x=160) ── -->
+  <!-- Segment haut : y=320→362 -->
+  <line x1="160" y1="320" x2="160" y2="362" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <!-- Fenêtre : y=362→428 (pointillé bleu) -->
+  <line x1="160" y1="362" x2="160" y2="428" stroke="#6ca0dc" stroke-width="3" stroke-dasharray="9,4"/>
+  <!-- Segment bas : y=428→520 -->
+  <line x1="160" y1="428" x2="160" y2="520" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+
+  <!-- ── SALON mur EST (x=440) ── -->
+  <!-- Segment haut : y=320→384 -->
+  <line x1="440" y1="320" x2="440" y2="384" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <!-- Arche zaguán : y=384→424, courbe vers l'est -->
+  <path d="M 440 384 Q 454 404 440 424" fill="none" stroke="#444" stroke-width="1.5"/>
+  <!-- Segment bas : y=424→520 -->
+  <line x1="440" y1="424" x2="440" y2="520" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+
+  <!-- ── CUISINE murs ── -->
+  <line x1="140" y1="200" x2="140" y2="320" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <line x1="140" y1="200" x2="310" y2="200" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <line x1="310" y1="200" x2="310" y2="320" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+
+  <!-- ── COULOIR NE murs ── -->
+  <line x1="370" y1="236" x2="370" y2="320" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <line x1="370" y1="236" x2="440" y2="236" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <!-- mur est = mur est salon (déjà tracé) -->
+
+  <!-- ── PATIO murs (existant en 3D via SalonRoom) ── -->
+  <!-- Mur ouest patio = prolongation mur ouest cuisine -->
+  <line x1="140" y1="68" x2="140" y2="200" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <!-- Mur nord patio -->
+  <line x1="130" y1="68" x2="470" y2="68" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <!-- Mur est patio -->
+  <line x1="470" y1="68" x2="470" y2="236" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <!-- Mur sud patio : entre cuisine est (x=310) et couloir NE ouest (x=370) -->
+  <line x1="310" y1="200" x2="370" y2="200" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <!-- Et le segment est reliant le couloir NE au patio est -->
+  <line x1="440" y1="236" x2="470" y2="236" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <!-- Mur nord patio ouest (de 130 à 140) -->
+  <line x1="130" y1="68" x2="130" y2="200" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <line x1="130" y1="200" x2="140" y2="200" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+
+  <!-- ── ZAGUÁN murs ── -->
+  <line x1="440" y1="364" x2="520" y2="364" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <line x1="520" y1="364" x2="520" y2="444" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <line x1="520" y1="444" x2="440" y2="444" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <!-- Porte extérieure zaguán (mur est x=520) : battants -->
+  <!-- Déjà dans le mur est — on ajoute symbole de porte double -->
+  <line x1="520" y1="394" x2="520" y2="414" stroke="#aaa" stroke-width="2" stroke-dasharray="2,2"/>
+  <path d="M 520 394 L 502 394" stroke="#777" stroke-width="1" fill="none"/>
+  <path d="M 520 394 Q 520 404 502 404" stroke="#777" stroke-width="1" fill="none"/>
+  <path d="M 520 414 L 502 414" stroke="#777" stroke-width="1" fill="none"/>
+  <path d="M 520 414 Q 520 404 502 404" stroke="#777" stroke-width="1" fill="none"/>
+
+  <!-- ── COULOIR SUD murs ── -->
+  <line x1="200" y1="520" x2="200" y2="574" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <line x1="260" y1="520" x2="260" y2="574" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+  <line x1="200" y1="574" x2="260" y2="574" stroke="#1a1a1a" stroke-width="3" stroke-linecap="square"/>
+
+  <!-- ═══════════ MURS FUTURS (pointillés gris) ═══════════ -->
+  <!-- Aile privée sud : ch.5 couloir, ch.6 chambre(s), ch.7 débarras -->
+
+  <!-- Mur ouest côté sud (de y=520 à y=700) -->
+  <line x1="108" y1="574" x2="108" y2="700" stroke="#666" stroke-width="2" stroke-dasharray="8,5"/>
+  <!-- Mur nord chambre (y=574, x=108→200) -->
+  <line x1="108" y1="574" x2="200" y2="574" stroke="#666" stroke-width="2" stroke-dasharray="8,5"/>
+  <!-- Mur est chambre / séparation couloir prolongé -->
+  <line x1="200" y1="574" x2="200" y2="700" stroke="#666" stroke-width="2" stroke-dasharray="8,5"/>
+  <!-- Mur est débarras (x=360) -->
+  <line x1="360" y1="574" x2="360" y2="700" stroke="#666" stroke-width="2" stroke-dasharray="8,5"/>
+  <!-- Mur sud (y=700) -->
+  <line x1="108" y1="700" x2="360" y2="700" stroke="#666" stroke-width="2" stroke-dasharray="8,5"/>
+  <!-- Séparation débarras / couloir futur (y=574, x=260→360) -->
+  <line x1="260" y1="574" x2="360" y2="574" stroke="#666" stroke-width="2" stroke-dasharray="8,5"/>
+  <!-- Mur nord extension est (y=574, x=260→440 joignant salon est) -->
+  <line x1="260" y1="574" x2="440" y2="574" stroke="#666" stroke-width="2" stroke-dasharray="8,5"/>
+  <!-- Mur west step (du salon west (x=160) au west chambre (x=108), y=520→574) -->
+  <line x1="160" y1="520" x2="160" y2="574" stroke="#666" stroke-width="2" stroke-dasharray="8,5"/>
+  <line x1="108" y1="574" x2="160" y2="574" stroke="#666" stroke-width="2" stroke-dasharray="8,5"/>
+  <!-- Séparation interne : couloir futur (x=200-260) entre y=574 et y=700 -->
+  <line x1="260" y1="620" x2="360" y2="620" stroke="#666" stroke-width="2" stroke-dasharray="6,4"/>
+  <!-- Séparation chambre 1 et 2 (indicatif) -->
+  <line x1="108" y1="640" x2="200" y2="640" stroke="#666" stroke-width="2" stroke-dasharray="6,4"/>
+
+  <!-- ═══════════ LABELS — PIÈCES ═══════════ -->
+
+  <text x="295" y="112" text-anchor="middle"
+        font-family="Georgia, serif" font-size="14" font-weight="bold" fill="#2a5f1e">Patio</text>
+  <text x="295" y="130" text-anchor="middle"
+        font-family="Georgia, serif" font-size="10" fill="#2a5f1e">jardin / ofrenda — ch. 8</text>
+
+  <text x="225" y="252" text-anchor="middle"
+        font-family="Georgia, serif" font-size="13" font-weight="bold" fill="#6a3a00">Cuisine</text>
+  <text x="225" y="268" text-anchor="middle"
+        font-family="Georgia, serif" font-size="10" fill="#6a3a00">ch. 2 · chien ici</text>
+
+  <text x="405" y="268" text-anchor="middle"
+        font-family="Georgia, serif" font-size="9" fill="#4a1f6a">Couloir NE</text>
+  <text x="405" y="280" text-anchor="middle"
+        font-family="sans-serif" font-size="8" fill="#4a1f6a">→ patio</text>
+
+  <!-- Salon -->
+  <text x="358" y="450" text-anchor="middle"
+        font-family="Georgia, serif" font-size="16" font-weight="bold" fill="#8b4513">Salon</text>
+  <text x="358" y="469" text-anchor="middle"
+        font-family="Georgia, serif" font-size="11" fill="#8b4513">ch. 1 / ch. 4</text>
+  <text x="358" y="486" text-anchor="middle"
+        font-family="sans-serif" font-size="8" fill="#a06040">14 m × 10 m</text>
+
+  <!-- Zaguán -->
+  <text x="480" y="402" text-anchor="middle"
+        font-family="Georgia, serif" font-size="11" font-weight="bold" fill="#4a3a00">Zaguán</text>
+  <text x="480" y="416" text-anchor="middle"
+        font-family="sans-serif" font-size="9" fill="#4a3a00">Entrée principale</text>
+
+  <!-- Couloir sud -->
+  <text x="230" y="543" text-anchor="middle"
+        font-family="Georgia, serif" font-size="8" font-weight="bold" fill="#1a3f5f">Couloir</text>
+  <text x="230" y="556" text-anchor="middle"
+        font-family="sans-serif" font-size="8" fill="#1a3f5f">ch. 3 / 5</text>
+  <text x="230" y="567" text-anchor="middle"
+        font-family="sans-serif" font-size="7" fill="#1a3f5f">miroir ↑</text>
+
+  <!-- Aile privée (labels pointillés) -->
+  <text x="154" y="610" text-anchor="middle"
+        font-family="Georgia, serif" font-size="10" fill="#666">Chambre 1</text>
+  <text x="154" y="624" text-anchor="middle"
+        font-family="sans-serif" font-size="8" fill="#888">ch. 6</text>
+  <text x="154" y="660" text-anchor="middle"
+        font-family="Georgia, serif" font-size="10" fill="#666">Chambre 2</text>
+  <text x="154" y="674" text-anchor="middle"
+        font-family="sans-serif" font-size="8" fill="#888">(à venir)</text>
+  <text x="310" y="600" text-anchor="middle"
+        font-family="Georgia, serif" font-size="10" fill="#666">Débarras</text>
+  <text x="310" y="614" text-anchor="middle"
+        font-family="sans-serif" font-size="8" fill="#888">ch. 7</text>
+  <text x="230" y="640" text-anchor="middle"
+        font-family="sans-serif" font-size="8" fill="#888">(couloir ch.5)</text>
+
+  <!-- ═══════════ ANNOTATIONS D'ARCHES ═══════════ -->
+
+  <!-- Label arche cuisine -->
+  <text x="250" y="314" text-anchor="middle"
+        font-family="sans-serif" font-size="8" fill="#333">⌒ cuisine</text>
+
+  <!-- Label arche NE -->
+  <text x="390" y="314" text-anchor="middle"
+        font-family="sans-serif" font-size="8" fill="#333">⌒ NE</text>
+
+  <!-- Label arche sud -->
+  <text x="230" y="530" text-anchor="middle"
+        font-family="sans-serif" font-size="8" fill="#333">⌣ sud</text>
+
+  <!-- Label arche zaguán -->
+  <text x="453" y="406" font-family="sans-serif" font-size="8" fill="#333">⌒</text>
+
+  <!-- ═══════════ FLÈCHE NORD ═══════════ -->
+  <g transform="translate(820, 110)">
+    <circle cx="0" cy="0" r="28" fill="white" stroke="#aaa" stroke-width="1.5"/>
+    <polygon points="0,-20 -5,6 0,0 5,6" fill="#333"/>
+    <polygon points="0,20 -5,-6 0,0 5,-6" fill="#ccc"/>
+    <text x="0" y="-24" text-anchor="middle"
+          font-family="sans-serif" font-size="12" font-weight="bold" fill="#222">N</text>
+  </g>
+
+  <!-- ═══════════ LÉGENDE ═══════════ -->
+  <g transform="translate(560, 340)">
+    <rect x="-8" y="-16" width="180" height="180" fill="white" fill-opacity="0.75" rx="4" stroke="#ccc" stroke-width="1"/>
+
+    <text x="0" y="0" font-family="sans-serif" font-size="11" font-weight="bold" fill="#222">Légende</text>
+
+    <!-- Arche -->
+    <line x1="0" y1="20" x2="28" y2="20" stroke="#1a1a1a" stroke-width="2.5"/>
+    <path d="M 0 20 Q 14 10 28 20" fill="none" stroke="#444" stroke-width="1.5"/>
+    <text x="36" y="24" font-family="sans-serif" font-size="10" fill="#222">Arche (passage)</text>
+
+    <!-- Fenêtre -->
+    <line x1="0" y1="42" x2="28" y2="42" stroke="#6ca0dc" stroke-width="2.5" stroke-dasharray="8,4"/>
+    <text x="36" y="46" font-family="sans-serif" font-size="10" fill="#222">Fenêtre / reja</text>
+
+    <!-- Mur futur -->
+    <line x1="0" y1="62" x2="28" y2="62" stroke="#666" stroke-width="2" stroke-dasharray="8,5"/>
+    <text x="36" y="66" font-family="sans-serif" font-size="10" fill="#222">Mur futur</text>
+
+    <!-- Porte -->
+    <line x1="0" y1="78" x2="8" y2="78" stroke="#1a1a1a" stroke-width="2"/>
+    <path d="M 8 78 L 24 78" stroke="#777" stroke-width="1"/>
+    <path d="M 8 78 Q 8 94 24 94" stroke="#777" stroke-width="1" fill="none"/>
+    <text x="36" y="86" font-family="sans-serif" font-size="10" fill="#222">Porte</text>
+
+    <!-- Échelle -->
+    <line x1="0" y1="118" x2="40" y2="118" stroke="#333" stroke-width="2"/>
+    <line x1="0" y1="113" x2="0" y2="123" stroke="#333" stroke-width="2"/>
+    <line x1="40" y1="113" x2="40" y2="123" stroke="#333" stroke-width="2"/>
+    <text x="20" y="136" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#333">2 m</text>
+
+    <!-- Chapters summary -->
+    <text x="0" y="156" font-family="sans-serif" font-size="9" fill="#555">Ch.1/4 Salon · Ch.2 Cuisine</text>
+    <text x="0" y="168" font-family="sans-serif" font-size="9" fill="#555">Ch.3/5 Couloir · Ch.6 Chambre</text>
+    <text x="0" y="180" font-family="sans-serif" font-size="9" fill="#555">Ch.7 Débarras · Ch.8 Patio</text>
+  </g>
+
+  <!-- ═══════════ DIMENSIONS INDICATIVES ═══════════ -->
+  <!-- Largeur salon -->
+  <line x1="160" y1="536" x2="440" y2="536" stroke="#999" stroke-width="1" stroke-dasharray="3,2"/>
+  <line x1="160" y1="532" x2="160" y2="540" stroke="#999" stroke-width="1"/>
+  <line x1="440" y1="532" x2="440" y2="540" stroke="#999" stroke-width="1"/>
+  <text x="300" y="550" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#999">14 m</text>
+
+  <!-- Hauteur salon -->
+  <line x1="446" y1="320" x2="446" y2="520" stroke="#999" stroke-width="1" stroke-dasharray="3,2"/>
+  <line x1="442" y1="320" x2="450" y2="320" stroke="#999" stroke-width="1"/>
+  <line x1="442" y1="520" x2="450" y2="520" stroke="#999" stroke-width="1"/>
+  <text x="455" y="424" font-family="sans-serif" font-size="9" fill="#999">10 m</text>
+
+</svg>
