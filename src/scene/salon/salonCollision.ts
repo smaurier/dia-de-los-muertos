@@ -39,15 +39,15 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   // fond z=12 : porte OUVRABLE vers le cellier x∈[-6.3,-5.3]
   [-7.2, -6.3, 11.8, 12.2],   // fond cuisine, segment ouest
   [-5.3, -0.45, 11.8, 12.2],  // fond cuisine, segment est
-  // ── Cellier (x∈[-7,-3.8], z∈[12,15.2]) — derrière le fond de la cuisine ──
-  [-7.2, -6.95, 12.0, 15.4],  // mur ouest cellier
-  [-7.2, -3.6, 15.0, 15.4],   // mur fond cellier (z=15.2)
-  [-4.0, -3.6, 12.0, 15.4],   // mur est cellier (x=-3.8)
+  // ── Cellier (x∈[-7,-0.6], z∈[12,15.2]) — toute la largeur de la cuisine ──
+  [-7.2, -6.95, 12.0, 15.4],  // mur ouest cellier (porte bleue jardin décorative)
+  [-7.2, -0.4, 15.0, 15.4],   // mur fond cellier (z=15.2)
+  [-0.8, -0.4, 12.0, 15.4],   // mur est cellier (x=-0.6)
   // ── Mobilier cellier (nav seulement) ──────────────────────────────────────
-  [-7.0, -6.5, 12.3, 14.9],   // étagères à conserves (mur ouest)
+  [-1.0, -0.5, 12.3, 14.9],   // étagères à conserves (mur est)
   [-6.9, -5.65, 13.85, 15.2], // sacs de grain (coin nord-ouest)
-  [-4.7, -3.95, 13.55, 15.05],// tonneau + caisse (coin nord-est)
-  [-4.2, -3.8, 12.4, 13.25],  // ollas empilées (mur est)
+  [-4.4, -2.9, 14.3, 15.1],   // tonneau + caisse (fond, au centre)
+  [-2.85, -1.7, 14.55, 15.2], // ollas empilées (mur du fond)
   // ── Mobilier cuisine (nav seulement) ──────────────────────────────────────
   [-4.50, -3.10, 8.40, 9.40], // table cuisine (centre pièce)
   [-3.90, -3.30, 7.75, 8.35], // chaise sud

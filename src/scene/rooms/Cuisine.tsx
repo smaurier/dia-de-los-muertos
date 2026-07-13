@@ -13,6 +13,7 @@ import {
 import { Prop } from '../shared/Prop'
 import { PhotoFrame } from '../shared/PhotoFrame'
 import { Porte } from '../shared/Porte'
+import { PorteBleue } from '../shared/PorteBleue'
 
 const C_CEIL      = '#F0E0C8'
 const C_IRON      = '#1A1512'
@@ -99,31 +100,7 @@ export function Cuisine() {
 
       {/* ── Porte bleue du jardin (mur ouest, non ouvrable — plan : "porte vers
           jardin"). Prend l'ancien emplacement de la porte du cellier. ── */}
-      <group position={[-6.96, 0, 10.0]} rotation={[0, Math.PI / 2, 0]}>
-        <mesh position={[0, 1.10, 0]}>
-          <boxGeometry args={[0.96, 2.20, 0.08]} />
-          <meshToonMaterial color="#2A5A1A" gradientMap={toonGradient} />
-          <Outlines thickness={0.020} color="black" />
-        </mesh>
-        <mesh position={[0, 1.10, 0.01]}>
-          <boxGeometry args={[0.84, 2.06, 0.06]} />
-          <meshToonMaterial color="#1E4080" gradientMap={toonGradient} />
-          <Outlines thickness={0.018} color="black" />
-        </mesh>
-        <mesh position={[0, 1.54, 0.04]}>
-          <boxGeometry args={[0.72, 0.62, 0.04]} />
-          <meshToonMaterial color="#2050A0" gradientMap={toonGradient} />
-        </mesh>
-        <mesh position={[0, 0.64, 0.04]}>
-          <boxGeometry args={[0.72, 0.88, 0.04]} />
-          <meshToonMaterial color="#2050A0" gradientMap={toonGradient} />
-        </mesh>
-        <mesh position={[0.31, 1.10, 0.08]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.015, 0.015, 0.18, 8]} />
-          <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
-          <Outlines thickness={0.008} color="black" />
-        </mesh>
-      </group>
+      <PorteBleue position={[-6.96, 0, 10.0]} rotationY={Math.PI / 2} />
 
       {/* ── Fogón (vieux poêle blanc, mur du fond à droite, ref cuisine-entree-02)
           rotation π : porte du four face au sud (vers la pièce) ── */}
@@ -397,6 +374,11 @@ export function Cuisine() {
         </mesh>
         <pointLight position={[0, 2.40, 0]} intensity={3.2} color="#f5b060" distance={5.5} decay={2} />
       </group>
+
+      {/* ── Lumières d'appoint : mur en pierre (l'ampoule seule le laissait dans
+          la bande toon la plus sombre → mur noir) + lueur du fogón ── */}
+      <pointLight position={[-1.5, 1.8, 9.2]} intensity={1.3} color="#f0c080" distance={4.5} decay={2} />
+      <pointLight position={[-2.2, 1.4, 11.0]} intensity={1.0} color="#ff9040" distance={3.5} decay={2} />
 
       {/* Cadre photo mur fond, près du coin en pierres */}
       <PhotoFrame position={[-0.95, 1.82, 11.96]} rotY={Math.PI} />

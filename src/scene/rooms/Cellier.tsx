@@ -1,12 +1,13 @@
 // src/scene/rooms/Cellier.tsx
-// Cellier / garde-manger (x∈[-7,-3.8], z∈[12,15.2]) — derrière le mur du fond
-// de la cuisine (plan-maison-v1 : cellier accolé à la cuisine, côté opposé au
-// salon). Porte OUVRABLE dans le mur commun z=12 (x∈[-6.3,-5.3]).
+// Cellier / garde-manger (x∈[-7,-0.6], z∈[12,15.2]) — toute la largeur de la
+// cuisine, derrière son mur du fond (plan-maison-v1). Porte OUVRABLE dans le
+// mur commun z=12 (x∈[-6.3,-5.3]) + porte bleue vers le jardin au mur ouest.
 // Pénombre, conserves, grains, chiles séchés.
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
 import { Porte } from '../shared/Porte'
+import { PorteBleue } from '../shared/PorteBleue'
 
 const C_CEIL      = '#D8CCB4'
 const C_WOOD_DARK = '#3A2008'
@@ -16,9 +17,9 @@ const C_CHILE     = '#B22015'
 const C_TERRE     = '#B87040'
 
 // Centre et dimensions
-const CX = -5.4
+const CX = -3.8
 const CZ = 13.6
-const CW = 3.2   // x∈[-7,-3.8]
+const CW = 6.4   // x∈[-7,-0.6]
 const CD = 3.2   // z∈[12,15.2]
 
 // Bocaux de conserves : [dx sur l'étagère, rayon, hauteur, couleur]
@@ -56,8 +57,8 @@ export function Cellier() {
         <planeGeometry args={[CW, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* Est x=-3.8 */}
-      <mesh position={[-3.8, 1.45, CZ]} rotation={[0, -Math.PI / 2, 0]}>
+      {/* Est x=-0.6 */}
+      <mesh position={[-0.6, 1.45, CZ]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[CD, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
@@ -66,8 +67,8 @@ export function Cellier() {
         <planeGeometry args={[0.7, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[-4.55, 1.45, 12.0]}>
-        <planeGeometry args={[1.5, 2.9]} />
+      <mesh position={[-2.95, 1.45, 12.0]}>
+        <planeGeometry args={[4.7, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
       <mesh position={[-5.8, 2.5, 12.0]}>
@@ -91,8 +92,11 @@ export function Cellier() {
           actuellement grande ouverte vers l'intérieur du cellier. */}
       <Porte position={[-6.27, 0, 12.05]} rotationY={Math.PI / 2} angle={-2.3} width={0.94} />
 
-      {/* ── Étagères murales (mur ouest) : 3 niveaux de conserves ── */}
-      <group position={[-6.72, 0, 13.6]} rotation={[0, Math.PI / 2, 0]}>
+      {/* ── Porte bleue vers le jardin (mur ouest, non ouvrable) ── */}
+      <PorteBleue position={[-6.96, 0, 13.6]} rotationY={Math.PI / 2} />
+
+      {/* ── Étagères murales (mur est — le mur ouest porte la porte du jardin) ── */}
+      <group position={[-0.88, 0, 13.6]} rotation={[0, -Math.PI / 2, 0]}>
         {SHELF_Y.map((sy, si) => (
           <group key={si}>
             <mesh position={[0, sy, 0]}>
@@ -149,7 +153,7 @@ export function Cellier() {
       ))}
 
       {/* ── Tonneau + caisse de fruits (coin nord-est) ── */}
-      <group position={[-4.3, 0, 14.7]}>
+      <group position={[-4.0, 0, 14.7]}>
         <mesh position={[0, 0.42, 0]}>
           <cylinderGeometry args={[0.30, 0.26, 0.84, 12]} />
           <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
@@ -162,7 +166,7 @@ export function Cellier() {
           </mesh>
         ))}
       </group>
-      <group position={[-4.35, 0, 13.9]}>
+      <group position={[-3.3, 0, 14.8]}>
         <mesh position={[0, 0.17, 0]}>
           <boxGeometry args={[0.44, 0.34, 0.62]} />
           <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
@@ -178,8 +182,8 @@ export function Cellier() {
         ))}
       </group>
 
-      {/* ── Ollas en terre cuite empilées (le long du mur est) ── */}
-      {([[-3.95, 12.6, 0.17], [-4.0, 13.05, 0.13], [-3.98, 12.82, 0.15]] as [number, number, number][]).map(([ox, oz, or_], i) => (
+      {/* ── Ollas en terre cuite empilées (le long du mur du fond) ── */}
+      {([[-2.5, 14.9, 0.17], [-2.05, 14.85, 0.13], [-2.28, 14.88, 0.15]] as [number, number, number][]).map(([ox, oz, or_], i) => (
         <mesh key={i} position={[ox, or_ * 1.1, oz]}>
           <cylinderGeometry args={[or_, or_ * 0.72, or_ * 2.2, 10]} />
           <meshToonMaterial color={C_TERRE} gradientMap={toonGradient} />
@@ -188,7 +192,7 @@ export function Cellier() {
       ))}
 
       {/* ── Ristras de chiles suspendues au plafond ── */}
-      {([[-6.4, 12.55], [-4.4, 14.9]] as [number, number][]).map(([rx, rz], ri) => (
+      {([[-6.4, 12.55], [-4.4, 14.9], [-1.5, 12.6]] as [number, number][]).map(([rx, rz], ri) => (
         <group key={ri} position={[rx, 0, rz]}>
           <mesh position={[0, 2.55, 0]}>
             <cylinderGeometry args={[0.008, 0.008, 0.7, 5]} />
@@ -239,7 +243,7 @@ export function Cellier() {
       ))}
 
       {/* ── Lumière : pénombre chaude, une seule ampoule faible ── */}
-      <pointLight position={[CX, 2.3, CZ]} intensity={0.9} color="#e8c890" distance={5} decay={2} />
+      <pointLight position={[CX, 2.3, CZ]} intensity={1.1} color="#e8c890" distance={7} decay={2} />
     </group>
   )
 }
