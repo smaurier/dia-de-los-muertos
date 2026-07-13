@@ -67,7 +67,7 @@ export function FamilyMemberGLB({ config }: Props) {
 
   return (
     <group ref={groupRef} position={config.startPosition}>
-      <primitive object={scene} rotation={[0, rotY, 0]} />
+      <primitive object={scene} rotation={[0, rotY, 0]} scale={100} />
     </group>
   )
 }
