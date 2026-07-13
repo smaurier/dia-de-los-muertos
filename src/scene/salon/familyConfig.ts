@@ -335,10 +335,11 @@ export const familyConfig: NPCConfig[] = [
     rotationY: Math.PI,
   },
   {
-    id: 'enfant4', name: 'Mariana', tier: 2, isChild: true,
-    startPosition: [4.65, 0, 0.60],
+    id: 'enfant4', name: 'Mariana', tier: 3, isChild: true,
+    // debout SUR sa chaise (bout est) : y = hauteur d'assise
+    startPosition: [4.65, 0.45, 0.60],
     waypoints: [],
-    scenarios: [{ id: 'enfant4_sage', weight: 1, duration: [20, 30], steps: [{ type: 'sit', targetId: 'table-chair-5' }, { type: 'idle', duration: 20 }] }],
+    scenarios: [],
     meshColor: '#D4956A',
     rotationY: -Math.PI / 2,  // bout EST de la table → face -x (vers la table)
   },
@@ -408,7 +409,8 @@ export const familyConfig: NPCConfig[] = [
   // ── Tier 3 — statiques ──────────────────────────────────────────────────────────
   {
     id: 'soeur', name: 'Sofía', tier: 3, isChild: true,
-    startPosition: [1.95, -0.45, -0.60],
+    // debout SUR sa chaise (rangée sud) : y = hauteur d'assise
+    startPosition: [1.95, 0.45, -0.60],
     waypoints: [],
     scenarios: [],
     meshColor: '#E0A888',
