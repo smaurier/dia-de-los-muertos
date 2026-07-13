@@ -41,10 +41,22 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [-0.65, -0.45, 5.8, 6.4],   // pierre, segment sud
   [-0.65, -0.45, 7.4, 12.2],  // pierre, segment nord
   // ── Couloir en L : branche nord (x∈[-0.6,7], z∈[6.2,7.6]) puis branche est
-  //    (x∈[7,8.4], z∈[2,7.6]) qui débouche dans le zaguán ────────────────────
-  [-0.6, 8.6, 7.45, 7.75],    // mur nord couloir (z=7.6, prolongé au coude)
-  [ 8.25, 8.55, 2.0, 7.6],    // mur est branche est (x=8.4)
-  [ 6.8, 7.2, 2.2, 6.2],      // mur ouest branche est (dos du mur est salon)
+  //    (x∈[7.35,8.75], z∈[2,7.6]) qui débouche dans le zaguán ────────────────
+  // mur nord couloir z=7.6 : percé x∈[4.03,4.97] → porte chambre 1 (AABB
+  // dynamique doorConfig)
+  [-0.6, 4.0, 7.45, 7.75],    // mur nord couloir, segment ouest
+  [ 5.0, 8.95, 7.45, 7.75],   // mur nord couloir, segment est (jusqu'au coude)
+  [ 8.6, 8.9, 2.0, 7.6],      // mur est branche est (x=8.75)
+  [ 6.95, 7.4, 2.0, 6.2],     // mur ouest branche est (mur est épais du salon)
+  // ── Chambre 1 (x∈[-0.6,7], z∈[7.6,12]) — mur ouest = pierre (déjà listé) ──
+  [-0.45, 7.2, 11.8, 12.2],   // mur nord chambre (z=12)
+  [ 6.8, 7.2, 7.6, 12.2],     // mur est chambre (x=7)
+  // ── Mobilier chambre 1 (nav seulement) ────────────────────────────────────
+  [ 0.85, 1.75, 10.05, 11.95], // lit Emilio
+  [ 4.55, 5.45, 10.05, 11.95], // lit Sofía
+  [ 2.85, 3.45, 11.45, 11.95], // table de chevet + veilleuse
+  [ 6.35, 7.0, 8.45, 9.75],   // armoire (mur est)
+  [ 5.7, 6.7, 7.75, 8.4],     // coffre à jouets
   // fond z=12 : porte OUVRABLE vers le cellier x∈[-6.3,-5.3]
   [-7.2, -6.3, 11.8, 12.2],   // fond cuisine, segment ouest
   [-5.3, -0.45, 11.8, 12.2],  // fond cuisine, segment est
@@ -63,14 +75,14 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [-5.15, -4.55, 8.60, 9.20], // chaise ouest
   [-2.55, -1.85, 11.25, 12.0], // fogón (mur du fond)
   [-7.0,  -6.40, 7.30, 7.90], // ofrenda (mur ouest)
-  // ── Mur est x=7 : arche zaguán ouverte z∈[-0.9,0.9] ──────────────────────
-  // x=6.75 (< 7) : obstacle commence avant le mur plan pour que x=6.8 soit dedans (strict >).
-  [ 6.75,  7.2,  0.95, 5.85],  // section nord du mur est
-  [ 6.75,  7.2, -5.85, -0.95], // section sud du mur est
+  // ── Mur est x=7 (épais, x∈[7,7.35]) : arche zaguán ouverte z∈[-0.9,0.9] ──
+  // x=6.75 (< 7) : obstacle commence avant le mur pour que x=6.8 soit dedans (strict >).
+  [ 6.75,  7.4,  0.95, 5.85],  // section nord du mur est
+  [ 6.75,  7.4, -5.85, -0.95], // section sud du mur est
   // ── Zaguán (x∈[7,10], z∈[-2,2]) ──────────────────────────────────────────
-  // mur nord zaguán : ouvert x∈[7.2,8.2] → couloir (branche est)
-  [ 7.0,  7.2,  1.85,  2.2 ], // mur nord zaguán, sliver ouest
-  [ 8.2, 10.2,  1.85,  2.2 ], // mur nord zaguán, segment est
+  // mur nord zaguán : ouvert x∈[7.55,8.55] → couloir (branche est)
+  [ 7.35, 7.55,  1.85,  2.2 ], // mur nord zaguán, sliver ouest
+  [ 8.55, 10.2,  1.85,  2.2 ], // mur nord zaguán, segment est
   [ 7.0, 10.2, -2.2,  -1.85], // mur sud zaguán
   [ 9.85, 10.2, -1.85, 1.85], // mur est zaguán (porte ext. bloquée pour l'instant)
 ]

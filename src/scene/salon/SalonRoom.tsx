@@ -20,6 +20,7 @@ import { PhotoFrame } from '../shared/PhotoFrame'
 import { Cuisine } from '../rooms/Cuisine'
 import { Cellier } from '../rooms/Cellier'
 import { Couloir } from '../rooms/Couloir'
+import { Chambre1 } from '../rooms/Chambre1'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
 const SHOW_AABB = new URLSearchParams(window.location.search).has('aabb')
@@ -496,23 +497,47 @@ export function SalonRoom() {
       {/* ─── Couloir nord-est — part de la porte du mur en pierre ─── */}
       <Couloir />
 
-      {/* ─── Mur Est x=7 — arche d'entrée (zaguán, z=0, ouverture z∈[-0.9,0.9]) */}
-      <mesh position={[7, 1.6, -3.35]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[4.9, 3.2]} />
+      {/* ─── Chambre 1 (Emilio + Sofía) — au nord du couloir, porte face à
+          l'arche 2 ─── */}
+      <Chambre1 />
+
+      {/* ─── Mur Est x=7 — arche d'entrée (zaguán, z=0, ouverture z∈[-0.9,0.9]).
+          Mur ÉPAIS (0,35 m, x∈[7,7.35]) comme le mur nord : embrasure profonde,
+          faces visibles des deux côtés (salon ET zaguán/couloir). ───────────── */}
+      <mesh position={[7.175, 1.6, -3.35]}>
+        <boxGeometry args={[0.35, 3.2, 4.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[7, 1.6, 3.35]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[4.9, 3.2]} />
+      <mesh position={[7.175, 1.6, 3.35]}>
+        <boxGeometry args={[0.35, 3.2, 4.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* Bandeau et cintre arche est */}
-      <mesh position={[7, 2.95, 0]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[1.8, 0.5]} />
+      {/* Bandeau au-dessus de l'arche est (de l'apex 2,7 au plafond 3,2) */}
+      <mesh position={[7.175, 2.95, 0]}>
+        <boxGeometry args={[0.35, 0.5, 1.8]} />
         <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[7, 1.8, 0]} rotation={[0, -Math.PI / 2, 0]}>
+      {/* Cintre : anneaux adobe côté salon et côté zaguán */}
+      <mesh position={[6.99, 1.8, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <ringGeometry args={[0.9, 1.6, 24, 1, 0, Math.PI]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[7.36, 1.8, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <ringGeometry args={[0.9, 1.6, 24, 1, 0, Math.PI]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      {/* Intrados : sous-face courbe (axe tourné le long de x) */}
+      <mesh position={[7.175, 1.8, 0]} rotation={[0, Math.PI / 2, 0]} geometry={intradosGeometry}>
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
+      </mesh>
+      {/* Jambages : faces internes de l'embrasure, normales vers l'ouverture */}
+      <mesh position={[7.175, 0.9, 0.9]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[0.35, 1.8]} />
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[7.175, 0.9, -0.9]}>
+        <planeGeometry args={[0.35, 1.8]} />
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
       </mesh>
       {/* Croix au-dessus de l'arche est (intérieur salon) */}
       <mesh position={[6.99, 2.82, 0]}>
@@ -977,19 +1002,20 @@ export function SalonRoom() {
           <planeGeometry args={[3.0, 2.9]} />
           <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
         </mesh>
-        {/* Mur nord du zaguán — ouvert x∈[7.2,8.2] vers le couloir (plan :
-            le couloir débouche dans l'entrée) */}
-        <mesh position={[7.1, 1.45, 2]}>
+        {/* Mur nord du zaguán — ouvert x∈[7.55,8.55] vers le couloir (plan :
+            le couloir débouche dans l'entrée). Le mur est du salon (épais)
+            occupe x∈[7,7.35]. DoubleSide : visible du zaguán ET du couloir. */}
+        <mesh position={[7.45, 1.45, 2]}>
           <planeGeometry args={[0.2, 2.9]} />
-          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
         </mesh>
-        <mesh position={[9.1, 1.45, 2]}>
-          <planeGeometry args={[1.8, 2.9]} />
-          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+        <mesh position={[9.275, 1.45, 2]}>
+          <planeGeometry args={[1.45, 2.9]} />
+          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
         </mesh>
-        <mesh position={[7.7, 2.5, 2]}>
+        <mesh position={[8.05, 2.5, 2]}>
           <planeGeometry args={[1.0, 0.8]} />
-          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
         </mesh>
         {/* Porte extérieure (double, planches) sur le mur est du zaguán */}
         {[-0.42, 0.42].map(dz => (
