@@ -62,35 +62,28 @@ export function Cuisine() {
         <planeGeometry args={[CD, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Mur est (x=-0.6) — pierre (ref cuisine-coin-pierres-01), porte en
-          bois FERMÉE vers le futur couloir z∈[6.4,7.4] (s'ouvrira quand le
-          couloir existera — collision bloquée en attendant) ── */}
-      <mesh position={[-0.6, 1.45, 6.1]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.6, 2.9]} />
+      {/* ── Mur est (x=-0.6) — pierre (ref cuisine-coin-pierres-01) : UN SEUL
+          plan sur toute la longueur → texture continue. La porte FERMÉE vers le
+          futur couloir (z∈[6.4,7.4]) est PLAQUÉE dessus avec son encadrement —
+          on percera le mur quand le couloir existera. ── */}
+      <mesh position={[-0.6, 1.45, CZ]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[CD, 2.9]} />
         <meshToonMaterial map={murPierre} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[-0.6, 1.45, 9.7]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[4.6, 2.9]} />
-        <meshToonMaterial map={murPierre} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-0.6, 2.5, 6.9]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[1.0, 0.8]} />
-        <meshToonMaterial map={murPierre} gradientMap={toonGradient} />
-      </mesh>
-      {/* Encadrement + porte fermée vers le couloir */}
+      {/* Encadrement + porte fermée vers le couloir (plaqués sur la pierre) */}
       {[6.4, 7.4].map(dz => (
-        <mesh key={dz} position={[-0.6, 1.05, dz]}>
-          <boxGeometry args={[0.14, 2.1, 0.08]} />
+        <mesh key={dz} position={[-0.66, 1.05, dz]}>
+          <boxGeometry args={[0.1, 2.1, 0.08]} />
           <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
           <Outlines thickness={0.012} color="black" />
         </mesh>
       ))}
-      <mesh position={[-0.6, 2.12, 6.9]}>
-        <boxGeometry args={[0.14, 0.09, 1.08]} />
+      <mesh position={[-0.66, 2.12, 6.9]}>
+        <boxGeometry args={[0.1, 0.09, 1.08]} />
         <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
         <Outlines thickness={0.012} color="black" />
       </mesh>
-      <Porte position={[-0.6, 0, 6.43]} angle={0} width={0.94} />
+      <Porte position={[-0.68, 0, 6.43]} angle={0} width={0.94} />
 
       {/* ── Azulejos crédence — mur du fond derrière le fogón (ref entree-01/02) ── */}
       <mesh position={[-2.2, 1.3, 11.98]} rotation={[0, Math.PI, 0]}>
