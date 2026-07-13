@@ -9,25 +9,39 @@ import { FamilyMember } from './FamilyMember'
 import { familyConfig } from './familyConfig'
 import { useGameStore } from '../../game/store/gameStore'
 import { useAudioLayers } from '../../hooks/useAudioLayers'
+import { getGrandUnclePosition } from '../../game/systems/npcSystem'
 
 const ARC_TIMINGS = [240, 480] // secondes : phase 0→1 à 4min, phase 1→2 à 8min
+const SALON_RADIUS = 8  // m — au-delà = joueur a quitté le salon
 
 export function Salon() {
-  const arcTimer = useRef(0)
+  const arcTimer   = useRef(0)
+  const wasInside  = useRef(true)
+  const exitSeed   = useRef(Math.floor(Math.random() * 10000))
 
-  const adultIsNear = false // Salon sandbox : pas de mécanique adulte-couloir
-  const setSalonArcPhase = useGameStore(s => s.setSalonArcPhase)
-  const salonArcPhase = useGameStore(s => s.salonArcPhase)
+  const adultIsNear           = false
+  const setSalonArcPhase      = useGameStore(s => s.setSalonArcPhase)
+  const salonArcPhase         = useGameStore(s => s.salonArcPhase)
+  const setGrandUnclePosition = useGameStore(s => s.setGrandUnclePosition)
 
   useAudioLayers({ adultIsNear })
 
-  useFrame((_, delta) => {
+  useFrame(({ camera }, delta) => {
     arcTimer.current += delta
     if (salonArcPhase === 0 && arcTimer.current > ARC_TIMINGS[0]) {
       setSalonArcPhase(1)
     } else if (salonArcPhase === 1 && arcTimer.current > ARC_TIMINGS[1]) {
       setSalonArcPhase(2)
     }
+
+    // Grand-oncle : change de position quand le joueur quitte le salon
+    const dist = Math.sqrt(camera.position.x ** 2 + camera.position.z ** 2)
+    const inside = dist <= SALON_RADIUS
+    if (wasInside.current && !inside) {
+      exitSeed.current = (exitSeed.current * 1664525 + 1013904223) >>> 0
+      setGrandUnclePosition(getGrandUnclePosition(exitSeed.current))
+    }
+    wasInside.current = inside
   })
 
   return (

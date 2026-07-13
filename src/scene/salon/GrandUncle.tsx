@@ -23,10 +23,19 @@ const GRAND_UNCLE_POSITIONS: Record<string, [number, number, number]> = {
 const MODEL_URL = '/models/characters/grand-oncle.glb'
 const CLIP_SIT = 'sitting-idle'
 const MODEL_TUNING = {
-  scale: 1,                                        // normalisé au merge (1,75 m)
-  offset: [0.08, 0, 0] as [number, number, number], // hanches sur le coussin, chaussures devant la base (dossier à l'est)
-  rotationY: -Math.PI / 2,                          // face à la TV (ouest) — le modèle regarde +z par défaut
-  color: '#EDE8DE',                                 // repli si un mesh n'a pas de texture
+  scale: 1,
+  color: '#EDE8DE',
+}
+
+// Tuning par position : offset, rotation, clip
+const POSITION_TUNING: Record<string, {
+  offset: [number, number, number]
+  rotationY: number
+  clip: string
+}> = {
+  couch:  { offset: [0.08, 0, 0], rotationY: -Math.PI / 2, clip: 'sitting-idle' },
+  buffet: { offset: [0, 0, 0],    rotationY: Math.PI,       clip: 'standing-idle' },
+  window: { offset: [0, 0, 0],    rotationY: Math.PI / 2,   clip: 'standing-idle' },
 }
 
 const GRAND_UNCLE_SCENARIOS: Scenario[] = [
@@ -87,12 +96,16 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
       null
   }, [scene])
 
-  // Sitting idle en boucle (par NOM — names[0] est alphabétique, plus fiable)
+  // Animation selon position (sitting-idle au canapé, standing-idle ailleurs)
   useEffect(() => {
-    const action = actions[CLIP_SIT] ?? actions[names[0]]
-    action?.reset().setLoop(THREE.LoopRepeat, Infinity).play()
-    return () => { action?.stop() }
-  }, [actions, names])
+    const tuning = POSITION_TUNING[grandUnclePosition]
+    const clipName = tuning?.clip ?? CLIP_SIT
+    // Arrêter toutes les actions actives avant d'en démarrer une nouvelle
+    Object.values(actions).forEach(a => a?.fadeOut(0.3))
+    const action = actions[clipName] ?? actions[names[0]]
+    action?.reset().fadeIn(0.3).setLoop(THREE.LoopRepeat, Infinity).play()
+    return () => { action?.fadeOut(0.3) }
+  }, [actions, names, grandUnclePosition])
 
   const showSubtitle = useSubtitleStore(s => s.showSubtitle)
   const scenarioTimer = useRef(0)
@@ -143,13 +156,14 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
   })
 
   const worldPos = GRAND_UNCLE_POSITIONS[grandUnclePosition]
+  const tuning   = POSITION_TUNING[grandUnclePosition]
 
   return (
     <group ref={ref} position={worldPos}>
       <primitive
         object={scene}
-        position={MODEL_TUNING.offset}
-        rotation={[0, MODEL_TUNING.rotationY, 0]}
+        position={tuning.offset}
+        rotation={[0, tuning.rotationY, 0]}
         scale={MODEL_TUNING.scale}
       />
     </group>
