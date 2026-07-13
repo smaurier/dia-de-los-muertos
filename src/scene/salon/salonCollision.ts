@@ -38,9 +38,11 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   // mur est pierre percé : porte couloir z∈[6.4,7.4] (AABB dynamique doorConfig)
   [-0.65, -0.45, 5.8, 6.4],   // pierre, segment sud
   [-0.65, -0.45, 7.4, 12.2],  // pierre, segment nord
-  // ── Couloir nord-est (x∈[-0.6,7], z∈[6.2,7.6]) ────────────────────────────
-  [-0.6, 7.2, 7.45, 7.75],    // mur nord couloir (z=7.6)
-  [ 6.8, 7.2, 6.2, 7.6],      // bout est couloir (x=7, fermé)
+  // ── Couloir en L : branche nord (x∈[-0.6,7], z∈[6.2,7.6]) puis branche est
+  //    (x∈[7,8.4], z∈[2,7.6]) qui débouche dans le zaguán ────────────────────
+  [-0.6, 8.6, 7.45, 7.75],    // mur nord couloir (z=7.6, prolongé au coude)
+  [ 8.25, 8.55, 2.0, 7.6],    // mur est branche est (x=8.4)
+  [ 6.8, 7.2, 2.2, 6.2],      // mur ouest branche est (dos du mur est salon)
   // fond z=12 : porte OUVRABLE vers le cellier x∈[-6.3,-5.3]
   [-7.2, -6.3, 11.8, 12.2],   // fond cuisine, segment ouest
   [-5.3, -0.45, 11.8, 12.2],  // fond cuisine, segment est
@@ -64,7 +66,9 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [ 6.75,  7.2,  0.95, 5.85],  // section nord du mur est
   [ 6.75,  7.2, -5.85, -0.95], // section sud du mur est
   // ── Zaguán (x∈[7,10], z∈[-2,2]) ──────────────────────────────────────────
-  [ 7.0, 10.2,  1.85,  2.2 ], // mur nord zaguán
+  // mur nord zaguán : ouvert x∈[7.2,8.2] → couloir (branche est)
+  [ 7.0,  7.2,  1.85,  2.2 ], // mur nord zaguán, sliver ouest
+  [ 8.2, 10.2,  1.85,  2.2 ], // mur nord zaguán, segment est
   [ 7.0, 10.2, -2.2,  -1.85], // mur sud zaguán
   [ 9.85, 10.2, -1.85, 1.85], // mur est zaguán (porte ext. bloquée pour l'instant)
 ]

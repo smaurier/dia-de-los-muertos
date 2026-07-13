@@ -978,8 +978,18 @@ export function SalonRoom() {
           <planeGeometry args={[3.0, 2.9]} />
           <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
         </mesh>
-        <mesh position={[8.5, 1.45, 2]}>
-          <planeGeometry args={[3.0, 2.9]} />
+        {/* Mur nord du zaguán — ouvert x∈[7.2,8.2] vers le couloir (plan :
+            le couloir débouche dans l'entrée) */}
+        <mesh position={[7.1, 1.45, 2]}>
+          <planeGeometry args={[0.2, 2.9]} />
+          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+        </mesh>
+        <mesh position={[9.1, 1.45, 2]}>
+          <planeGeometry args={[1.8, 2.9]} />
+          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+        </mesh>
+        <mesh position={[7.7, 2.5, 2]}>
+          <planeGeometry args={[1.0, 0.8]} />
           <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
         </mesh>
         {/* Porte extérieure (double, planches) sur le mur est du zaguán */}
