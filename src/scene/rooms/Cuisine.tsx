@@ -12,7 +12,7 @@ import {
 } from '../shared/paintedTextures'
 import { Prop } from '../shared/Prop'
 import { PhotoFrame } from '../shared/PhotoFrame'
-import { Porte } from '../shared/Porte'
+import { PorteAnimee } from '../shared/PorteAnimee'
 import { PorteBleue } from '../shared/PorteBleue'
 
 const C_CEIL      = '#F0E0C8'
@@ -83,7 +83,9 @@ export function Cuisine() {
         <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
         <Outlines thickness={0.012} color="black" />
       </mesh>
-      <Porte position={[-0.68, 0, 6.43]} angle={0} width={0.94} />
+      {/* FERMÉE par défaut, touche F pour ouvrir (s'ouvre vers la cuisine).
+          Le passage reste bloqué : le couloir n'existe pas encore. */}
+      <PorteAnimee id="couloir-cuisine" position={[-0.68, 0, 6.43]} openAngle={-1.9} width={0.94} />
 
       {/* ── Azulejos crédence — grand pan derrière le fogón, du soubassement
           à mi-mur comme dans la ref entree-02 ── */}

@@ -29,6 +29,7 @@ const CONTROLS_MAP = [
   { name: 'left',     keys: ['ArrowLeft', 'KeyA'] },
   { name: 'right',    keys: ['ArrowRight', 'KeyD'] },
   { name: 'hide',     keys: ['KeyE', 'Space'] },
+  { name: 'interact', keys: ['KeyF'] },
 ]
 
 // Mode photo (vérification visuelle sans pointer lock) :

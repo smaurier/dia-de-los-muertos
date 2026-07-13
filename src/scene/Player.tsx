@@ -6,7 +6,10 @@ import * as THREE from 'three'
 import { toonGradient } from './shared/toonGradient'
 import { makeFaceTextures } from './shared/blinkTexture'
 import { usePlayerStore } from '../game/store/playerStore'
+import { useDoorStore } from '../game/store/doorStore'
+import { nearestDoorId, closedDoorObstacles } from '../game/systems/doorSystem'
 import { canMove, cameraBackDistance, clampCameraToRoom, SALON_BOUNDS } from './salon/salonCollision'
+import { DOORS, DOOR_INTERACT_DIST } from './salon/doorConfig'
 import { npcPositions } from './salon/npcRegistry'
 
 const SPEED = 3
@@ -107,9 +110,20 @@ export function Player() {
   const sideVector = useRef(new THREE.Vector3())
   const camDir = useRef(new THREE.Vector3())
   const prevHide = useRef(false)
+  const prevInteract = useRef(false)
 
   useFrame((_, delta) => {
-    const { forward, backward, left, right, hide } = getKeys()
+    const { forward, backward, left, right, hide, interact } = getKeys()
+
+    // Touche F (front montant) : ouvre/ferme la porte la plus proche à portée.
+    if (interact && !prevInteract.current) {
+      const doorId = nearestDoorId(boyPos.current.x, boyPos.current.z, DOORS, DOOR_INTERACT_DIST)
+      if (doorId) useDoorStore.getState().toggleDoor(doorId)
+    }
+    prevInteract.current = interact
+
+    // Portes fermées = obstacles dynamiques pour canMove.
+    const doorObstacles = closedDoorObstacles(DOORS, useDoorStore.getState().isOpen)
 
     // addVectors (pas subVectors) + (right-left) = strafing correct
     frontVector.current.set(0, 0, Number(backward) - Number(forward))
@@ -129,8 +143,8 @@ export function Player() {
       const nx = boyPos.current.x + direction.current.x
       const nz = boyPos.current.z + direction.current.z
 
-      if (canMove(boyPos.current.x, boyPos.current.z, nx, boyPos.current.z)) boyPos.current.x = nx
-      if (canMove(boyPos.current.x, boyPos.current.z, boyPos.current.x, nz)) boyPos.current.z = nz
+      if (canMove(boyPos.current.x, boyPos.current.z, nx, boyPos.current.z, doorObstacles)) boyPos.current.x = nx
+      if (canMove(boyPos.current.x, boyPos.current.z, boyPos.current.x, nz, doorObstacles)) boyPos.current.z = nz
 
       // Garçon tourne vers direction de déplacement
       if (boyRef.current) {

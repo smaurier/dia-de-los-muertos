@@ -143,10 +143,16 @@ export function cameraBackDistance(
 // Déplacement autorisé ? Bloqué seulement en ENTRANT dans un obstacle : un
 // personnage déjà à l'intérieur (NPC assis à sa chaise, spawn limite) peut
 // toujours en sortir au lieu de geler sur place.
-export function canMove(fromX: number, fromZ: number, toX: number, toZ: number): boolean {
+// extraObstacles : obstacles dynamiques (ex. portes fermées — doorSystem).
+export function canMove(
+  fromX: number, fromZ: number, toX: number, toZ: number,
+  extraObstacles: readonly [number, number, number, number][] = [],
+): boolean {
   if (toX < NAV_BOUNDS.minX || toX > NAV_BOUNDS.maxX) return false
   if (toZ < NAV_BOUNDS.minZ || toZ > NAV_BOUNDS.maxZ) return false
-  const allObstacles = (SALON_OBSTACLES as readonly [number,number,number,number][]).concat(ROOM_WALLS as unknown as [number,number,number,number][])
+  const allObstacles = (SALON_OBSTACLES as readonly [number,number,number,number][])
+    .concat(ROOM_WALLS as unknown as [number,number,number,number][])
+    .concat(extraObstacles)
   return !allObstacles.some(([mx, Mx, mz, Mz]) => {
     const toInside = toX > mx && toX < Mx && toZ > mz && toZ < Mz
     if (!toInside) return false

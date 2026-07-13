@@ -6,7 +6,7 @@
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
-import { Porte } from '../shared/Porte'
+import { PorteAnimee } from '../shared/PorteAnimee'
 import { PorteBleue } from '../shared/PorteBleue'
 
 const C_CEIL      = '#D8CCB4'
@@ -88,9 +88,9 @@ export function Cellier() {
         <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
         <Outlines thickness={0.012} color="black" />
       </mesh>
-      {/* Porte du cellier — gond au montant ouest (x=-6.3), OUVRABLE (angle),
-          actuellement grande ouverte vers l'intérieur du cellier. */}
-      <Porte position={[-6.27, 0, 12.05]} rotationY={Math.PI / 2} angle={-2.3} width={0.94} />
+      {/* Porte du cellier — gond au montant ouest (x=-6.3). FERMÉE par défaut,
+          touche F pour ouvrir (s'ouvre vers l'intérieur du cellier). */}
+      <PorteAnimee id="cellier" position={[-6.27, 0, 12.05]} rotationY={Math.PI / 2} openAngle={-2.3} width={0.94} />
 
       {/* ── Porte bleue vers le jardin (mur ouest, non ouvrable) ── */}
       <PorteBleue position={[-6.96, 0, 13.6]} rotationY={Math.PI / 2} />
