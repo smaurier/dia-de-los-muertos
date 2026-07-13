@@ -232,6 +232,8 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: mamanScenarios,
     meshColor: '#c8956c',
+    modelUrl: '/models/characters/base-03.glb',
+    clipIdle: 'Sitting Idle(4)',
   },
   {
     id: 'papa', name: 'Papá Carlos', tier: 2,
@@ -239,6 +241,8 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: papaScenarios,
     meshColor: '#8B6543',
+    modelUrl: '/models/characters/base-01.glb',
+    clipIdle: 'Breathing Idle',
   },
   {
     id: 'oncle1', name: 'Tío Héctor', tier: 2,
@@ -246,6 +250,8 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: oncleScenarios,
     meshColor: '#7A5533',
+    modelUrl: '/models/characters/base-01.glb',
+    clipIdle: 'Breathing Idle',
   },
   {
     id: 'oncle2', name: 'Tío Ramón', tier: 2,
@@ -253,6 +259,8 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: oncleScenarios,
     meshColor: '#6B4423',
+    modelUrl: '/models/characters/base-02.glb',
+    clipIdle: 'Breathing Idle',
   },
   {
     id: 'oncle3', name: 'Tío Beto', tier: 2,
@@ -260,6 +268,8 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: oncleScenarios,
     meshColor: '#8B6040',
+    modelUrl: '/models/characters/base-02.glb',
+    clipIdle: 'Breathing Idle',
   },
   {
     id: 'tante1', name: 'Tía Lupita', tier: 2,
@@ -267,6 +277,8 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: tanteScenarios,
     meshColor: '#C27B5A',
+    modelUrl: '/models/characters/base-03.glb',
+    clipIdle: 'Sitting Idle(4)',
   },
   {
     id: 'tante2', name: 'Tía Consuelo', tier: 2,
@@ -274,6 +286,8 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: tanteScenarios,
     meshColor: '#B8705A',
+    modelUrl: '/models/characters/base-03.glb',
+    clipIdle: 'Sitting Idle(4)',
   },
   {
     id: 'enfant4', name: 'Mariana', tier: 2,
@@ -310,6 +324,8 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [[0, 0, -2], [1, 0, 2], [-2, 0, 1], [-1, 0, -3]],
     scenarios: oncleJeuneScenarios,
     meshColor: '#7B5535',
+    modelUrl: '/models/characters/base-01.glb',
+    clipIdle: 'Breathing Idle',
   },
   {
     id: 'tante-jeune', name: 'Tía Verónica', tier: 1,  // femme de Tío Andrés
@@ -317,6 +333,8 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [[1, 0, -1.5], [0, 0, 2], [-1, 0, -3]],
     scenarios: tanteScenarios,
     meshColor: '#C07060',
+    modelUrl: '/models/characters/base-03.glb',
+    clipIdle: 'Sitting Idle(4)',
   },
   {
     id: 'enfant1', name: 'Mateo', tier: 1,
@@ -353,5 +371,7 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: [],
     meshColor: '#A88068',
+    modelUrl: '/models/characters/base-04.glb',
+    clipIdle: 'Breathing Idle',
   },
 ]
