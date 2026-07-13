@@ -345,24 +345,27 @@ export const familyConfig: NPCConfig[] = [
   },
   // ── Tier 1 — actifs (roaming) ───────────────────────────────────────────────────
   {
-    id: 'cousin1', name: 'Toño', tier: 1, isChild: true,
-    startPosition: [1, 0, 3],
-    waypoints: [[1, 0, 3], [-2, 0, -1], [3, 0, -2], [0, 0, 1]],
-    scenarios: cousinScenarios,
+    id: 'cousin1', name: 'Toño', tier: 3, isChild: true,
+    // debout SUR sa chaise (rangée sud) : y = hauteur d'assise
+    startPosition: [-3.05, 0.45, -0.60],
+    waypoints: [],
+    scenarios: [],
     meshColor: '#A87050',
   },
   {
-    id: 'cousine1', name: 'Fernanda', tier: 1, isChild: true,
-    startPosition: [-1, 0, 2],
-    waypoints: [[-1, 0, 2], [2, 0, -1], [-3, 0, 1]],
-    scenarios: cousinScenarios,
+    id: 'cousine1', name: 'Fernanda', tier: 3, isChild: true,
+    // debout SUR sa chaise (rangée sud) : y = hauteur d'assise
+    startPosition: [-2.05, 0.45, -0.60],
+    waypoints: [],
+    scenarios: [],
     meshColor: '#D4906A',
   },
   {
-    id: 'cousine2', name: 'Camila', tier: 1, isChild: true,
-    startPosition: [2, 0, 2],
-    waypoints: [[2, 0, 1], [-1, 0, -2], [1, 0, 3]],
-    scenarios: cousinScenarios,
+    id: 'cousine2', name: 'Camila', tier: 3, isChild: true,
+    // debout SUR sa chaise (rangée sud) : y = hauteur d'assise
+    startPosition: [-1.05, 0.45, -0.60],
+    waypoints: [],
+    scenarios: [],
     meshColor: '#C88060',
   },
   {
@@ -386,24 +389,27 @@ export const familyConfig: NPCConfig[] = [
     rotationY: Math.PI / 2,  // bout OUEST de la table → face +x (vers la table)
   },
   {
-    id: 'enfant1', name: 'Mateo', tier: 1,
-    startPosition: [2, 0, 2],
-    waypoints: [[2, 0, 2], [-2, 0, -1], [1, 0, -2], [3, 0, 1]],
-    scenarios: enfantScenarios,
+    id: 'enfant1', name: 'Mateo', tier: 3, isChild: true,
+    // debout SUR sa chaise (rangée sud) : y = hauteur d'assise
+    startPosition: [-0.05, 0.45, -0.60],
+    waypoints: [],
+    scenarios: [],
     meshColor: '#D4906A',
   },
   {
-    id: 'enfant2', name: 'Valentina', tier: 1,
-    startPosition: [-1, 0, 3],
-    waypoints: [[-1, 0, 3], [2, 0, -2], [0, 0, 1]],
-    scenarios: enfantScenarios,
+    id: 'enfant2', name: 'Valentina', tier: 3, isChild: true,
+    // debout SUR sa chaise (rangée sud) : y = hauteur d'assise
+    startPosition: [0.95, 0.45, -0.60],
+    waypoints: [],
+    scenarios: [],
     meshColor: '#E0A080',
   },
   {
-    id: 'enfant3', name: 'Diego', tier: 1,
-    startPosition: [3, 0, -1.5],
-    waypoints: [[3, 0, -1], [-1, 0, 2], [1, 0, -3]],
-    scenarios: enfantScenarios,
+    id: 'enfant3', name: 'Diego', tier: 3, isChild: true,
+    // debout SUR sa chaise (rangée sud) : y = hauteur d'assise
+    startPosition: [2.95, 0.45, -0.60],
+    waypoints: [],
+    scenarios: [],
     meshColor: '#C88050',
   },
   // ── Tier 3 — statiques ──────────────────────────────────────────────────────────
