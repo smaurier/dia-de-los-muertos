@@ -7,6 +7,7 @@ import { toonGradient } from './shared/toonGradient'
 import { makeFaceTextures } from './shared/blinkTexture'
 import { usePlayerStore } from '../game/store/playerStore'
 import { useDoorStore } from '../game/store/doorStore'
+import { useSubtitleStore } from '../game/store/subtitleStore'
 import { nearestDoorId, closedDoorObstacles } from '../game/systems/doorSystem'
 import { canMove, cameraBackDistance, clampCameraToRoom, SALON_BOUNDS } from './salon/salonCollision'
 import { DOORS, DOOR_INTERACT_DIST } from './salon/doorConfig'
@@ -115,10 +116,18 @@ export function Player() {
   useFrame((_, delta) => {
     const { forward, backward, left, right, hide, interact } = getKeys()
 
-    // Touche F (front montant) : ouvre/ferme la porte la plus proche à portée.
+    // Touche interact (front montant) : ouvre/ferme la porte la plus proche.
+    // Porte verrouillée → Emilio commente au lieu d'ouvrir.
     if (interact && !prevInteract.current) {
       const doorId = nearestDoorId(boyPos.current.x, boyPos.current.z, DOORS, DOOR_INTERACT_DIST)
-      if (doorId) useDoorStore.getState().toggleDoor(doorId)
+      if (doorId) {
+        const door = DOORS.find(d => d.id === doorId)
+        if (door?.locked) {
+          useSubtitleStore.getState().showSubtitle('Está cerrado.', 'Emilio')
+        } else {
+          useDoorStore.getState().toggleDoor(doorId)
+        }
+      }
     }
     prevInteract.current = interact
 

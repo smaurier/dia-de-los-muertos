@@ -1,6 +1,7 @@
 // src/scene/rooms/Cuisine.tsx
 // Cuisine familiale (x∈[-7,-0.6], z∈[5.8,12.0]) — accès depuis l'arche nord du salon.
 // Refs : cuisine-entree-01/02.png, cuisine-coin-pierres-01/02.png
+import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import {
@@ -16,6 +17,31 @@ import { PorteAnimee } from '../shared/PorteAnimee'
 import { PorteBleue } from '../shared/PorteBleue'
 
 const C_CEIL      = '#F0E0C8'
+
+// Mur en pierre PERCÉ pour la porte du couloir : un seul mesh (ShapeGeometry
+// avec trou) → texture continue sur tout le mur, pas de segments qui cassent
+// les UV. Local : x = longueur (6.2 m, z monde 5.8→12), y = hauteur.
+// Trou porte : local x∈[0.6,1.6] (z monde [6.4,7.4]), y∈[0,2.1].
+const stoneWallGeometry = (() => {
+  const shape = new THREE.Shape()
+  shape.moveTo(0, 0)
+  shape.lineTo(6.2, 0)
+  shape.lineTo(6.2, 2.9)
+  shape.lineTo(0, 2.9)
+  shape.closePath()
+  const hole = new THREE.Path()
+  hole.moveTo(0.6, 0)
+  hole.lineTo(1.6, 0)
+  hole.lineTo(1.6, 2.1)
+  hole.lineTo(0.6, 2.1)
+  hole.closePath()
+  shape.holes.push(hole)
+  const g = new THREE.ShapeGeometry(shape)
+  // ShapeGeometry : UV = coordonnées brutes → normaliser en 0..1
+  const uv = g.getAttribute('uv')
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) / 6.2, uv.getY(i) / 2.9)
+  return g
+})()
 const C_IRON      = '#1A1512'
 const C_WOOD_DARK = '#3A2008'
 const C_WOOD_MED  = '#5C3010'
@@ -62,12 +88,10 @@ export function Cuisine() {
         <planeGeometry args={[CD, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Mur est (x=-0.6) — pierre (ref cuisine-coin-pierres-01) : UN SEUL
-          plan sur toute la longueur → texture continue. La porte FERMÉE vers le
-          futur couloir (z∈[6.4,7.4]) est PLAQUÉE dessus avec son encadrement —
-          on percera le mur quand le couloir existera. ── */}
-      <mesh position={[-0.6, 1.45, CZ]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[CD, 2.9]} />
+      {/* ── Mur est (x=-0.6) — pierre (ref cuisine-coin-pierres-01), PERCÉ
+          pour la porte du couloir (z∈[6.4,7.4]) : un seul mesh troué →
+          texture continue sur tout le mur. ── */}
+      <mesh geometry={stoneWallGeometry} position={[-0.6, 0, 5.8]} rotation={[0, -Math.PI / 2, 0]}>
         <meshToonMaterial map={murPierre} gradientMap={toonGradient} />
       </mesh>
       {/* Encadrement + porte fermée vers le couloir (plaqués sur la pierre) */}
@@ -83,8 +107,8 @@ export function Cuisine() {
         <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
         <Outlines thickness={0.012} color="black" />
       </mesh>
-      {/* FERMÉE par défaut, touche F pour ouvrir (s'ouvre vers la cuisine).
-          Le passage reste bloqué : le couloir n'existe pas encore. */}
+      {/* FERMÉE par défaut, touche interact pour ouvrir (s'ouvre vers la
+          cuisine) → couloir nord-est. */}
       <PorteAnimee id="couloir-cuisine" position={[-0.68, 0, 6.43]} openAngle={-1.9} width={0.94} />
 
       {/* ── Azulejos crédence — grand pan derrière le fogón, du soubassement

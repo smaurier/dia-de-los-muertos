@@ -34,8 +34,13 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [-7.2, -3.45, 5.55, 6.2],   // section ouest du mur nord
   [-1.55,  7.2, 5.55, 6.2],   // section est (arche NE supprimée → plein)
   // ── Cuisine (z∈[5.8,12.0], x∈[-7,-0.6]) ──────────────────────────────────
-  [-7.2, -6.95, 5.8, 12.2],   // mur ouest plein (porte bleue jardin décorative)
-  [-0.65, -0.45, 5.8, 12.2],  // mur est pierre (porte couloir FERMÉE → bloqué)
+  [-7.2, -6.95, 5.8, 12.2],   // mur ouest plein (porte bleue jardin verrouillée)
+  // mur est pierre percé : porte couloir z∈[6.4,7.4] (AABB dynamique doorConfig)
+  [-0.65, -0.45, 5.8, 6.4],   // pierre, segment sud
+  [-0.65, -0.45, 7.4, 12.2],  // pierre, segment nord
+  // ── Couloir nord-est (x∈[-0.6,7], z∈[6.2,7.6]) ────────────────────────────
+  [-0.6, 7.2, 7.45, 7.75],    // mur nord couloir (z=7.6)
+  [ 6.8, 7.2, 6.2, 7.6],      // bout est couloir (x=7, fermé)
   // fond z=12 : porte OUVRABLE vers le cellier x∈[-6.3,-5.3]
   [-7.2, -6.3, 11.8, 12.2],   // fond cuisine, segment ouest
   [-5.3, -0.45, 11.8, 12.2],  // fond cuisine, segment est

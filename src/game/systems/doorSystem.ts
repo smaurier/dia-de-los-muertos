@@ -9,6 +9,8 @@ export type DoorDef = {
   // AABB [minX, maxX, minZ, maxZ] bloquée quand la porte est FERMÉE.
   // null : la porte est purement visuelle (ex. passage condamné derrière).
   aabb: readonly [number, number, number, number] | null
+  // Verrouillée : F ne l'ouvre pas — Emilio commente ("Está cerrado.")
+  locked?: boolean
 }
 
 // Porte la plus proche du joueur à portée d'interaction, sinon null.

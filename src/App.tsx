@@ -9,6 +9,8 @@ import { Suspense, useState, useEffect, useRef } from 'react'
 import { Player } from './scene/Player'
 import { Salon } from './scene/salon/Salon'
 import { Subtitles } from './scene/ui/Subtitles'
+import { DoorHint } from './scene/ui/DoorHint'
+import { INTERACT_KEY } from './game/controlsConfig'
 
 // Toon riche (expérience DA) : fog chaud + bloom bougies + vignette.
 // Cible mood : docs/references/rooms/cuisine/cuisine-entree-02.png
@@ -29,7 +31,7 @@ const CONTROLS_MAP = [
   { name: 'left',     keys: ['ArrowLeft', 'KeyA'] },
   { name: 'right',    keys: ['ArrowRight', 'KeyD'] },
   { name: 'hide',     keys: ['KeyE', 'Space'] },
-  { name: 'interact', keys: ['KeyF'] },
+  { name: 'interact', keys: [INTERACT_KEY] },
 ]
 
 // Mode photo (vérification visuelle sans pointer lock) :
@@ -124,6 +126,7 @@ export default function App() {
       )}
       <FadeIn />
       <Subtitles />
+      <DoorHint />
       <KeyboardControls map={CONTROLS_MAP}>
         <Canvas
           camera={{ fov: 65, near: 0.1, far: 100, position: [0, 1.3, 4.2] }}
