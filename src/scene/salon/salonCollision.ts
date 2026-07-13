@@ -17,14 +17,14 @@ export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
   [-4.55, -3.00, -5.75, -4.40],  // canapé model : retour d'angle (recul +0.2)
   [-4.85, -4.25, -4.75, -3.15],  // repose-pied (ottoman)
   [-6.90, -5.95, -1.10, -0.10],  // fauteuil (dossier contre le bas de la fenêtre, face est)
-  [ 2.2, 4.5,   5.0,  5.7 ],  // buffet mur nord (photos/vase/bougies)
+  [ 2.2, 4.5,   4.78, 5.48],  // buffet mur nord (photos/vase)
   [-6.90, -5.75, -2.75, -1.55],  // TV CRT + meuble (mur ouest, écran vers l'est)
-  [ 6.1, 6.7,   0.85, 1.55],  // plante en pot mur est
+  [ 6.1, 6.7,   2.50, 3.10],  // plante en pot mur est (déplacée de z=1.2 à z=2.8)
   [-5.32, -4.68, -5.78, -5.12],  // commode + lampe + mini plante (mur sud, entre retour et TV)
   [-6.6, -5.6,  4.3,  5.1 ],  // cactus coin nord-ouest
   [-6.6, -6.1,  2.1,  2.6 ],  // plante fenêtre nord
   [-6.65, -6.15, -1.85, -1.35],  // plante fenêtre sud (décalée : place du fauteuil)
-  [ 5.2,  6.4,  5.15, 5.75],  // vaisselier coin nord-est
+  [ 5.2,  6.4,  4.90, 5.50],  // vaisselier coin nord-est
 ]
 
 // Sections de mur physiques — utilisées par canMove uniquement (pas caméra).
@@ -33,10 +33,14 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   // ── Mur nord z=5.8 : arche cuisine ouverte x∈[-3.4,-1.6] ──────────────────
   [-7.2, -3.45, 5.55, 6.2],   // section ouest du mur nord
   [-1.55,  7.2, 5.55, 6.2],   // section est (arche NE supprimée → plein)
-  // ── Cuisine (z∈[5.8,8.6], x∈[-4.4,-0.6]) ─────────────────────────────────
-  [-4.55, -4.15, 5.8, 8.65],  // mur ouest cuisine
-  [-0.85, -0.45, 5.8, 8.65],  // mur est cuisine
-  [-4.55, -0.45, 8.45, 8.75], // mur fond cuisine
+  // ── Cuisine (z∈[5.8,12.0], x∈[-7,-0.6]) ──────────────────────────────────
+  [-7.2, -6.95, 5.8, 12.2],   // mur ouest cuisine (x=-7)
+  [-0.65, -0.45, 5.8, 12.2],  // mur est cuisine (x=-0.6)
+  [-7.2,  -0.45, 11.8, 12.2], // fond cuisine (z=12)
+  // ── Mobilier cuisine (nav seulement) ──────────────────────────────────────
+  [-3.15, -1.95, 6.75, 7.55], // table cuisine
+  [-2.76, -2.34, 6.27, 6.69], // chaise cuisine
+  [-1.24, -0.66, 7.84, 8.46], // fogón
   // ── Mur est x=7 : arche zaguán ouverte z∈[-0.9,0.9] ──────────────────────
   // x=6.75 (< 7) : obstacle commence avant le mur plan pour que x=6.8 soit dedans (strict >).
   [ 6.75,  7.2,  0.95, 5.85],  // section nord du mur est
@@ -53,7 +57,7 @@ export const SALON_BOUNDS = { minX: -6.7, maxX: 6.7, minZ: -5.6, maxZ: 5.6 }
 // Bounds de navigation totaux — couvre salon + cuisine (nord) + zaguán (est).
 // L'arche sud est supprimée → minZ = -5.7 (mur plein).
 // canMove utilise NAV_BOUNDS ; la caméra reste dans SALON_BOUNDS.
-export const NAV_BOUNDS = { minX: -6.7, maxX: 10.0, minZ: -5.7, maxZ: 8.55 }
+export const NAV_BOUNDS = { minX: -7.2, maxX: 10.0, minZ: -5.7, maxZ: 12.2 }
 
 // Murs physiques du salon (plans à x=±7, z=±5.8) et marge caméra.
 // CAM_MARGIN > near plane (0.1) : la caméra clampée ne coupe jamais un mur.

@@ -6,7 +6,7 @@ import * as THREE from 'three'
 import { toonGradient } from './shared/toonGradient'
 import { makeFaceTextures } from './shared/blinkTexture'
 import { usePlayerStore } from '../game/store/playerStore'
-import { canMove, cameraBackDistance, clampCameraToRoom } from './salon/salonCollision'
+import { canMove, cameraBackDistance, clampCameraToRoom, SALON_BOUNDS } from './salon/salonCollision'
 import { npcPositions } from './salon/npcRegistry'
 
 const SPEED = 3
@@ -172,10 +172,13 @@ export function Player() {
       -camDir.current.x, -camDir.current.z,
       CAM_BACK,
     )
-    const [camX, camZ] = clampCameraToRoom(
-      boyPos.current.x - camDir.current.x * backDist,
-      boyPos.current.z - camDir.current.z * backDist,
-    )
+    const rawCamX = boyPos.current.x - camDir.current.x * backDist
+    const rawCamZ = boyPos.current.z - camDir.current.z * backDist
+    // Clamp caméra aux murs salon uniquement quand le joueur EST dans le salon.
+    // Ailleurs la caméra suit librement (pièces adjacentes ont leurs propres murs).
+    const inSalon = boyPos.current.x >= SALON_BOUNDS.minX && boyPos.current.x <= SALON_BOUNDS.maxX
+                 && boyPos.current.z >= SALON_BOUNDS.minZ && boyPos.current.z <= SALON_BOUNDS.maxZ
+    const [camX, camZ] = inSalon ? clampCameraToRoom(rawCamX, rawCamZ) : [rawCamX, rawCamZ]
     camera.position.x = camX
     camera.position.y = CAM_UP
     camera.position.z = camZ

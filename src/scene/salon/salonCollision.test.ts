@@ -85,8 +85,8 @@ describe('cameraBackDistance', () => {
 
   it('détecte une entrée latérale dans une AABB (test slab, pas seulement frontal)', () => {
     // Recul longeant le mur est (x=6.3, z croissant) : le rayon entre dans la
-    // plante en pot [6.1, 6.7, 0.85, 1.55] élargie (z > 0.7) → recul 0.7.
-    expect(cameraBackDistance(6.3, 0, 0, 1, MAX_BACK)).toBeCloseTo(0.7, 5)
+    // plante en pot [6.1, 6.7, 2.50, 3.10] élargie (z > 2.35) → depuis z=1.5 recul 0.85.
+    expect(cameraBackDistance(6.3, 1.5, 0, 1, MAX_BACK)).toBeCloseTo(0.85, 5)
   })
 
   it('ne rend jamais un recul négatif', () => {
