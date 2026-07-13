@@ -38,9 +38,11 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [-0.65, -0.45, 5.8, 12.2],  // mur est cuisine (x=-0.6)
   [-7.2,  -0.45, 11.8, 12.2], // fond cuisine (z=12)
   // ── Mobilier cuisine (nav seulement) ──────────────────────────────────────
-  [-3.15, -1.95, 6.75, 7.55], // table cuisine
-  [-2.76, -2.34, 6.27, 6.69], // chaise cuisine
-  [-1.24, -0.66, 7.84, 8.46], // fogón
+  [-4.50, -3.10, 8.40, 9.40], // table cuisine (centre pièce)
+  [-3.90, -3.30, 7.75, 8.35], // chaise sud
+  [-5.15, -4.55, 8.60, 9.20], // chaise ouest
+  [-2.55, -1.85, 11.25, 12.0], // fogón (mur du fond)
+  [-7.0,  -6.40, 7.30, 7.90], // ofrenda (mur ouest)
   // ── Mur est x=7 : arche zaguán ouverte z∈[-0.9,0.9] ──────────────────────
   // x=6.75 (< 7) : obstacle commence avant le mur plan pour que x=6.8 soit dedans (strict >).
   [ 6.75,  7.2,  0.95, 5.85],  // section nord du mur est

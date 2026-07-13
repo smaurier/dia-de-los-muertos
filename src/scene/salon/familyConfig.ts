@@ -272,6 +272,7 @@ export const familyConfig: NPCConfig[] = [
     meshColor: '#c8956c',
     modelUrl: '/models/characters/base-03.glb',
     clipIdle: 'Sitting Idle(4)',
+    rotationY: Math.PI,
   },
   {
     id: 'papa', name: 'Papá Carlos', tier: 2,
@@ -339,7 +340,7 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: [{ id: 'enfant4_sage', weight: 1, duration: [20, 30], steps: [{ type: 'sit', targetId: 'table-chair-5' }, { type: 'idle', duration: 20 }] }],
     meshColor: '#D4956A',
-    rotationY: Math.PI / 2,
+    rotationY: -Math.PI / 2,  // bout EST de la table → face -x (vers la table)
   },
   // ── Tier 1 — actifs (roaming) ───────────────────────────────────────────────────
   {
@@ -371,7 +372,7 @@ export const familyConfig: NPCConfig[] = [
     meshColor: '#7B5535',
     modelUrl: '/models/characters/base-01.glb',
     clipIdle: 'Sitting Idle(4)',
-    rotationY: -Math.PI / 2,
+    rotationY: Math.PI / 2,  // bout OUEST de la table → face +x (vers la table)
   },
   {
     id: 'tante-jeune', name: 'Tía Verónica', tier: 2,
@@ -381,7 +382,7 @@ export const familyConfig: NPCConfig[] = [
     meshColor: '#C07060',
     modelUrl: '/models/characters/base-03.glb',
     clipIdle: 'Sitting Idle(4)',
-    rotationY: -Math.PI / 2,
+    rotationY: Math.PI / 2,  // bout OUEST de la table → face +x (vers la table)
   },
   {
     id: 'enfant1', name: 'Mateo', tier: 1,
@@ -420,6 +421,6 @@ export const familyConfig: NPCConfig[] = [
     meshColor: '#A88068',
     modelUrl: '/models/characters/base-04.glb',
     clipIdle: 'Sitting Idle(4)',
-    rotationY: -Math.PI / 2,
+    rotationY: Math.PI / 2,  // fauteuil face est (+x) — idle "dort" à venir
   },
 ]

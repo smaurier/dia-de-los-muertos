@@ -56,9 +56,9 @@ export function Cuisine() {
         <meshToonMaterial map={murPierre} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Azulejos crédence — mur est derrière le fogón ── */}
-      <mesh position={[-0.61, 1.3, 8.1]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[1.0, 0.82]} />
+      {/* ── Azulejos crédence — mur du fond derrière le fogón (ref entree-01/02) ── */}
+      <mesh position={[-2.2, 1.3, 11.98]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[2.0, 1.1]} />
         <meshToonMaterial map={azulejosTalavera} gradientMap={toonGradient} />
       </mesh>
 
@@ -89,8 +89,9 @@ export function Cuisine() {
         </mesh>
       </group>
 
-      {/* ── Fogón (vieux poêle blanc, coin est, ref cuisine-entree-02) ── */}
-      <group position={[-0.95, 0, 8.15]}>
+      {/* ── Fogón (vieux poêle blanc, mur du fond à droite, ref cuisine-entree-02)
+          rotation π : porte du four face au sud (vers la pièce) ── */}
+      <group position={[-2.2, 0, 11.62]} rotation={[0, Math.PI, 0]}>
         <mesh position={[0, 0.45, 0]}>
           <boxGeometry args={[0.58, 0.90, 0.62]} />
           <meshToonMaterial color="#E8E4DC" gradientMap={toonGradient} />
@@ -153,8 +154,8 @@ export function Cuisine() {
         </group>
       </group>
 
-      {/* ── Étagère murale + ustensiles suspendus (mur est, côté fond) ── */}
-      <group position={[-1.55, 0, 8.56]}>
+      {/* ── Étagère murale + ustensiles suspendus (mur du fond, à l'ouest du fogón) ── */}
+      <group position={[-4.0, 0, 11.94]}>
         {/* Planche */}
         <mesh position={[0, 1.68, 0]}>
           <boxGeometry args={[1.55, 0.042, 0.22]} />
@@ -214,8 +215,8 @@ export function Cuisine() {
         ))}
       </group>
 
-      {/* ── Table cuisine centrale ── */}
-      <group position={[-2.55, 0, 7.15]}>
+      {/* ── Table cuisine au centre de la pièce (ref entree-01/02) ── */}
+      <group position={[-3.8, 0, 8.9]}>
         <mesh position={[0, 0.76, 0]}>
           <boxGeometry args={[1.20, 0.055, 0.80]} />
           <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
@@ -275,17 +276,24 @@ export function Cuisine() {
         </mesh>
       </group>
 
-      {/* ── Chaise cuisine ── */}
+      {/* ── Chaises cuisine : une au sud face à la table, une à l'ouest (ref) ── */}
       <Prop
         url="/models/props/chaise.glb"
         color={C_WOOD_DARK}
-        position={[-2.55, 0, 6.48]}
-        rotationY={Math.PI}
+        position={[-3.6, 0, 8.05]}
+        rotationY={0}
+        targetHeight={0.95}
+      />
+      <Prop
+        url="/models/props/chaise.glb"
+        color={C_WOOD_DARK}
+        position={[-4.85, 0, 8.9]}
+        rotationY={Math.PI / 2}
         targetHeight={0.95}
       />
 
-      {/* ── Ofrenda de cuisine (mur ouest) ── */}
-      <group position={[-4.12, 0, 6.95]}>
+      {/* ── Ofrenda de cuisine — contre le mur ouest (ref coin-pierres-02) ── */}
+      <group position={[-6.72, 0, 7.6]}>
         <mesh position={[0, 0.44, 0]}>
           <boxGeometry args={[0.50, 0.88, 0.34]} />
           <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
@@ -334,11 +342,11 @@ export function Cuisine() {
             <meshToonMaterial color="#1A1010" gradientMap={toonGradient} />
           </mesh>
         ))}
-        <PhotoFrame position={[0.005, 1.78, 0.36]} rotY={Math.PI / 2} />
+        <PhotoFrame position={[-0.22, 1.78, 0]} rotY={Math.PI / 2} />
       </group>
 
-      {/* ── Ampoule nue suspendue ── */}
-      <group position={[-2.5, 0, 7.2]}>
+      {/* ── Ampoule nue suspendue au-dessus de la table (ref) ── */}
+      <group position={[-3.8, 0, 8.9]}>
         <mesh position={[0, 2.74, 0]}>
           <cylinderGeometry args={[0.006, 0.006, 0.44, 5]} />
           <meshToonMaterial color="#1A1010" gradientMap={toonGradient} />
@@ -354,8 +362,8 @@ export function Cuisine() {
         <pointLight position={[0, 2.40, 0]} intensity={3.2} color="#f5b060" distance={5.5} decay={2} />
       </group>
 
-      {/* Cadre photo mur fond */}
-      <PhotoFrame position={[-3.8, 1.82, 11.96]} rotY={Math.PI} />
+      {/* Cadre photo mur fond, près du coin en pierres */}
+      <PhotoFrame position={[-0.95, 1.82, 11.96]} rotY={Math.PI} />
     </group>
   )
 }
