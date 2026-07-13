@@ -94,7 +94,6 @@ const CHAIRS: ChairCfg[] = [
   { pos: [ 4.65, 0,  0.60], rot: -Math.PI / 2 }, // est — face à -x (table)
   { pos: [ 4.65, 0,  1.40], rot: -Math.PI / 2 }, // chaise vide d'Emi
   { pos: [ 3.95, 0,  2.60], rot: Math.PI },        // nord +1 — chaise vide grande-tante (elle est au fauteuil)
-  { pos: [ 3.95, 0, -0.60], rot: 0 },              // sud +1 — coin enfant complet
 ]
 
 const TABLE_LEG_X = [-3.55, -0.05, 3.45]
