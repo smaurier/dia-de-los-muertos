@@ -90,9 +90,9 @@ export function Cuisine() {
       </mesh>
       {/* ── Mur est (x=-0.6) — pierre (ref cuisine-coin-pierres-01), PERCÉ
           pour la porte du couloir (z∈[6.4,7.4]) : un seul mesh troué →
-          texture continue sur tout le mur. ── */}
+          texture continue. DoubleSide : visible aussi depuis le couloir. ── */}
       <mesh geometry={stoneWallGeometry} position={[-0.6, 0, 5.8]} rotation={[0, -Math.PI / 2, 0]}>
-        <meshToonMaterial map={murPierre} gradientMap={toonGradient} />
+        <meshToonMaterial map={murPierre} gradientMap={toonGradient} side={THREE.DoubleSide} />
       </mesh>
       {/* Encadrement + porte fermée vers le couloir (plaqués sur la pierre) */}
       {[6.4, 7.4].map(dz => (
