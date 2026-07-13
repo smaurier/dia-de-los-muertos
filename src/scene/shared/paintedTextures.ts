@@ -105,3 +105,9 @@ export const nappeBrodee = painted('nappe-brodee-01.png', 2, 1)
 
 // Plateau de table : planches horizontales dans l'image → répéter surtout en X.
 export const boisSombre = painted('bois-sombre-01.png', 4, 1)
+
+// ── Cuisine ──────────────────────────────────────────────────────────────────
+// Azulejos Talavera : carreaux ~20 cm → 3×2 répétitions sur crédence ~60×40 cm.
+export const azulejosTalavera = painted('azulejos-talavera.png', 3, 2)
+// Mur en pierre (moellons) : mur est de la cuisine.
+export const murPierre = paintedDesat('mur-pierre.png', 1.2, 1, 0.85, 1.0)
