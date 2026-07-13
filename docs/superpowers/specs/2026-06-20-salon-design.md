@@ -66,13 +66,16 @@ src/game/systems/
 
 | Zone | Position | Contenu |
 |------|----------|---------|
-| Repas | Centre-fond | Table 3.5m × 1.4m, 20 chaises |
+| Repas | Centre-fond | Table 3.5m × 1.4m, 20 chaises — coin adulte (côté nord) + coin enfant (côté sud) |
 | TV/canapé | Droite entrée | Canapé 3 places, fauteuil, repose-pied, télé murale |
 | Circulation | Milieu | Espace ouvert — NPCs traversent |
 | Fond de salle | Gauche-fond | Buffet/crédence, chaises murales |
 
 ### Règle chaises (indice passif)
-**20 chaises à table = 20 personnes attendues.** Le grand-oncle est dans la pièce (22e personne avec le bébé). Il n'a pas de place à table. Personne n'a prévu qu'il serait là. Le jeu ne le signale pas.
+**20 chaises à table = 22 présents − bébé (dans les bras) − grand-oncle.**  
+Coin adulte (nord) : papa, maman, oncles, tantes, oncle jeune, tante jeune — 10 chaises.  
+Coin enfant (sud) : sœur 1, sœur 2, cousin, cousines, enfants du couple jeune, Emi — 10 chaises.  
+Le grand-oncle n'a pas de place. Personne n'a prévu qu'il serait là. Le jeu ne le signale pas.
 
 ### Placement grand-oncle
 Zone TV/canapé, **visible immédiatement depuis l'entrée** (côté droit en entrant). Canapé positionné face à la télé, pieds sur repose-pied. Premier regard du joueur = grand-oncle identifiable.

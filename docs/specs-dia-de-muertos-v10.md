@@ -81,7 +81,7 @@ Il est dans le salon, sur le canapé de la zone TV, pieds sur le repose-pied. Vi
 
 Ce qui le distingue n'est pas son comportement — il réagit comme n'importe quel adulte. C'est l'absence d'intégration sociale :
 
-- **20 chaises à table pour 22 personnes présentes.** Le bébé est dans les bras de sa mère. Le grand-oncle n'a pas de place. Personne n'a prévu qu'il serait là. Le jeu ne le signale pas.
+- **20 chaises à table = 22 présents − bébé − grand-oncle.** Coin adulte (côté nord) : papa, maman, oncles, tantes, oncle jeune, tante jeune. Coin enfant (côté sud) : sœurs, cousin, cousines, enfants du couple jeune, Emi. Le grand-oncle n'a pas de place. Personne n'a prévu qu'il serait là. Le jeu ne le signale pas.
 - **Personne ne l'appelle. Personne ne lui adresse la parole.** Les scénarios NPC ne le ciblent jamais comme destinataire. Il existe en parallèle de la soirée, pas dedans.
 - **Il a bougé.** Si le joueur quitte le salon et revient, le grand-oncle peut se trouver debout près du buffet, ou côté fenêtre. Aucune explication.
 
@@ -331,7 +331,7 @@ Une seule soirée. Continue.
 ### Chapitre 1 — Le salon — la famille
 *Le salon est établi. Le trivial. Le grand-oncle est là.*
 
-Grande sala centrale. 22 personnes. Table imposante au centre — 20 chaises, toutes occupées ou tirées. Le grand-oncle est sur le canapé de la zone TV, côté droit en entrant, pieds sur le repose-pied. Visible immédiatement. Rien d'étrange. Personne ne lui parle.
+Grande sala centrale. 22 personnes. Table imposante au centre — 20 chaises (coin adulte nord / coin enfant sud), toutes occupées ou tirées. Le grand-oncle est sur le canapé de la zone TV, côté droit en entrant, pieds sur le repose-pied. Visible immédiatement. Rien d'étrange. Personne ne lui parle.
 
 *"¿Dónde está?"* / *"Ya está comiendo."*
 
@@ -536,7 +536,7 @@ Ces éléments structurent le projet. Ils ne sont jamais nommés dans l'expérie
 
 **L'adulte** est l'invité de l'ofrenda. Il vient parce qu'on l'a invité. Il repart parce que la nuit se termine.
 
-**Le grand-oncle** : 20 chaises pour 20 personnes. Le grand-oncle est le 21e (sans compter le bébé). Il n'est dans aucun scénario d'un autre NPC. Il existe dans la soirée mais pas dedans.
+**Le grand-oncle** : 20 chaises pour 20 personnes (22 − bébé − grand-oncle). Il n'est dans aucun scénario d'un autre NPC. Il existe dans la soirée mais pas dedans.
 
 ---
 
