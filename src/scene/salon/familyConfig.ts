@@ -290,7 +290,7 @@ export const familyConfig: NPCConfig[] = [
     clipIdle: 'Sitting Idle(4)',
   },
   {
-    id: 'enfant4', name: 'Mariana', tier: 2,
+    id: 'enfant4', name: 'Mariana', tier: 2, isChild: true,
     startPosition: [-0.05, 0, 2.60],
     waypoints: [],
     scenarios: [{ id: 'enfant4_sage', weight: 1, duration: [20, 30], steps: [{ type: 'sit', targetId: 'table-chair-5' }, { type: 'idle', duration: 20 }] }],
