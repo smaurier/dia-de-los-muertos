@@ -121,6 +121,36 @@ Petite commode entre canapé et TV. Lampe. Mini plante. La pièce s'installe.
 
 ---
 
+### 2026-07-14 — La maison s'étend, méthode « contexte d'abord »
+
+Grosse leçon en début de session : tentative de construire les 8 pièces du
+plan d'un coup — trois itérations ratées, rollback total au dernier push.
+Nouvelle méthode : **une pièce à la fois, validation visuelle à chaque pas.**
+
+Et ça marche : cuisine agrandie et réorganisée selon les refs (fogón au fond,
+crédence azulejos, table au centre), **cellier** derrière le mur du fond
+(conserves, sacs de grain, ristras de chiles), **couloir en L** qui part de la
+porte du mur en pierre, longe le salon et débouche dans le zaguán. Première
+boucle jouable : salon → cuisine → couloir → entrée → salon. Les trois arches
+du salon desservent maintenant la circulation, comme sur le plan.
+
+**Portes interactives** : touche F, indice à l'écran, portes qui pivotent sur
+leurs gonds. Les portes verrouillées font parler Emilio : « Está cerrado. »
+Première réplique du héros déclenchée par une interaction.
+
+**Les enfants debout sur les chaises** : les huit enfants ne courent plus —
+chacun est figé debout sur sa chaise autour de la table. Sylvain : « c'est
+pour la praticité et savoir où sont les enfants, ce n'est pas pour le
+scénario. » Phase actuelle : construire tout le contexte (la maison, les
+placements), le scénario viendra quand le décor sera nickel. Les enfants
+perchés sont des marque-places — et accessoirement, l'image est étrange et
+belle, très Día de Muertos.
+
+> *[Huit enfants immobiles debout sur des chaises dans la pénombre — tu as vu
+> l'image en le demandant, ou c'est le hasard de la praticité ?]*
+
+---
+
 ## Ce qui reste
 
 - 9 GLB à générer (en cours)
@@ -140,4 +170,4 @@ L'attention construit l'expérience.
 
 ---
 
-*Dernière mise à jour : 2026-07-12*
+*Dernière mise à jour : 2026-07-14*
