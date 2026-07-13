@@ -523,10 +523,38 @@ export function SalonRoom() {
         <boxGeometry args={[3.6, 3.2, 0.35]} />
         <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
       </mesh>
-      {/* Panneau nord droit — continu (arche NE supprimée, plan-maison-v1) */}
-      <mesh position={[2.7, 1.6, 5.975]}>
-        <boxGeometry args={[8.6, 3.2, 0.35]} />
+      {/* Panneau nord droit — scindé pour l'arche 2 (x=4.5, ouverture x∈[3.6,5.4]) */}
+      <mesh position={[1.0, 1.6, 5.975]}>
+        <boxGeometry args={[5.2, 3.2, 0.35]} />
         <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[6.2, 1.6, 5.975]}>
+        <boxGeometry args={[1.6, 3.2, 0.35]} />
+        <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
+      </mesh>
+      {/* Arche 2 — bandeau, cintres, intrados, jambages */}
+      <mesh position={[4.5, 2.95, 5.975]}>
+        <boxGeometry args={[1.8, 0.5, 0.35]} />
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[4.5, 1.8, 5.79]} rotation={[0, Math.PI, 0]}>
+        <ringGeometry args={[0.9, 1.6, 24, 1, 0, Math.PI]} />
+        <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[4.5, 1.8, 6.16]}>
+        <ringGeometry args={[0.9, 1.6, 24, 1, 0, Math.PI]} />
+        <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[4.5, 1.8, 5.975]} geometry={intradosGeometry}>
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[3.6, 0.9, 5.975]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[0.35, 1.8]} />
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[5.4, 0.9, 5.975]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[0.35, 1.8]} />
+        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
       </mesh>
       {/* Bandeau au-dessus de l'arche 1 (de l'apex 2,7 au plafond 3,2) */}
       <mesh position={[-2.5, 2.95, 5.975]}>
@@ -585,6 +613,32 @@ export function SalonRoom() {
         {/* Cadres dans la pièce au fond (la ref en montre à travers l'arche) */}
         <PhotoFrame position={[-2.5, 1.8, 8.55]} rotY={Math.PI} />
         <PhotoFrame position={[-4.35, 1.7, 7.0]} rotY={Math.PI / 2} />
+      </group>
+
+      {/* ─── Pièce arche 2 — couloir nord-est (x∈[3.5,6.5], z∈[5.8,8.4]) ─── */}
+      <group>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[5.0, 0.001, 7.1]}>
+          <planeGeometry args={[3.0, 2.6]} />
+          <meshPhongMaterial map={solTomettes} shininess={40} specular="#4a3420" />
+        </mesh>
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={[5.0, 2.9, 7.1]}>
+          <planeGeometry args={[3.0, 2.6]} />
+          <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
+        </mesh>
+        <mesh position={[5.0, 1.45, 8.4]} rotation={[0, Math.PI, 0]}>
+          <planeGeometry args={[3.0, 2.9]} />
+          <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
+        </mesh>
+        <mesh position={[3.5, 1.45, 7.1]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[2.6, 2.9]} />
+          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+        </mesh>
+        <mesh position={[6.5, 1.45, 7.1]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[2.6, 2.9]} />
+          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+        </mesh>
+        <pointLight position={[5.0, 2.2, 7.2]} intensity={1.8} color="#f5b860" distance={5} decay={2} />
+        <PhotoFrame position={[5.0, 1.8, 8.35]} rotY={Math.PI} />
       </group>
 
       {/* ─── Pièce arche 3 — couloir sud (x∈[-5,-2], z∈[-6,-8.5]) ─────────── */}
