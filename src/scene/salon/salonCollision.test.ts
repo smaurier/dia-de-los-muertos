@@ -117,8 +117,10 @@ describe('canMove', () => {
   })
 
   it('bloque toujours la sortie de la pièce (hors arches)', () => {
-    // Mur nord plein côté est (arche cuisine est à x≈-2.5, x=4 est un mur plein)
-    expect(canMove(4, 5.5, 4, 5.7)).toBe(false)
+    // Mur nord plein entre les arches (arche cuisine x≈-2.5, arche 2 x∈[3.6,5.4])
+    expect(canMove(1, 5.5, 1, 5.7)).toBe(false)
+    // Arche 2 (x=4.5) ouverte vers le couloir → passage autorisé
+    expect(canMove(4.5, 5.5, 4.5, 5.7)).toBe(true)
     // Arche zaguán (z=0) est ouverte → passage autorisé
     expect(canMove(6.6, 0, 6.8, 0)).toBe(true)
     // Mur est plein au nord de l'arche (z=3 hors ouverture z∈[-0.9,0.9])
