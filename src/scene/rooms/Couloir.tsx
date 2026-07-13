@@ -31,10 +31,24 @@ export function Couloir() {
       </mesh>
 
       {/* ── Branche nord ── */}
-      {/* Mur sud z=6.2 (dos du mur nord du salon) */}
-      <mesh position={[3.2, 1.45, 6.2]}>
-        <planeGeometry args={[7.6, 2.9]} />
+      {/* Mur sud z=6.2 (dos du mur nord du salon) — ouvert x∈[3.6,5.4] :
+          l'arche 2 du salon débouche dans le couloir */}
+      <mesh position={[1.5, 1.45, 6.2]}>
+        <planeGeometry args={[4.2, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[6.2, 1.45, 6.2]}>
+        <planeGeometry args={[1.6, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[4.5, 2.8, 6.2]}>
+        <planeGeometry args={[1.8, 0.2]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      {/* Sol de seuil dans l'épaisseur du mur (z∈[5.8,6.2], sous l'arche 2) */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[4.5, 0.001, 6.0]}>
+        <planeGeometry args={[1.8, 0.4]} />
+        <meshPhongMaterial map={solTomettes} shininess={20} />
       </mesh>
       {/* Mur nord z=7.6 — prolongé jusqu'à x=8.4 (coude) */}
       <mesh position={[3.9, 1.45, 7.6]} rotation={[0, Math.PI, 0]}>

@@ -32,7 +32,9 @@ export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
 const ROOM_WALLS: readonly [number, number, number, number][] = [
   // ── Mur nord z=5.8 : arche cuisine ouverte x∈[-3.4,-1.6] ──────────────────
   [-7.2, -3.45, 5.55, 6.2],   // section ouest du mur nord
-  [-1.55,  7.2, 5.55, 6.2],   // section est (arche NE supprimée → plein)
+  // section est : arche 2 ouverte x∈[3.6,5.4] → couloir
+  [-1.55, 3.55, 5.55, 6.2],   // entre les deux arches
+  [ 5.45,  7.2, 5.55, 6.2],   // à l'est de l'arche 2
   // ── Cuisine (z∈[5.8,12.0], x∈[-7,-0.6]) ──────────────────────────────────
   [-7.2, -6.95, 5.8, 12.2],   // mur ouest plein (porte bleue jardin verrouillée)
   // mur est pierre percé : porte couloir z∈[6.4,7.4] (AABB dynamique doorConfig)
