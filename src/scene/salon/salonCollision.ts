@@ -6,10 +6,10 @@
 // inequality : 1.5 > 1.45 → outside → ils peuvent se placer et bouger librement).
 
 export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
-  // Table x[-4.75,3.75] z[-1.05,1.05] + sièges.
-  // z=±1.45 : couvre les sièges (z=±1.60, assise front à z=±1.39) sans bloquer NPCs à z=±1.5.
-  // x=-5.3 : chaises ouest déplacées à x=-5.0, assise s'étend à x=-5.21 → buffer 0.1m.
-  [-4.85, 4.95,  -1.45, 1.45],
+  // Table x[-4.75,3.75] z[-0.05,1.95] (centre z=1.0) + sièges.
+  // z=[-0.55, 2.55] : couvre sièges (nord z=2.60, sud z=-0.60), NPCs à ces positions = extérieurs.
+  // x=-5.3 : chaises ouest à x=-4.55, assise s'étend à x≈-5.0 → buffer 0.1m.
+  [-4.85, 4.95,  -0.55, 2.55],
   // Coin salon SUD-OUEST (refs) : canapé face à l'ouest, TV au mur ouest près
   // de la fenêtre, repose-pied entre les deux, lampe derrière le canapé.
   [-3.05, -1.80, -5.70, -2.10],  // canapé model (bbox mesurée, recul +0.2) : segment principal

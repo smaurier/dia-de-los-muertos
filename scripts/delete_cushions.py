@@ -142,8 +142,9 @@ bmesh.update_edit_mesh(body.data)
 bpy.ops.mesh.delete(type="FACE")
 bpy.ops.object.mode_set(mode="OBJECT")
 
-# Recalcul des normales (trous ouverts → normales des bords maintenant correctes)
-body.data.calc_normals_split()
+# Recalcul des normales (Blender 5+ : calc_normals_split supprimé)
+if hasattr(body.data, 'calc_normals_split'):
+    body.data.calc_normals_split()
 
 bpy.ops.export_scene.gltf(filepath=out_glb, export_format="GLB", export_yup=True)
 print(f"[del] exporté: {out_glb}")

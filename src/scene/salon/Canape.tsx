@@ -25,21 +25,26 @@ const UV_OFFSET = -UV_MIN / UV_RANGE // ≈ -0.587
 
 // Positions en espace LOCAL GLB (avant scale) — issues de delete_cushions.py
 // À remplacer par les valeurs POSITIONS_JSON du script après exécution
+// Positions en espace Three.js Y-up (conversion depuis Blender Z-up : x,y,z → x,z,-y)
+// Rotations : Blender (rx,ry,rz) → Three.js (rx, rz, -ry)
 const CUSHION_DEFS = [
   {
     label: 'rouge',
-    pos: [-0.88, -0.35, 0.15] as [number, number, number],
-    rot: [0, -Math.PI * 78 / 180, 0] as [number, number, number],
+    // Blender pos [-0.640, -0.300, 0.245] rot [0, -1.361, 0]
+    pos: [-0.640,  0.245,  0.300] as [number, number, number],
+    rot: [0,       0,      1.361] as [number, number, number],
   },
   {
     label: 'creme',
-    pos: [-0.36, 0.45, 0.15] as [number, number, number],
-    rot: [Math.PI * 78 / 180, 0, Math.PI * 18 / 180] as [number, number, number],
+    // Blender pos [-0.360, 0.421, 0.153] rot [1.361, 0, 0.314]
+    pos: [-0.360,  0.153,  -0.421] as [number, number, number],
+    rot: [1.361,   0.314,   0    ] as [number, number, number],
   },
   {
     label: 'violet',
-    pos: [0.66, 0.45, 0.15] as [number, number, number],
-    rot: [Math.PI * 78 / 180, 0, 0] as [number, number, number],
+    // Blender pos [0.660, 0.282, 0.171] rot [1.361, 0, 0]
+    pos: [0.660,   0.171,  -0.282] as [number, number, number],
+    rot: [1.361,   0,       0    ] as [number, number, number],
   },
 ] as const
 
