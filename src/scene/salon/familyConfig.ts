@@ -298,21 +298,21 @@ export const familyConfig: NPCConfig[] = [
   },
   // ── Tier 1 — actifs (roaming) ───────────────────────────────────────────────────
   {
-    id: 'cousin1', name: 'Toño', tier: 1,         // le cousin du cache-cache
+    id: 'cousin1', name: 'Toño', tier: 1, isChild: true,
     startPosition: [1, 0, 3],
     waypoints: [[1, 0, 3], [-2, 0, -1], [3, 0, -2], [0, 0, 1]],
     scenarios: cousinScenarios,
     meshColor: '#A87050',
   },
   {
-    id: 'cousine1', name: 'Fernanda', tier: 1,
+    id: 'cousine1', name: 'Fernanda', tier: 1, isChild: true,
     startPosition: [-1, 0, 2],
     waypoints: [[-1, 0, 2], [2, 0, -1], [-3, 0, 1]],
     scenarios: cousinScenarios,
     meshColor: '#D4906A',
   },
   {
-    id: 'cousine2', name: 'Camila', tier: 1,
+    id: 'cousine2', name: 'Camila', tier: 1, isChild: true,
     startPosition: [2, 0, 2],
     waypoints: [[2, 0, 1], [-1, 0, -2], [1, 0, 3]],
     scenarios: cousinScenarios,
@@ -359,7 +359,7 @@ export const familyConfig: NPCConfig[] = [
   },
   // ── Tier 3 — statiques ──────────────────────────────────────────────────────────
   {
-    id: 'soeur', name: 'Sofía', tier: 3,           // sœur d'Emi
+    id: 'soeur', name: 'Sofía', tier: 3, isChild: true,
     startPosition: [1.95, -0.45, -0.60],
     waypoints: [],
     scenarios: [],

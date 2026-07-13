@@ -158,7 +158,7 @@ function FamilyMemberGeometry({ config }: FamilyMemberProps) {
     }
   })
 
-  const isChild = config.tier === 1 && config.id.startsWith('enfant')
+  const isChild = config.isChild ?? (config.tier === 1 && config.id.startsWith('enfant'))
   const isBaby = config.id === 'bebe'
   const capsuleR = isBaby ? 0.12 : isChild ? 0.18 : 0.25
   const bodyY = isBaby ? 0.4 : isChild ? 0.6 : 0.875

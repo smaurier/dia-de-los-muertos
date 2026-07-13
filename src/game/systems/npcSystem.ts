@@ -28,6 +28,7 @@ export type NPCConfig = {
   scenarios: Scenario[]
   meshColor: string
   excludeFromSocialGraph?: boolean
+  isChild?: boolean
   // GLB model (optional — falls back to placeholder geometry when absent)
   modelUrl?: string
   clipIdle?: string
