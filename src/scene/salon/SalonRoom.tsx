@@ -7,13 +7,14 @@ import { toonGradient } from '../shared/toonGradient'
 import { papelTextures } from '../shared/papelTexture'
 import {
   murAdobeNorth, murAdobeLintel, murAdobeSouth, murAdobeSide,
-  solTomettes, solTomettesNormal, nappeBrodee, boisSombre,
+  solTomettes, solTomettesNormal, boisSombre,
 } from '../shared/paintedTextures'
 import { rideauTexture, plafondBoisTexture } from '../shared/fabricTexture'
 import { WindowVista } from './WindowVista'
 import { Prop } from '../shared/Prop'
 import { Canape } from './Canape'
 import { SALON_OBSTACLES } from './salonCollision'
+import { NappeCloth } from './NappeCloth'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
 const SHOW_AABB = new URLSearchParams(window.location.search).has('aabb')
@@ -66,34 +67,34 @@ const FLAG_X  = [-4.9, -4.1, -3.3, -2.5, -1.7, -0.9, -0.1, 0.7, 1.5, 2.3, 3.1, 3
 
 // ─── Chaises ─────────────────────────────────────────────────────────────────
 type ChairCfg = { pos: [number, number, number]; rot: number }
-// Chaises nord/sud : z=1.25 → 1.60 (assise s'étendait jusqu'à z=1.04, table va à z=1.15 → 11cm overlap).
-// End chairs : rot corrigé. local +z = direction assise. West end doit faire face à +x (table) → rot=+π/2.
-// East end doit faire face à -x → rot=-π/2. Positions x sorties du range table [-4.75, 3.75].
+// Table centre z=1.0. Nord z=2.60, sud z=-0.60 — passage ~1m entre chaises sud et canapé (front z≈-2.1).
+// End chairs : West end face à +x → rot=+π/2. East end face à -x → rot=-π/2.
+// Positions x sorties du range table [-4.75, 3.75].
 const CHAIRS: ChairCfg[] = [
-  { pos: [-3.05, 0, 1.60], rot: Math.PI },    // nord — face au sud (table)
-  { pos: [-2.05, 0, 1.60], rot: Math.PI },
-  { pos: [-1.05, 0, 1.60], rot: Math.PI },
-  { pos: [-0.05, 0, 1.60], rot: Math.PI },
-  { pos: [0.95,  0, 1.60], rot: Math.PI },
-  { pos: [1.95,  0, 1.60], rot: Math.PI },
-  { pos: [2.95,  0, 1.60], rot: Math.PI },
-  { pos: [-3.05, 0, -1.60], rot: 0 },         // sud — face au nord (table)
-  { pos: [-2.05, 0, -1.60], rot: 0 },
-  { pos: [-1.05, 0, -1.60], rot: 0 },
-  { pos: [-0.05, 0, -1.60], rot: 0 },
-  { pos: [0.95,  0, -1.60], rot: 0 },
-  { pos: [1.95,  0, -1.60], rot: 0 },
-  { pos: [2.95,  0, -1.60], rot: 0 },
-  { pos: [-4.55, 0, -0.4], rot:  Math.PI / 2 }, // ouest — face à +x (table)
-  { pos: [-4.55, 0,  0.4], rot:  Math.PI / 2 },
-  { pos: [ 4.65, 0, -0.4], rot: -Math.PI / 2 }, // est — face à -x (table)
-  { pos: [ 4.65, 0,  0.4], rot: -Math.PI / 2 },
-  // (les 2 chaises d'appoint derrière le canapé ont été retirées — la
-  // grande-tante s'assoit sur le retour d'angle du canapé)
+  { pos: [-3.05, 0, 2.60], rot: Math.PI },    // nord — face au sud (table)
+  { pos: [-2.05, 0, 2.60], rot: Math.PI },
+  { pos: [-1.05, 0, 2.60], rot: Math.PI },
+  { pos: [-0.05, 0, 2.60], rot: Math.PI },
+  { pos: [0.95,  0, 2.60], rot: Math.PI },
+  { pos: [1.95,  0, 2.60], rot: Math.PI },
+  { pos: [2.95,  0, 2.60], rot: Math.PI },
+  { pos: [-3.05, 0, -0.60], rot: 0 },         // sud — face au nord (table)
+  { pos: [-2.05, 0, -0.60], rot: 0 },
+  { pos: [-1.05, 0, -0.60], rot: 0 },
+  { pos: [-0.05, 0, -0.60], rot: 0 },
+  { pos: [0.95,  0, -0.60], rot: 0 },
+  { pos: [1.95,  0, -0.60], rot: 0 },
+  { pos: [2.95,  0, -0.60], rot: 0 },
+  { pos: [-4.55, 0,  0.60], rot:  Math.PI / 2 }, // ouest — face à +x (table)
+  { pos: [-4.55, 0,  1.40], rot:  Math.PI / 2 },
+  { pos: [ 4.65, 0,  0.60], rot: -Math.PI / 2 }, // est — face à -x (table)
+  { pos: [ 4.65, 0,  1.40], rot: -Math.PI / 2 }, // chaise vide d'Emi
+  { pos: [ 3.95, 0,  2.60], rot: Math.PI },        // nord +1 — chaise vide grande-tante (elle est au fauteuil)
+  { pos: [ 3.95, 0, -0.60], rot: 0 },              // sud +1 — coin enfant complet
 ]
 
 const TABLE_LEG_X = [-3.55, -0.05, 3.45]
-const TABLE_LEG_Z = [-0.75, 0.75]
+const TABLE_LEG_Z = [0.25, 1.75]
 
 // Cadres muraux (ref vue-entrée). Nord : autour de l'arche et au-dessus du
 // buffet. Sud : au-dessus du coin salon. Est : de part et d'autre de la porte.
@@ -102,12 +103,12 @@ const FRAMES_SOUTH: [number, number, number][] = [[3.6, 2.1, -5.77], [4.8, 1.95,
 const FRAMES_EAST:  [number, number, number][] = [[6.97, 1.9, 2.0], [6.97, 1.9, -1.8]]
 // Bougies sur le buffet (mur sud), de part et d'autre des photos
 const CANDLES_BUFFET: [number, number, number][] = [[2.12, 1.13, 5.32], [4.38, 1.13, 5.32]]
-const CANDLES_TABLE: [number, number, number][]  = [[-1.55, 0.78, 0.25], [1.25, 0.78, -0.25]]
+const CANDLES_TABLE: [number, number, number][]  = [[-1.55, 0.78, 1.25], [1.25, 0.78, 0.75]]
 // Grande fenêtre unique à rideaux, centrée mur ouest (ref salon-vue-entree-01)
 const WINDOW_CZ = 0.5
 const REJA_DZ   = [-1.32, -0.88, -0.44, 0, 0.44, 0.88, 1.32]
 const PLATE_X   = [-3.05, -2.05, -1.05, -0.05, 0.95, 1.95, 2.95]
-const PLATE_Z   = [0.80, -0.80]  // suit le plateau resserré (z=±1.05)
+const PLATE_Z   = [1.80, 0.20]  // table centre z=1.0, assiettes à z=1.0±0.80
 
 // ─── Composants ───────────────────────────────────────────────────────────────
 // Écran CRT : lueur bleutée qui scintille (match/programme lointain).
@@ -752,26 +753,26 @@ export function SalonRoom() {
       {/* ─── Table centrale ─────────────────────────────────────────────────── */}
       {/* Plateau resserré (2.3 → 2.1) : proportions banquet plus réalistes sans
           toucher chaises/NPCs/AABB (tous calibrés sur z=±1.5/1.6). */}
-      <mesh position={[-0.05, 0.76, 0]}>
+      <mesh position={[-0.05, 0.76, 1.0]}>
         <boxGeometry args={[8.5, 0.08, 2.1]} />
         <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
         <Outlines thickness={0.025} color="black" />
       </mesh>
       {/* Ceinture longue nord */}
-      <mesh position={[-0.05, 0.66, 0.88]}>
+      <mesh position={[-0.05, 0.66, 1.88]}>
         <boxGeometry args={[8.1, 0.14, 0.06]} />
         <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
       </mesh>
       {/* Ceinture longue sud */}
-      <mesh position={[-0.05, 0.66, -0.88]}>
+      <mesh position={[-0.05, 0.66, 0.12]}>
         <boxGeometry args={[8.1, 0.14, 0.06]} />
         <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[-3.75, 0.66, 0]}>
+      <mesh position={[-3.75, 0.66, 1.0]}>
         <boxGeometry args={[0.06, 0.14, 1.8]} />
         <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[3.65, 0.66, 0]}>
+      <mesh position={[3.65, 0.66, 1.0]}>
         <boxGeometry args={[0.06, 0.14, 1.8]} />
         <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
       </mesh>
@@ -787,41 +788,7 @@ export function SalonRoom() {
       )}
 
       {/* ─── Table dressée ──────────────────────────────────────────────────── */}
-      {/* Nappe drapée (ref salon-vue-entree-01) : dessus texturé + 4 jupes toon
-          qui tombent de 0.38 m, liseré brodé en bas des grandes jupes. Les
-          anciennes tombées de 10 cm en meshBasicMaterial blanc pur faisaient un
-          néon flottant. */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-0.05, 0.805, 0]}>
-        <planeGeometry args={[8.8, 2.4]} />
-        <meshToonMaterial map={nappeBrodee} gradientMap={toonGradient} />
-      </mesh>
-      {/* Jupes nord / sud */}
-      <mesh position={[-0.05, 0.615, 1.2]}>
-        <planeGeometry args={[8.8, 0.38]} />
-        <meshToonMaterial color="#F1EBDD" gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-0.05, 0.615, -1.2]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[8.8, 0.38]} />
-        <meshToonMaterial color="#F1EBDD" gradientMap={toonGradient} />
-      </mesh>
-      {/* Jupes est / ouest (bouts de table) */}
-      <mesh position={[4.35, 0.615, 0]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[2.4, 0.38]} />
-        <meshToonMaterial color="#F1EBDD" gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-4.45, 0.615, 0]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[2.4, 0.38]} />
-        <meshToonMaterial color="#F1EBDD" gradientMap={toonGradient} />
-      </mesh>
-      {/* Liseré brodé en bas des grandes jupes */}
-      <mesh position={[-0.5, 0.45, 1.205]}>
-        <boxGeometry args={[8.8, 0.045, 0.012]} />
-        <meshToonMaterial color="#C4632F" gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-0.5, 0.45, -1.205]}>
-        <boxGeometry args={[8.8, 0.045, 0.012]} />
-        <meshToonMaterial color="#C4632F" gradientMap={toonGradient} />
-      </mesh>
+      <NappeCloth />
       {/* Assiettes + verres — une assiette + un verre par convive */}
       {PLATE_X.flatMap((px, pi) => PLATE_Z.map((pz, zi) => (
         <group key={`p-${pi}-${zi}`} position={[px, 0.814, pz]}>
@@ -853,7 +820,7 @@ export function SalonRoom() {
         </group>
       )))}
       {/* Assiettes bouts de table — end chairs ouest (x=-5.0) et est (x=4.2) */}
-      {([ [-4.15, 0.4], [-4.15, -0.4], [4.25, 0.4], [4.25, -0.4] ] as [number, number][]).map(([px, pz], i) => (
+      {([ [-4.15, 1.4], [-4.15, 0.6], [4.25, 1.4], [4.25, 0.6] ] as [number, number][]).map(([px, pz], i) => (
         <group key={`end-plate-${i}`} position={[px, 0.814, pz]}>
           <mesh>
             <cylinderGeometry args={[0.18, 0.18, 0.014, 12]} />
@@ -873,17 +840,17 @@ export function SalonRoom() {
       ))}
 
       {/* Plats de service centraux */}
-      <mesh position={[-0.05, 0.816, 0]}>
+      <mesh position={[-0.05, 0.816, 1.0]}>
         <cylinderGeometry args={[0.30, 0.30, 0.020, 12]} />
         <meshToonMaterial color="#E8D4B4" gradientMap={toonGradient} />
         <Outlines thickness={0.012} color="black" />
       </mesh>
-      <mesh position={[-2.05, 0.816, 0]}>
+      <mesh position={[-2.05, 0.816, 1.0]}>
         <cylinderGeometry args={[0.24, 0.24, 0.018, 10]} />
         <meshToonMaterial color="#D4B890" gradientMap={toonGradient} />
         <Outlines thickness={0.010} color="black" />
       </mesh>
-      <mesh position={[1.95, 0.816, 0]}>
+      <mesh position={[1.95, 0.816, 1.0]}>
         <cylinderGeometry args={[0.24, 0.24, 0.018, 10]} />
         <meshToonMaterial color="#D4B890" gradientMap={toonGradient} />
         <Outlines thickness={0.010} color="black" />

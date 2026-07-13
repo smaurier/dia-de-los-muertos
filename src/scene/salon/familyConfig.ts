@@ -208,14 +208,52 @@ const enfantScenarios: Scenario[] = [
   },
 ]
 
-const oncleJeuneScenarios: Scenario[] = [
-  ...oncleScenarios,
+const oncleJeuneSeatedScenarios: Scenario[] = [
   {
-    id: 'oncle_jeune_enfant', weight: 3, duration: [6, 10],
+    id: 'oncle_jeune_assis', weight: 5, duration: [15, 25],
     steps: [
-      { type: 'walk', target: [1, 0, 2] },
-      { type: 'dialogue', text: '¡Oye! ¿A dónde vas tan rápido?', speakerName: 'Tío Andrés' },
+      { type: 'sit', targetId: 'table-chair-west-1' },
+      { type: 'idle', duration: 12 },
+    ],
+  },
+  {
+    id: 'oncle_jeune_rit', weight: 3, duration: [6, 10],
+    steps: [
       { type: 'idle', duration: 3 },
+      { type: 'dialogue', text: '¡Ja ja, qué bueno!', speakerName: 'Tío Andrés' },
+      { type: 'idle', duration: 3 },
+    ],
+  },
+  {
+    id: 'oncle_jeune_enfants', weight: 2, duration: [5, 8],
+    steps: [
+      { type: 'dialogue', text: '¿Dónde están los niños?', speakerName: 'Tío Andrés' },
+      { type: 'idle', duration: 4 },
+    ],
+  },
+]
+
+const tanteJeuneSeatedScenarios: Scenario[] = [
+  {
+    id: 'tante_jeune_assise', weight: 5, duration: [15, 25],
+    steps: [
+      { type: 'sit', targetId: 'table-chair-west-2' },
+      { type: 'idle', duration: 12 },
+    ],
+  },
+  {
+    id: 'tante_jeune_appelle', weight: 3, duration: [5, 8],
+    steps: [
+      { type: 'dialogue', text: '¡Niños, vengan a comer!', speakerName: 'Tía Verónica' },
+      { type: 'idle', duration: 4 },
+    ],
+  },
+  {
+    id: 'tante_jeune_parle', weight: 2, duration: [8, 14],
+    steps: [
+      { type: 'sit', targetId: 'table-chair-west-2' },
+      { type: 'dialogue', text: '¿Ya viste lo que pasó?', speakerName: 'Tía Verónica' },
+      { type: 'idle', duration: 6 },
     ],
   },
 ]
@@ -255,25 +293,25 @@ export const familyConfig: NPCConfig[] = [
   },
   {
     id: 'oncle2', name: 'Tío Ramón', tier: 2,
-    startPosition: [-1.05, 0, -0.60],
+    startPosition: [-0.05, 0, 2.60],   // coin adulte nord
     waypoints: [],
     scenarios: oncleScenarios,
     meshColor: '#6B4423',
     modelUrl: '/models/characters/base-02.glb',
-    clipIdle: 'Breathing Idle',
+    clipIdle: 'Sitting Idle(4)',
   },
   {
     id: 'oncle3', name: 'Tío Beto', tier: 2,
-    startPosition: [0.95, 0, -0.60],
+    startPosition: [0.95, 0, 2.60],    // coin adulte nord
     waypoints: [],
     scenarios: oncleScenarios,
     meshColor: '#8B6040',
     modelUrl: '/models/characters/base-02.glb',
-    clipIdle: 'Breathing Idle',
+    clipIdle: 'Sitting Idle(4)',
   },
   {
     id: 'tante1', name: 'Tía Lupita', tier: 2,
-    startPosition: [-0.05, 0, -0.60],
+    startPosition: [1.95, 0, 2.60],    // coin adulte nord
     waypoints: [],
     scenarios: tanteScenarios,
     meshColor: '#C27B5A',
@@ -282,7 +320,7 @@ export const familyConfig: NPCConfig[] = [
   },
   {
     id: 'tante2', name: 'Tía Consuelo', tier: 2,
-    startPosition: [-2.05, 0, -0.60],
+    startPosition: [2.95, 0, 2.60],    // coin adulte nord
     waypoints: [],
     scenarios: tanteScenarios,
     meshColor: '#B8705A',
@@ -291,7 +329,7 @@ export const familyConfig: NPCConfig[] = [
   },
   {
     id: 'enfant4', name: 'Mariana', tier: 2, isChild: true,
-    startPosition: [-0.05, 0, 2.60],
+    startPosition: [4.65, 0, 0.60],    // tête est (coin enfant)
     waypoints: [],
     scenarios: [{ id: 'enfant4_sage', weight: 1, duration: [20, 30], steps: [{ type: 'sit', targetId: 'table-chair-5' }, { type: 'idle', duration: 20 }] }],
     meshColor: '#D4956A',
@@ -319,19 +357,19 @@ export const familyConfig: NPCConfig[] = [
     meshColor: '#C88060',
   },
   {
-    id: 'oncle-jeune', name: 'Tío Andrés', tier: 1,
-    startPosition: [0, 0, -2],
-    waypoints: [[0, 0, -2], [1, 0, 2], [-2, 0, 1], [-1, 0, -3]],
-    scenarios: oncleJeuneScenarios,
+    id: 'oncle-jeune', name: 'Tío Andrés', tier: 2,
+    startPosition: [-4.55, 0, 1.40],   // tête ouest (couple jeune)
+    waypoints: [],
+    scenarios: oncleJeuneSeatedScenarios,
     meshColor: '#7B5535',
     modelUrl: '/models/characters/base-01.glb',
-    clipIdle: 'Breathing Idle',
+    clipIdle: 'Sitting Idle(4)',
   },
   {
-    id: 'tante-jeune', name: 'Tía Verónica', tier: 1,  // femme de Tío Andrés
-    startPosition: [1, 0, -1.5],
-    waypoints: [[1, 0, -1.5], [0, 0, 2], [-1, 0, -3]],
-    scenarios: tanteScenarios,
+    id: 'tante-jeune', name: 'Tía Verónica', tier: 2,  // femme de Tío Andrés
+    startPosition: [-4.55, 0, 0.60],   // tête ouest
+    waypoints: [],
+    scenarios: tanteJeuneSeatedScenarios,
     meshColor: '#C07060',
     modelUrl: '/models/characters/base-03.glb',
     clipIdle: 'Sitting Idle(4)',
@@ -366,12 +404,12 @@ export const familyConfig: NPCConfig[] = [
     meshColor: '#E0A888',
   },
   {
-    id: 'grande-tante', name: 'Tía Abuela Rosa', tier: 3,  // assoupie dans le fauteuil
-    startPosition: [-4.15, -0.48, -5.1],
+    id: 'grande-tante', name: 'Tía Abuela Rosa', tier: 3,  // assoupie dans le fauteuil du buffet
+    startPosition: [-6.42, 0, -0.6],   // fauteuil ouest — sa chaise de table (x=3.95 nord) est vide
     waypoints: [],
     scenarios: [],
     meshColor: '#A88068',
     modelUrl: '/models/characters/base-04.glb',
-    clipIdle: 'Breathing Idle',
+    clipIdle: 'Sitting Idle(4)',
   },
 ]
