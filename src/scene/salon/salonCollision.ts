@@ -17,14 +17,14 @@ export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
   [-4.55, -3.00, -5.75, -4.40],  // canapé model : retour d'angle (recul +0.2)
   [-4.85, -4.25, -4.75, -3.15],  // repose-pied (ottoman)
   [-6.90, -5.95, -1.10, -0.10],  // fauteuil (dossier contre le bas de la fenêtre, face est)
-  [ 2.2, 4.5,   4.78, 5.48],  // buffet mur nord (photos/vase)
+  [ 1.0, 3.3,   5.03, 5.73],  // buffet mur nord (décalé ouest, dégagé arche 2)
   [-6.90, -5.75, -2.75, -1.55],  // TV CRT + meuble (mur ouest, écran vers l'est)
   [ 6.1, 6.7,   2.50, 3.10],  // plante en pot mur est (déplacée de z=1.2 à z=2.8)
   [-5.32, -4.68, -5.78, -5.12],  // commode + lampe + mini plante (mur sud, entre retour et TV)
   [-6.6, -5.6,  4.3,  5.1 ],  // cactus coin nord-ouest
   [-6.6, -6.1,  2.1,  2.6 ],  // plante fenêtre nord
   [-6.65, -6.15, -1.85, -1.35],  // plante fenêtre sud (décalée : place du fauteuil)
-  [ 5.2,  6.4,  4.90, 5.50],  // vaisselier coin nord-est
+  [ 5.65, 6.85, 5.15, 5.75],  // vaisselier coin nord-est (décalé est, dégagé arche 2)
 ]
 
 // Sections de mur physiques — utilisées par canMove uniquement (pas caméra).

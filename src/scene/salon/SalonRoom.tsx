@@ -102,7 +102,6 @@ const TABLE_LEG_Z = [0.25, 1.75]
 
 // Cadres muraux (ref vue-entrée). Nord : autour de l'arche et au-dessus du
 // buffet. Sud : au-dessus du coin salon. Est : de part et d'autre de la porte.
-const FRAMES_NORTH: [number, number, number][] = [[-0.6, 1.9, 5.77], [1.4, 2.1, 5.77], [3.2, 2.15, 5.77]]
 const FRAMES_SOUTH: [number, number, number][] = [[3.6, 2.1, -5.77], [4.8, 1.95, -5.77], [6.0, 2.15, -5.77]]
 const FRAMES_EAST:  [number, number, number][] = [[6.97, 1.9, 2.0], [6.97, 1.9, -1.8]]
 // Bougies supprimées (obstruaient la navigation vers les arches)
@@ -923,13 +922,13 @@ export function SalonRoom() {
       <Prop
         url="/models/props/buffet.glb"
         color={C_WOOD_MED}
-        position={[3.2, 0, 5.10]}
+        position={[2.0, 0, 5.35]}
         rotationY={Math.PI}
         targetHeight={1.05}
       />
       {/* Photos de famille debout sur le buffet */}
-      {([[2.9, -0.06], [3.25, 0.04], [3.65, -0.04], [4.0, 0.06]] as [number, number][]).map(([px, rot], i) => (
-        <group key={i} position={[px, 1.05, 5.10]} rotation={[0, Math.PI + rot, 0]}>
+      {([[1.7, -0.06], [2.05, 0.04], [2.45, -0.04], [2.8, 0.06]] as [number, number][]).map(([px, rot], i) => (
+        <group key={i} position={[px, 1.05, 5.35]} rotation={[0, Math.PI + rot, 0]}>
           <mesh>
             <boxGeometry args={[0.16, 0.22, 0.02]} />
             <meshToonMaterial color={C_FRAME} gradientMap={toonGradient} />
@@ -942,7 +941,7 @@ export function SalonRoom() {
         </group>
       ))}
       {/* Vase de cempasúchil (fleurs oranges) */}
-      <group position={[2.45, 1.05, 5.10]}>
+      <group position={[1.25, 1.05, 5.35]}>
         <mesh position={[0, 0.11, 0]}>
           <cylinderGeometry args={[0.055, 0.075, 0.22, 9]} />
           <meshToonMaterial color={C_CERAMIC} gradientMap={toonGradient} />
@@ -1005,7 +1004,7 @@ export function SalonRoom() {
       </group>
 
       {/* ─── Vaisselier (coin nord-est, ref vue-fenetre) ────────────────────── */}
-      <group position={[5.7, 0, 5.20]} rotation={[0, Math.PI, 0]}>
+      <group position={[6.15, 0, 5.45]} rotation={[0, Math.PI, 0]}>
         {/* Caisson bas */}
         <mesh position={[0, 0.45, 0]}>
           <boxGeometry args={[1.5, 0.9, 0.48]} />
@@ -1044,7 +1043,7 @@ export function SalonRoom() {
       <group position={[-5.2, 2.0, 5.77]} rotation={[0, Math.PI, 0]} scale={[1.45, 1.45, 1]}>
         <PhotoFrame position={[0, 0, 0]} />
       </group>
-      {FRAMES_NORTH.map((pos, i) => <PhotoFrame key={i} position={pos} rotY={Math.PI} />)}
+      {/* FRAMES_NORTH supprimés — place pour l'arche chambre 1 (mur milieu x∈[-1.6,3.6]) */}
       {/* Mur sud : cadres au-dessus du coin salon (ref vue-entree, droite) */}
       {FRAMES_SOUTH.map((pos, i) => <PhotoFrame key={i} position={pos} />)}
       {FRAMES_EAST.map((pos, i) => (
@@ -1249,7 +1248,7 @@ export function SalonRoom() {
       </group>
 
       {/* ─── Vase de cempasúchil sur le buffet nord (ref vue-fenetre) ────────── */}
-      <group position={[3.3, 1.02, 5.35]}>
+      <group position={[2.1, 1.02, 5.35]}>
         <mesh position={[0, 0.14, 0]}>
           <cylinderGeometry args={[0.09, 0.06, 0.28, 10]} />
           <meshToonMaterial color="#7A9AB8" gradientMap={toonGradient} />
