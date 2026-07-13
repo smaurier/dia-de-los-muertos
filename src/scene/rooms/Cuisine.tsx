@@ -85,11 +85,19 @@ export function Cuisine() {
       </mesh>
       <Porte position={[-0.68, 0, 6.43]} angle={0} width={0.94} />
 
-      {/* ── Azulejos crédence — mur du fond derrière le fogón (ref entree-01/02) ── */}
-      <mesh position={[-2.2, 1.3, 11.98]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[2.0, 1.1]} />
+      {/* ── Azulejos crédence — grand pan derrière le fogón, du soubassement
+          à mi-mur comme dans la ref entree-02 ── */}
+      <mesh position={[-2.2, 1.2, 11.96]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[2.6, 1.5]} />
         <meshToonMaterial map={azulejosTalavera} gradientMap={toonGradient} />
       </mesh>
+      {/* Liseré bois en haut de la crédence */}
+      <mesh position={[-2.2, 1.97, 11.95]}>
+        <boxGeometry args={[2.6, 0.045, 0.03]} />
+        <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
+      </mesh>
+      {/* Lueur douce sur la crédence (sinon bande toon sombre au fond) */}
+      <pointLight position={[-2.2, 1.6, 11.2]} intensity={0.8} color="#f5d8a0" distance={2.5} decay={2} />
 
       {/* ── Porte bleue du jardin (mur ouest, non ouvrable — plan : "porte vers
           jardin"). Prend l'ancien emplacement de la porte du cellier. ── */}
