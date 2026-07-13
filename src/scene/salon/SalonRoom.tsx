@@ -18,6 +18,7 @@ import { SALON_OBSTACLES } from './salonCollision'
 import { NappeCloth } from './NappeCloth'
 import { PhotoFrame } from '../shared/PhotoFrame'
 import { Cuisine } from '../rooms/Cuisine'
+import { Cellier } from '../rooms/Cellier'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
 const SHOW_AABB = new URLSearchParams(window.location.search).has('aabb')
@@ -489,6 +490,9 @@ export function SalonRoom() {
 
       {/* ─── Cuisine — voir src/scene/rooms/Cuisine.tsx ─── */}
       <Cuisine />
+
+      {/* ─── Cellier — garde-manger à l'ouest de la cuisine ─── */}
+      <Cellier />
 
       {/* ─── Mur Est x=7 — arche d'entrée (zaguán, z=0, ouverture z∈[-0.9,0.9]) */}
       <mesh position={[7, 1.6, -3.35]} rotation={[0, -Math.PI / 2, 0]}>

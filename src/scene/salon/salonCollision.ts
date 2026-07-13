@@ -34,9 +34,20 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [-7.2, -3.45, 5.55, 6.2],   // section ouest du mur nord
   [-1.55,  7.2, 5.55, 6.2],   // section est (arche NE supprimée → plein)
   // ── Cuisine (z∈[5.8,12.0], x∈[-7,-0.6]) ──────────────────────────────────
-  [-7.2, -6.95, 5.8, 12.2],   // mur ouest cuisine (x=-7)
+  // mur ouest x=-7 : porte cellier z∈[9.5,10.5]
+  [-7.2, -6.95, 5.8, 9.5],    // mur ouest cuisine, segment sud
+  [-7.2, -6.95, 10.5, 12.2],  // mur ouest cuisine, segment nord
   [-0.65, -0.45, 5.8, 12.2],  // mur est cuisine (x=-0.6)
   [-7.2,  -0.45, 11.8, 12.2], // fond cuisine (z=12)
+  // ── Cellier (x∈[-10,-7], z∈[8.4,12]) ──────────────────────────────────────
+  [-10.2, -9.8, 8.4, 12.0],   // mur ouest cellier
+  [-10.2, -7.0, 11.8, 12.2],  // mur nord cellier
+  [-10.2, -7.0, 8.2, 8.6],    // mur sud cellier
+  // ── Mobilier cellier (nav seulement) ──────────────────────────────────────
+  [-10.0, -9.5, 8.75, 11.65], // étagères à conserves (mur ouest)
+  [-9.9,  -8.65, 8.4, 9.7],   // sacs de grain (coin sud-ouest)
+  [-9.65, -8.1, 11.2, 12.0],  // tonneau + caisse (coin nord)
+  [-8.5,  -7.7, 8.55, 8.95],  // ollas empilées (mur sud)
   // ── Mobilier cuisine (nav seulement) ──────────────────────────────────────
   [-4.50, -3.10, 8.40, 9.40], // table cuisine (centre pièce)
   [-3.90, -3.30, 7.75, 8.35], // chaise sud
@@ -59,7 +70,7 @@ export const SALON_BOUNDS = { minX: -6.7, maxX: 6.7, minZ: -5.6, maxZ: 5.6 }
 // Bounds de navigation totaux — couvre salon + cuisine (nord) + zaguán (est).
 // L'arche sud est supprimée → minZ = -5.7 (mur plein).
 // canMove utilise NAV_BOUNDS ; la caméra reste dans SALON_BOUNDS.
-export const NAV_BOUNDS = { minX: -7.2, maxX: 10.0, minZ: -5.7, maxZ: 12.2 }
+export const NAV_BOUNDS = { minX: -10.2, maxX: 10.0, minZ: -5.7, maxZ: 12.2 }
 
 // Murs physiques du salon (plans à x=±7, z=±5.8) et marge caméra.
 // CAM_MARGIN > near plane (0.1) : la caméra clampée ne coupe jamais un mur.

@@ -12,6 +12,7 @@ import {
 } from '../shared/paintedTextures'
 import { Prop } from '../shared/Prop'
 import { PhotoFrame } from '../shared/PhotoFrame'
+import { Porte } from '../shared/Porte'
 
 const C_CEIL      = '#F0E0C8'
 const C_IRON      = '#1A1512'
@@ -45,9 +46,41 @@ export function Cuisine() {
         <planeGeometry args={[CW, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Mur ouest (x=-7.0) — adobe ── */}
-      <mesh position={[-7.0, 1.45, CZ]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[CD, 2.9]} />
+      {/* ── Mur ouest (x=-7.0) — adobe. Deux portes : cellier z∈[9.5,10.5]
+          (ouverte) et couloir z∈[6.3,7.3] (fermée, s'ouvrira quand le couloir
+          existera — collision bloquée en attendant) ── */}
+      <mesh position={[-7.0, 1.45, 6.05]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[0.5, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[-7.0, 1.45, 8.4]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[2.2, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[-7.0, 2.5, 6.8]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[1.0, 0.8]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      {/* Encadrement + porte fermée vers le futur couloir */}
+      {[6.3, 7.3].map(dz => (
+        <mesh key={dz} position={[-7.0, 1.05, dz]}>
+          <boxGeometry args={[0.14, 2.1, 0.08]} />
+          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+          <Outlines thickness={0.012} color="black" />
+        </mesh>
+      ))}
+      <mesh position={[-7.0, 2.12, 6.8]}>
+        <boxGeometry args={[0.14, 0.09, 1.08]} />
+        <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
+        <Outlines thickness={0.012} color="black" />
+      </mesh>
+      <Porte position={[-7.0, 0, 6.33]} angle={0} width={0.94} />
+      <mesh position={[-7.0, 1.45, 11.25]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[1.5, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[-7.0, 2.5, 10.0]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[1.0, 0.8]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
       {/* ── Mur est (x=-0.6) — pierre (ref cuisine-coin-pierres-01) ── */}
