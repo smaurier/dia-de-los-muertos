@@ -53,7 +53,7 @@ export function DiningArea() {
         ))
       )}
 
-      {/* ─── Table dressée ──────────────────────────────────────────────────── */}
+      {/* ─── Set table ──────────────────────────────────────────────────────── */}
       <Tablecloth />
       {/* Plates + glasses — one plate + one glass per guest */}
       {PLATE_X.flatMap((px, pi) => PLATE_Z.map((pz, zi) => (

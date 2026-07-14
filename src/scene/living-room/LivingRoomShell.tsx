@@ -1,21 +1,6 @@
 // src/scene/living-room/LivingRoomShell.tsx
-import * as THREE from 'three'
-import { Outlines } from '@react-three/drei'
-import { toonGradient } from '../shared/toonGradient'
-import { boisSombre } from '../shared/paintedTextures'
-import { LeafyPlant } from './shell/LeafyPlant'
 import { PapelGarland } from './shell/PapelGarland'
-import { Kitchen } from '../rooms/Kitchen'
-import { Pantry } from '../rooms/Pantry'
-import { Corridor } from '../rooms/Corridor'
-import { Bedroom1 } from '../rooms/Bedroom1'
-import { Bedroom2 } from '../rooms/Bedroom2'
-import { Bathroom } from '../rooms/Bathroom'
-import { StorageRoom } from '../rooms/StorageRoom'
-import { Office } from '../rooms/Office'
-import { Patio } from '../rooms/Patio'
-import { Garage } from '../rooms/Garage'
-import { SkyDome } from '../shared/SkyDome'
+import { SatelliteRooms } from './shell/SatelliteRooms'
 import { SceneAuditProbe } from '../debug/sceneAudit'
 import { PerfProbe } from '../debug/PerfProbe'
 import { LivingRoomLighting } from './shell/LivingRoomLighting'
@@ -25,360 +10,45 @@ import { DiningArea } from './shell/DiningArea'
 import { SofaCorner } from './shell/SofaCorner'
 import { Furniture } from './shell/Furniture'
 import { Decorations } from './shell/Decorations'
-import {
-  C_WOOD_DARK, C_WOOD_MED, C_GOLD,
-  C_FRAME, C_PHOTO, C_POT, C_LEAF, C_CERAMIC,
-} from './shell/livingRoomConstants'
-
-// ─── Composants ───────────────────────────────────────────────────────────────
 
 // ─── Scene ────────────────────────────────────────────────────────────────────
 export function LivingRoomShell() {
   return (
     <group>
-      {/* ─── Lighting ───────────────────────────────────────────────────────── */}
+      {/* Lighting */}
       <LivingRoomLighting />
 
-      {/* ─── Structure (floor, ceiling, four walls) ─────────────────────────── */}
+      {/* Structure (floor, ceiling, four walls) */}
       <LivingRoomStructure />
 
-      {/* ─── Pièces satellites. (Room culling retiré : les murs sont partagés
-          entre pièces — trous visibles — et la mesure a montré que le coût
-          dominant est ailleurs : réflecteurs + coûts fixes par frame.) */}
-      {/* Group nommé : masqué PENDANT les passes des réflecteurs du salon
-          (leur reflet ne montre que le salon — re-rendre la maison entière
-          coûtait ~35 ms/frame, mesuré par bissection). ReflectorThrottle. */}
-      <group name="satellite-rooms">
-        <Kitchen />
-        <Pantry />
-        <Corridor />
-        <Bedroom1 />
-        <Bedroom2 />
-        <Bathroom />
-        <StorageRoom />
-        <Office />
-        <Patio />
-        <Garage />
-      </group>
+      {/* Satellite rooms + starry sky bubble */}
+      <SatelliteRooms />
 
-      {/* ─── Bulle de ciel étoilé au-dessus de toute la maison ─── */}
-      <SkyDome />
-
-      {/* ─── Audit graphique (?audit) + mesure perf (?perf) — inactifs sinon ─── */}
+      {/* Graphics audit (?audit) + perf measurement (?perf) — inactive otherwise */}
       <SceneAuditProbe />
       <PerfProbe />
 
-      {/* ─── Grande fenêtre à rideaux (mur ouest, ref salon-vue-entree-01) ──── */}
+      {/* Large curtained window (west wall, ref salon-vue-entree-01) */}
       <LivingRoomWindow />
 
-      {/* ─── Papel picado ───────────────────────────────────────────────────── */}
+      {/* Papel picado */}
       <PapelGarland />
 
-      {/* ─── Table centrale + Table dressée + 20 chaises + Bougies table ─────── */}
+      {/* Central table + set table + 20 chairs + table candles */}
       <DiningArea />
 
-      {/* ─── South-west lounge corner: footstool, sofa, rug, armchair,
-          bassinet, CRT TV + cabinet, and the TV photo frames ───────────────── */}
+      {/* South-west lounge corner: footstool, sofa, rug, armchair,
+          bassinet, CRT TV + cabinet, and the TV photo frames */}
       <SofaCorner />
 
-      {/* ─── Wall furniture: buffet + candles, zaguán entry corridor
-          (with front door), china cabinet ─────────────────────────────────── */}
+      {/* Wall furniture: buffet + candles, zaguán entry corridor
+          (with front door), china cabinet */}
       <Furniture />
 
-      {/* ─── Décor: photo frames, cactus, wrought-iron chandelier ───────────── */}
+      {/* Decor: photo frames, cactus, wrought-iron chandelier, serving
+          plates, feast, vase, wall candles, tapestry, plants, dresser,
+          and baseboards */}
       <Decorations />
-
-      {/* ─── Plats de service (centre de table, entre les bougies) ─────────── */}
-      {/* Plat de tamales */}
-      <group position={[-2.75, 0.84, 0]}>
-        <mesh scale={[1.4, 1, 1]}>
-          <cylinderGeometry args={[0.24, 0.28, 0.05, 12]} />
-          <meshToonMaterial color={C_CERAMIC} gradientMap={toonGradient} />
-          <Outlines thickness={0.014} color="black" />
-        </mesh>
-        {([-0.20, 0, 0.20] as number[]).map((dx, i) => (
-          <mesh key={i} position={[dx, 0.055, 0]} rotation={[0, (i - 1) * 0.25, 0]}>
-            <boxGeometry args={[0.11, 0.06, 0.26]} />
-            <meshToonMaterial color="#D9B98A" gradientMap={toonGradient} />
-            <Outlines thickness={0.010} color="black" />
-          </mesh>
-        ))}
-      </group>
-      {/* Marmite de mole */}
-      <group position={[-0.15, 0.82, 0]}>
-        <mesh position={[0, 0.06, 0]}>
-          <cylinderGeometry args={[0.19, 0.14, 0.14, 12]} />
-          <meshToonMaterial color="#B05038" gradientMap={toonGradient} />
-          <Outlines thickness={0.014} color="black" />
-        </mesh>
-        <mesh position={[0, 0.125, 0]}>
-          <cylinderGeometry args={[0.155, 0.155, 0.015, 12]} />
-          <meshToonMaterial color="#4A2210" gradientMap={toonGradient} />
-        </mesh>
-      </group>
-      {/* Corbeille d'oranges */}
-      <group position={[2.45, 0.83, 0]}>
-        <mesh>
-          <cylinderGeometry args={[0.20, 0.15, 0.09, 10]} />
-          <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
-          <Outlines thickness={0.014} color="black" />
-        </mesh>
-        {([[-0.07, 0.07, 0.05], [0.08, 0.07, -0.04], [-0.02, 0.07, -0.08], [0.01, 0.13, 0.01]] as [number, number, number][]).map((p, i) => (
-          <mesh key={i} position={p}>
-            <sphereGeometry args={[0.055, 9, 9]} />
-            <meshToonMaterial color="#E67E22" gradientMap={toonGradient} />
-            <Outlines thickness={0.010} color="black" />
-          </mesh>
-        ))}
-      </group>
-
-      {/* ─── Festin complété (refs : la table est couverte de plats) ────────── */}
-      {/* Pile de tortillas + linge */}
-      <group position={[1.55, 0.84, 0.35]}>
-        <mesh>
-          <cylinderGeometry args={[0.16, 0.16, 0.015, 10]} />
-          <meshToonMaterial color={C_CERAMIC} gradientMap={toonGradient} />
-          <Outlines thickness={0.012} color="black" />
-        </mesh>
-        {[0.02, 0.045, 0.07].map((py, i) => (
-          <mesh key={i} position={[(i % 2) * 0.012, py, -(i % 2) * 0.01]}>
-            <cylinderGeometry args={[0.12 - i * 0.004, 0.12 - i * 0.004, 0.022, 10]} />
-            <meshToonMaterial color="#E9D8A8" gradientMap={toonGradient} />
-          </mesh>
-        ))}
-      </group>
-      {/* Bol de frijoles */}
-      <group position={[-1.45, 0.84, -0.35]}>
-        <mesh position={[0, 0.045, 0]}>
-          <cylinderGeometry args={[0.13, 0.09, 0.10, 12]} />
-          <meshToonMaterial color="#8A4A2A" gradientMap={toonGradient} />
-          <Outlines thickness={0.012} color="black" />
-        </mesh>
-        <mesh position={[0, 0.09, 0]}>
-          <cylinderGeometry args={[0.105, 0.105, 0.012, 12]} />
-          <meshToonMaterial color="#3A1C10" gradientMap={toonGradient} />
-        </mesh>
-      </group>
-      {/* Deux jarras (agua de jamaica) */}
-      {([[-3.55, 0.55], [3.35, -0.5]] as [number, number][]).map(([jx, jz], i) => (
-        <group key={i} position={[jx, 0.84, jz]}>
-          <mesh position={[0, 0.10, 0]}>
-            <cylinderGeometry args={[0.075, 0.055, 0.20, 10]} />
-            <meshToonMaterial color="#B05038" gradientMap={toonGradient} />
-            <Outlines thickness={0.012} color="black" />
-          </mesh>
-          <mesh position={[0, 0.215, 0]}>
-            <cylinderGeometry args={[0.05, 0.075, 0.035, 10]} />
-            <meshToonMaterial color="#B05038" gradientMap={toonGradient} />
-          </mesh>
-          <mesh position={[0.085, 0.12, 0]} rotation={[0, 0, -0.3]}>
-            <torusGeometry args={[0.045, 0.011, 6, 10, Math.PI]} />
-            <meshToonMaterial color="#B05038" gradientMap={toonGradient} />
-          </mesh>
-        </group>
-      ))}
-      {/* Corbeille de pan de muerto */}
-      <group position={[0.05, 0.84, 0.42]}>
-        <mesh>
-          <cylinderGeometry args={[0.17, 0.13, 0.07, 10]} />
-          <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
-          <Outlines thickness={0.012} color="black" />
-        </mesh>
-        {([[-0.05, 0.04], [0.06, -0.03], [0.0, 0.09]] as [number, number][]).map(([bx, bz], i) => (
-          <group key={i} position={[bx, 0.065 + (i === 2 ? 0.05 : 0), bz]}>
-            <mesh>
-              <sphereGeometry args={[0.062, 9, 9]} />
-              <meshToonMaterial color="#C8893A" gradientMap={toonGradient} />
-              <Outlines thickness={0.010} color="black" />
-            </mesh>
-            <mesh position={[0, 0.045, 0]}>
-              <sphereGeometry args={[0.02, 7, 7]} />
-              <meshToonMaterial color="#B8792F" gradientMap={toonGradient} />
-            </mesh>
-          </group>
-        ))}
-      </group>
-
-      {/* ─── Vase de cempasúchil sur le buffet nord (ref vue-fenetre) ────────── */}
-      <group position={[2.1, 1.02, 5.35]}>
-        <mesh position={[0, 0.14, 0]}>
-          <cylinderGeometry args={[0.09, 0.06, 0.28, 10]} />
-          <meshToonMaterial color="#7A9AB8" gradientMap={toonGradient} />
-          <Outlines thickness={0.014} color="black" />
-        </mesh>
-        {([[0, 0.36, 0], [-0.09, 0.32, 0.04], [0.09, 0.33, -0.03], [-0.04, 0.30, -0.08], [0.05, 0.31, 0.08], [0, 0.42, -0.02]] as [number, number, number][]).map((p, i) => (
-          <mesh key={i} position={p}>
-            <sphereGeometry args={[0.045, 8, 8]} />
-            <meshToonMaterial color={i % 2 ? '#E8940A' : '#D97E08'} gradientMap={toonGradient} />
-            <Outlines thickness={0.010} color="black" />
-          </mesh>
-        ))}
-      </group>
-
-      {/* ─── Bougies murales nord sur consoles (ref vue-fenetre : lueurs sur le
-          mur droit) ─────────────────────────────────────────────────────────── */}
-      {([[0.3, 5.62], [4.9, 5.62]] as [number, number][]).map(([sx2, sz2], i) => (
-        <group key={i}>
-          <mesh position={[sx2, 1.94, sz2 + 0.09]}>
-            <boxGeometry args={[0.24, 0.03, 0.16]} />
-            <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
-            <Outlines thickness={0.012} color="black" />
-          </mesh>
-        </group>
-      ))}
-
-      {/* ─── Tenture tissée (mur nord, à l'ouest de l'arche — ref) ───────────── */}
-      <group position={[-4.9, 2.0, 5.77]} rotation={[0, Math.PI, 0]}>
-        <mesh>
-          <planeGeometry args={[0.72, 1.0]} />
-          <meshToonMaterial color="#8A3A2A" gradientMap={toonGradient} />
-        </mesh>
-        {[-0.30, -0.10, 0.10, 0.30].map((ty, i) => (
-          <mesh key={i} position={[0, ty, 0.005]}>
-            <planeGeometry args={[0.72, 0.07]} />
-            <meshToonMaterial color={['#E8940A', '#27AE60', '#F1C40F', '#2980B9'][i]} gradientMap={toonGradient} />
-          </mesh>
-        ))}
-        <mesh position={[0, 0.54, 0.01]}>
-          <boxGeometry args={[0.82, 0.04, 0.03]} />
-          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-        </mesh>
-      </group>
-
-      {/* ─── Photos de famille posées sur le buffet ─────────────────────────── */}
-      {([-1.95, -2.5, -3.05] as number[]).map((pz, i) => (
-        <group key={i} position={[-6.28, 1.05, pz]} rotation={[-0.06, Math.PI / 2 + (i - 1) * 0.18, 0]}>
-          <mesh position={[0, 0.14, 0]}>
-            <boxGeometry args={[0.22, 0.28, 0.02]} />
-            <meshToonMaterial color={C_FRAME} gradientMap={toonGradient} />
-            <Outlines thickness={0.012} color="black" />
-          </mesh>
-          <mesh position={[0, 0.14, 0.012]}>
-            <boxGeometry args={[0.17, 0.23, 0.008]} />
-            <meshToonMaterial color={C_PHOTO} gradientMap={toonGradient} />
-          </mesh>
-        </group>
-      ))}
-
-      {/* ─── Plantes feuillues : mur est + de part et d'autre de la fenêtre (ref) ── */}
-      <LeafyPlant position={[6.5, 0, 2.8]} />
-      <LeafyPlant position={[-6.35, 0, 2.35]} />
-      <LeafyPlant position={[-6.4, 0, -1.6]} />
-
-      {/* ─── Petite commode + lampe de chevet + mini plante — ENTRE le bout du
-          retour du canapé et la TV, contre le mur sud (position B validée) ──── */}
-      <group position={[-5.0, 0, -5.45]} rotation={[0, -Math.PI / 2, 0]}>
-        {/* Commode : caisson bois, 2 tiroirs à boutons, 4 pieds courts */}
-        <mesh position={[0, 0.34, 0]}>
-          <boxGeometry args={[0.44, 0.44, 0.55]} />
-          <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
-          <Outlines thickness={0.016} color="black" />
-        </mesh>
-        <mesh position={[0, 0.575, 0]}>
-          <boxGeometry args={[0.48, 0.035, 0.59]} />
-          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-          <Outlines thickness={0.012} color="black" />
-        </mesh>
-        {[0.24, 0.44].map((ty, i) => (
-          <group key={i}>
-            <mesh position={[0.225, ty, 0]}>
-              <boxGeometry args={[0.015, 0.155, 0.46]} />
-              <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
-            </mesh>
-            <mesh position={[0.235, ty, 0]} rotation={[0, 0, Math.PI / 2]}>
-              <cylinderGeometry args={[0.016, 0.016, 0.02, 8]} />
-              <meshToonMaterial color={C_GOLD} gradientMap={toonGradient} />
-            </mesh>
-          </group>
-        ))}
-        {([-0.16, 0.16] as number[]).flatMap(lx =>
-          ([-0.22, 0.22] as number[]).map((lz, j) => (
-            <mesh key={`${lx}-${j}`} position={[lx, 0.06, lz]}>
-              <cylinderGeometry args={[0.02, 0.024, 0.12, 6]} />
-              <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-            </mesh>
-          ))
-        )}
-        {/* Mini plante en pot (quelques centimètres, à côté de la lampe) */}
-        <group position={[0.02, 0.59, 0.17]}>
-          <mesh position={[0, 0.035, 0]}>
-            <cylinderGeometry args={[0.035, 0.026, 0.07, 8]} />
-            <meshToonMaterial color={C_POT} gradientMap={toonGradient} />
-            <Outlines thickness={0.008} color="black" />
-          </mesh>
-          {([[0, 0.1, 0, 0.045], [-0.03, 0.085, 0.02, 0.03], [0.03, 0.09, -0.015, 0.032]] as [number, number, number, number][]).map(([px, py, pz, r], i) => (
-            <mesh key={i} position={[px, py, pz]} scale={[1, 1.4, 1]}>
-              <sphereGeometry args={[r, 7, 7]} />
-              <meshToonMaterial color={C_LEAF} gradientMap={toonGradient} />
-              <Outlines thickness={0.006} color="black" />
-            </mesh>
-          ))}
-        </group>
-        {/* Lampe de chevet : socle + tige courte + petit abat-jour */}
-        <group position={[0.02, 0.075, -0.14]}>
-          <mesh position={[0, 0.535, 0]}>
-            <cylinderGeometry args={[0.06, 0.075, 0.03, 10]} />
-            <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-            <Outlines thickness={0.010} color="black" />
-          </mesh>
-          <mesh position={[0, 0.63, 0]}>
-            <cylinderGeometry args={[0.014, 0.018, 0.16, 8]} />
-            <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-          </mesh>
-          <mesh position={[0, 0.76, 0]}>
-            <cylinderGeometry args={[0.075, 0.11, 0.15, 12, 1, true]} />
-            <meshToonMaterial color="#E8C87A" emissive="#F0C060" emissiveIntensity={0.6} gradientMap={toonGradient} side={THREE.DoubleSide} />
-            <Outlines thickness={0.012} color="black" />
-          </mesh>
-        </group>
-      </group>
-      <pointLight position={[-4.86, 1.0, -5.43]} intensity={0.6} color="#F5C87A" distance={3} decay={2} />
-
-      {/* ─── Plinthes segmentées — évitent arches et portes ─────────────────
-          Nord (z=5.772) : arche1 x∈[-3.4,-1.6] arche2 x∈[3.6,5.4]
-          Sud (z=-5.772) : arche3 x∈[-4.4,-2.6]
-          Est (x=6.952) : porte z∈[-0.9,0.9]
-          Ouest (x=-6.952) : plein (fenêtre à y>0.75, plinthe en dessous) ──── */}
-      {/* Nord — 3 segments */}
-      <mesh position={[-5.2, 0.06, 5.772]}>
-        <boxGeometry args={[3.6, 0.12, 0.055]} />
-        <meshBasicMaterial color="#3A2008" />
-      </mesh>
-      <mesh position={[1.0, 0.06, 5.772]}>
-        <boxGeometry args={[5.2, 0.12, 0.055]} />
-        <meshBasicMaterial color="#3A2008" />
-      </mesh>
-      <mesh position={[6.2, 0.06, 5.772]}>
-        <boxGeometry args={[1.6, 0.12, 0.055]} />
-        <meshBasicMaterial color="#3A2008" />
-      </mesh>
-      {/* Sud — 2 segments */}
-      <mesh position={[-5.7, 0.06, -5.772]}>
-        <boxGeometry args={[2.6, 0.12, 0.055]} />
-        <meshBasicMaterial color="#3A2008" />
-      </mesh>
-      <mesh position={[2.2, 0.06, -5.772]}>
-        <boxGeometry args={[9.6, 0.12, 0.055]} />
-        <meshBasicMaterial color="#3A2008" />
-      </mesh>
-      {/* Est — 2 segments (porte z∈[-0.9,0.9]) */}
-      <mesh position={[6.952, 0.06, -3.35]}>
-        <boxGeometry args={[0.055, 0.12, 4.9]} />
-        <meshBasicMaterial color="#3A2008" />
-      </mesh>
-      <mesh position={[6.952, 0.06, 3.35]}>
-        <boxGeometry args={[0.055, 0.12, 4.9]} />
-        <meshBasicMaterial color="#3A2008" />
-      </mesh>
-      {/* Ouest — plein */}
-      <mesh position={[-6.952, 0.06, 0]}>
-        <boxGeometry args={[0.055, 0.12, 11.6]} />
-        <meshBasicMaterial color="#3A2008" />
-      </mesh>
-
-      {/* (corniche supprimée : en meshBasicMaterial clair elle brillait comme
-          un néon dans la pénombre — les refs font rencontrer adobe et bois
-          sombre directement) */}
     </group>
   )
 }
