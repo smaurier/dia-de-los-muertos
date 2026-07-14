@@ -35,8 +35,10 @@ docs/
 ```bash
 npm run dev      # lancer le prototype
 npm test         # 42 tests logique pure
-npx tsc --noEmit # vérifier les types
+npm run typecheck   # vrai typecheck (tsc -b) — PAS 'tsc --noEmit' (no-op sur ce repo)
 ```
+
+> Note : `npx tsc --noEmit` sur la config racine (solution-style, `"files": []`) ne compile rien et sort toujours avec code 0 — utiliser `npm run typecheck` à la place.
 
 ## Références
 
