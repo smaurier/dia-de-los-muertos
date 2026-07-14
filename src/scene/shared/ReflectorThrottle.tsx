@@ -24,7 +24,9 @@ export function ReflectorThrottle() {
     const originals = new Map<THREE.Mesh, THREE.Mesh['onBeforeRender']>()
 
     // Patch différé et répété : les réflecteurs (Suspense, GLB) montent après.
+    let satellites: THREE.Object3D | null = null
     const patchAll = () => {
+      if (!satellites) satellites = scene.getObjectByName('satellite-rooms') ?? null
       scene.traverse(obj => {
         const mesh = obj as THREE.Mesh
         if (!mesh.isMesh || originals.has(mesh)) return
@@ -33,8 +35,20 @@ export function ReflectorThrottle() {
         const original = mesh.onBeforeRender
         originals.set(mesh, original)
         const myPhase = phase++
+        // Scope 'salon' (sol, fenêtre) : leur reflet ne montre que le salon —
+        // les 10 pièces satellites sont masquées PENDANT la passe (bissection :
+        // re-rendre la maison entière coûtait ~35 ms/frame). Le miroir du
+        // couloir (sans scope) continue de tout refléter.
+        const salonOnly = mesh.userData?.reflectorScope === 'salon'
         mesh.onBeforeRender = function (...args) {
-          if (frame % 2 === myPhase % 2) original.apply(this, args)
+          if (frame % 2 !== myPhase % 2) return
+          if (salonOnly && satellites) {
+            satellites.visible = false
+            original.apply(this, args)
+            satellites.visible = true
+          } else {
+            original.apply(this, args)
+          }
         }
       })
     }

@@ -47,6 +47,17 @@ const PHOTO = (() => {
   return nums.length === 6 && nums.every(n => !Number.isNaN(n)) ? nums : null
 })()
 
+// ?nofx coupe le composer — mais ReflectionsSansFog (useFrame à priorité ≠ 0)
+// désactive le rendu automatique de R3F : sans composer, personne ne rendait
+// → écran noir. En NOFX, ce composant reprend le rendu à la main.
+function ManualRender() {
+  const { gl, scene, camera } = useThree()
+  useFrame(() => {
+    gl.render(scene, camera)
+  }, 2)
+  return null
+}
+
 // Les réflecteurs drei (sol, vitre) rendent leur passe dans useFrame (prio 0) :
 // la caméra virtuelle, mirroir de la nôtre, voit le joueur 2× plus loin et le
 // fog l'avale (on « disparaît » du reflet en reculant). Un vrai reflet ne
@@ -192,6 +203,7 @@ export default function App() {
           )}
           <ReflectionsSansFog />
           <ReflectorThrottle />
+          {NOFX && <ManualRender />}
           <Suspense fallback={null}>
             {PHOTO ? <PhotoCamera conf={PHOTO} /> : <Player />}
             <Salon />

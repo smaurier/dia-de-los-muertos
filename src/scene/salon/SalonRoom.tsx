@@ -380,7 +380,7 @@ export function SalonRoom() {
       {/* ─── Sol tomettes (texture peinte, palier 3) ─────────────────────────── */}
       {/* Réflexion planaire floutée : la ref montre chaises/nappe/lustre qui se
           mirent dans les tomettes cirées. Seule entorse au toon, assumée. */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} userData={{ reflectorScope: 'salon' }}>
         <planeGeometry args={[14, 11.6]} />
         {NO_REFLECT ? (
           <meshPhongMaterial map={solTomettes} normalMap={solTomettesNormal} shininess={30} />
@@ -508,16 +508,21 @@ export function SalonRoom() {
       {/* ─── Pièces satellites. (Room culling retiré : les murs sont partagés
           entre pièces — trous visibles — et la mesure a montré que le coût
           dominant est ailleurs : réflecteurs + coûts fixes par frame.) */}
-      <Cuisine />
-      <Cellier />
-      <Couloir />
-      <Chambre1 />
-      <Chambre2 />
-      <SalleDeBain />
-      <Debarras />
-      <Bureau />
-      <Patio />
-      <Garage />
+      {/* Group nommé : masqué PENDANT les passes des réflecteurs du salon
+          (leur reflet ne montre que le salon — re-rendre la maison entière
+          coûtait ~35 ms/frame, mesuré par bissection). ReflectorThrottle. */}
+      <group name="satellite-rooms">
+        <Cuisine />
+        <Cellier />
+        <Couloir />
+        <Chambre1 />
+        <Chambre2 />
+        <SalleDeBain />
+        <Debarras />
+        <Bureau />
+        <Patio />
+        <Garage />
+      </group>
 
       {/* ─── Bulle de ciel étoilé au-dessus de toute la maison ─── */}
       <DomeCiel />
@@ -664,7 +669,7 @@ export function SalonRoom() {
         </mesh>
         {/* Vitre unique partagée (mi-profondeur des deux gorges) : reflet
             planaire — de nuit l'intérieur éclairé se mire dans le verre */}
-        <mesh position={[-7.085, 1.8, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <mesh position={[-7.085, 1.8, 0]} rotation={[0, Math.PI / 2, 0]} userData={{ reflectorScope: 'salon' }}>
           <planeGeometry args={[3.36, 2.04]} />
           {NO_REFLECT ? (
             <meshToonMaterial color="#C8DCE8" transparent opacity={0.35} gradientMap={toonGradient} side={THREE.DoubleSide} />
