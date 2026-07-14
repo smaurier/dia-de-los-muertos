@@ -25,6 +25,7 @@ import { Chambre2 } from '../rooms/Chambre2'
 import { SalleDeBain } from '../rooms/SalleDeBain'
 import { Debarras } from '../rooms/Debarras'
 import { Bureau } from '../rooms/Bureau'
+import { PorteEntree } from './PorteEntree'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
 const SHOW_AABB = new URLSearchParams(window.location.search).has('aabb')
@@ -1027,16 +1028,9 @@ export function SalonRoom() {
           <planeGeometry args={[1.19, 2.9]} />
           <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
         </mesh>
-        {/* Porte extérieure (double, planches) sur le mur est */}
-        {[-0.42, 0.42].map(dz => (
-          <mesh key={dz} position={[9.94, 1.15, dz]}>
-            <boxGeometry args={[0.12, 2.3, 0.82]} />
-            <meshToonMaterial color="#3E2210" gradientMap={toonGradient} />
-            <Outlines thickness={0.020} color="black" />
-          </mesh>
-        ))}
-        {/* Lumière naturelle de l'entrée */}
-        <pointLight position={[9.2, 2.2, 0]} intensity={1.3} color="#f8e8c0" distance={4.5} decay={2} />
+        {/* Porte principale : vantaux cloutés, cantera, imposte, farol —
+            voir PorteEntree.tsx */}
+        <PorteEntree />
       </group>
 
       {/* ─── Vaisselier (coin nord-est, ref vue-fenetre) ────────────────────── */}
