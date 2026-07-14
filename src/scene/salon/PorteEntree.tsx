@@ -21,7 +21,10 @@ const C_CANTERA  = '#C9B8A2'
 const C_CANTERA2 = '#B8A288'
 const C_GLOW     = '#F0C060'
 
-// Un vantail : panneau bois + cadre mouluré + 2 caissons + clavos + penture.
+// Un vantail — VU DE L'INTÉRIEUR de la maison : la face qu'on voit est la
+// structure (planches verticales, traverses, pentures forgées, gonds). Les
+// clavos, heurtoirs et caissons moulurés sont la parure de la rue — sur la
+// face est (x+), invisible d'ici mais cohérente si la porte s'ouvre un jour.
 // side=+1 : vantail nord (z>0), gonds côté jambage nord. side=-1 : miroir.
 function Vantail({ side }: { side: 1 | -1 }) {
   const zc = side * 0.45 // centre du vantail (z de ±0.02 à ±0.88)
@@ -33,70 +36,43 @@ function Vantail({ side }: { side: 1 | -1 }) {
         <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
         <Outlines thickness={0.016} color="black" />
       </mesh>
-      {/* Cadre mouluré en relief (côté couloir, face -x) */}
-      {[[0.32, 0.78], [1.13, 0.06], [2.05, 0.1]].map(([ty, th], i) => (
-        <mesh key={i} position={[-0.06, ty === 0.32 ? 0.32 : ty, 0]}>
-          <boxGeometry args={[0.03, th === 0.78 ? 0.12 : th + 0.04, 0.82]} />
+      {/* ── Face intérieure (-x, celle qu'on voit) : structure ── */}
+      {/* Rainures des planches verticales */}
+      {[-0.28, -0.09, 0.09, 0.28].map(dz => (
+        <mesh key={dz} position={[-0.052, 1.1, dz]}>
+          <boxGeometry args={[0.008, 2.02, 0.018]} />
           <meshToonMaterial color={C_WOOD_DK} gradientMap={toonGradient} />
         </mesh>
       ))}
-      {[-0.39, 0.39].map(dz => (
-        <mesh key={dz} position={[-0.06, 1.13, dz]}>
-          <boxGeometry args={[0.03, 1.9, 0.08]} />
-          <meshToonMaterial color={C_WOOD_DK} gradientMap={toonGradient} />
-        </mesh>
-      ))}
-      {/* Deux caissons moulurés (haut et bas) en léger relief */}
-      {[[1.62, 0.72], [0.68, 0.62]].map(([py, ph], i) => (
-        <group key={i}>
-          <mesh position={[-0.058, py, 0]}>
-            <boxGeometry args={[0.025, ph, 0.62]} />
-            <meshToonMaterial color={C_PANEL} gradientMap={toonGradient} />
-            <Outlines thickness={0.010} color="black" />
-          </mesh>
-          <mesh position={[-0.075, py, 0]}>
-            <boxGeometry args={[0.012, ph - 0.18, 0.44]} />
-            <meshToonMaterial color={C_WOOD} gradientMap={toonGradient} />
-          </mesh>
-        </group>
-      ))}
-      {/* Clavos — têtes de clous forgés en quinconce sur les montants */}
-      {[0.35, 0.78, 1.21, 1.64, 2.0].flatMap(py =>
-        [-0.33, 0.33].map(dz => (
-          <mesh key={`${py}-${dz}`} position={[-0.085, py, dz]} rotation={[0, 0, Math.PI / 2]}>
-            <cylinderGeometry args={[0.022, 0.03, 0.025, 6]} />
-            <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
-            <Outlines thickness={0.006} color="black" />
-          </mesh>
-        ))
-      )}
-      {/* Penture forgée (bande horizontale côté gonds, bout en pointe) */}
-      {[0.5, 1.75].map(py => (
-        <group key={py}>
-          <mesh position={[-0.065, py, side * 0.18]}>
-            <boxGeometry args={[0.015, 0.07, 0.5]} />
-            <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
-            <Outlines thickness={0.006} color="black" />
-          </mesh>
-          <mesh position={[-0.065, py, side * -0.09]} rotation={[side * Math.PI / 4, 0, 0]}>
-            <boxGeometry args={[0.015, 0.07, 0.07]} />
-            <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
-          </mesh>
-        </group>
-      ))}
-      {/* Heurtoir : platine ronde + anneau forgé (près du montant central) */}
-      <group position={[-0.08, 1.35, side * -0.28]}>
-        <mesh rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.045, 0.05, 0.02, 8]} />
-          <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+      {/* Traverses basse, médiane, haute */}
+      {[0.36, 1.13, 1.92].map(py => (
+        <mesh key={py} position={[-0.065, py, 0]}>
+          <boxGeometry args={[0.03, 0.16, 0.78]} />
+          <meshToonMaterial color={C_PANEL} gradientMap={toonGradient} />
           <Outlines thickness={0.008} color="black" />
         </mesh>
-        <mesh position={[-0.03, -0.05, 0]} rotation={[0, 0.3, 0]}>
-          <torusGeometry args={[0.05, 0.011, 6, 14]} />
-          <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
-          <Outlines thickness={0.006} color="black" />
-        </mesh>
-      </group>
+      ))}
+      {/* Pentures forgées sur les traverses, ancrées côté gonds */}
+      {[0.36, 1.92].map(py => (
+        <group key={py}>
+          <mesh position={[-0.085, py, side * 0.16]}>
+            <boxGeometry args={[0.012, 0.06, 0.54]} />
+            <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+            <Outlines thickness={0.006} color="black" />
+          </mesh>
+          {/* Bout en goutte */}
+          <mesh position={[-0.085, py, side * -0.13]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.035, 0.035, 0.012, 6]} />
+            <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+          </mesh>
+        </group>
+      ))}
+      {/* Poignée intérieure en fer (près du montant central) */}
+      <mesh position={[-0.08, 1.15, side * -0.3]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.045, 0.011, 6, 12, Math.PI]} />
+        <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+        <Outlines thickness={0.006} color="black" />
+      </mesh>
       {/* Gonds visibles côté jambage */}
       {[0.45, 1.8].map(py => (
         <mesh key={py} position={[-0.02, py, side * 0.42]}>
@@ -104,6 +80,31 @@ function Vantail({ side }: { side: 1 | -1 }) {
           <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
         </mesh>
       ))}
+      {/* ── Face rue (+x, invisible d'ici) : caissons + clavos + heurtoir ── */}
+      {[[1.62, 0.72], [0.68, 0.62]].map(([py, ph], i) => (
+        <mesh key={i} position={[0.058, py, 0]}>
+          <boxGeometry args={[0.025, ph, 0.62]} />
+          <meshToonMaterial color={C_PANEL} gradientMap={toonGradient} />
+        </mesh>
+      ))}
+      {[0.35, 0.78, 1.21, 1.64, 2.0].flatMap(py =>
+        [-0.33, 0.33].map(dz => (
+          <mesh key={`${py}-${dz}`} position={[0.085, py, dz]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.022, 0.03, 0.025, 6]} />
+            <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+          </mesh>
+        ))
+      )}
+      <group position={[0.08, 1.35, side * -0.28]}>
+        <mesh rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.045, 0.05, 0.02, 8]} />
+          <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+        </mesh>
+        <mesh position={[0.03, -0.05, 0]} rotation={[0, 0.3, 0]}>
+          <torusGeometry args={[0.05, 0.011, 6, 14]} />
+          <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+        </mesh>
+      </group>
     </group>
   )
 }
