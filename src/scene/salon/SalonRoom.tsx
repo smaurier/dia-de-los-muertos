@@ -385,7 +385,7 @@ export function SalonRoom() {
           map={solTomettes}
           normalMap={solTomettesNormal}
           normalScale={new THREE.Vector2(0.7, 0.7)}
-          resolution={512}
+          resolution={256}
           mirror={0.45}
           mixStrength={0.8}
           mixBlur={1}

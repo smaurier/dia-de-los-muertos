@@ -35,7 +35,8 @@ export function Mama() {
         color: old.map ? '#ffffff' : '#c68642',
         gradientMap: toonGradient,
       })
-      mesh.frustumCulled = false
+      mesh.geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 1, 0), 2.5)
+      mesh.frustumCulled = true // sphère fixe généreuse : cull sans disparitions
     })
     headBoneRef.current =
       scene.getObjectByName('mixamorigHead') ??

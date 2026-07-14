@@ -158,6 +158,9 @@ export default function App() {
       <KeyboardControls map={CONTROLS_MAP}>
         <Canvas
           camera={{ fov: 65, near: 0.1, far: 100, position: [0, 1.3, 4.2] }}
+          // DPR plafonné à 1.5 : sur écran hi-dpi le jeu rendait à 2× la
+          // résolution — fill rate doublé pour un gain invisible en toon
+          dpr={[1, 1.5]}
           style={{ width: '100vw', height: '100vh', background: '#1a0e07' }}
         >
           {TOON_RICHE.enabled && (
@@ -171,7 +174,9 @@ export default function App() {
                 framebuffer vide pendant le chargement des GLB et rend un écran
                 uniforme (couleur fog) définitivement. */}
             {TOON_RICHE.enabled && !NOFX && (
-              <EffectComposer>
+              // multisampling 2 (défaut 8) : l'anti-aliasing 8× coûtait cher
+              // pour un rendu toon à contours noirs + grain qui masque tout
+              <EffectComposer multisampling={2}>
                 <Bloom
                   luminanceThreshold={TOON_RICHE.bloomThreshold}
                   intensity={TOON_RICHE.bloomIntensity}

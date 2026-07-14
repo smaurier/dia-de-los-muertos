@@ -87,7 +87,8 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
           color: old.map ? '#ffffff' : (old.color ?? new THREE.Color(MODEL_TUNING.color)),
           gradientMap: toonGradient,
         })
-        mesh.frustumCulled = false // skinned mesh : bounds de repos faux une fois assis
+        mesh.geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 1, 0), 2.5)
+        mesh.frustumCulled = true // sphère fixe généreuse : cull sans disparitions
       }
     })
     headBoneRef.current =
