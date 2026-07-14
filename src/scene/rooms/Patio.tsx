@@ -9,7 +9,7 @@
 // À l'est (x=9.0) : le mur mitoyen du garage, percé d'une arche avec une
 // porte en bois ouvrable.
 import * as THREE from 'three'
-import { MeshReflectorMaterial, Outlines } from '@react-three/drei'
+import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide } from '../shared/paintedTextures'
 import { PorteAnimee } from '../shared/PorteAnimee'
@@ -186,36 +186,8 @@ export function Patio() {
       {/* Porte en bois OUVRABLE (touche F) dans l'arche */}
       <PorteAnimee id="garage" position={[9.0, 0, -8.57]} openAngle={-1.9} width={0.94} />
 
-      {/* ── Bassin ovale au centre : bordure pierre + eau-miroir ── */}
-      <group position={[4.2, 0, -8.3]}>
-        <mesh position={[0, 0.18, 0]} scale={[1.7, 1, 1.15]}>
-          <cylinderGeometry args={[1.06, 1.12, 0.36, 20, 1, true]} />
-          <meshToonMaterial color={C_DALLE} gradientMap={toonGradient} side={THREE.DoubleSide} />
-          <Outlines thickness={0.016} color="black" />
-        </mesh>
-        <mesh position={[0, 0.365, 0]} scale={[1.7, 1, 1.15]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[1.09, 0.055, 8, 24]} />
-          <meshToonMaterial color="#9A8A76" gradientMap={toonGradient} />
-          <Outlines thickness={0.014} color="black" />
-        </mesh>
-        {/* L'eau : la nuit s'y reflète */}
-        <mesh position={[0, 0.3, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[1.7, 1.15, 1]}>
-          <circleGeometry args={[1.02, 24]} />
-          <MeshReflectorMaterial
-            transparent
-            opacity={0.9}
-            color="#1a2a40"
-            resolution={512}
-            mirror={0.85}
-            mixStrength={1.2}
-            mixBlur={0.4}
-            blur={[120, 40]}
-            roughness={0.15}
-            metalness={0}
-            depthScale={0}
-          />
-        </mesh>
-      </group>
+      {/* (bassin supprimé : le centre du patio reste libre — c'est par là que
+          passera le chemin de pétales du ch9, vers l'ofrenda) */}
 
       {/* ── L'ofrenda — contre le MUR OUEST, loin de la porte verte.
           État ch1-2 : table dressée, arche de cempasúchil, quelques bougies
@@ -309,8 +281,9 @@ export function Patio() {
         </mesh>
       ))}
 
-      {/* ── Banc en bois contre la façade du salon ── */}
-      <group position={[5.6, 0, -6.5]}>
+      {/* ── Banc en bois contre la façade du salon — dossier au mur, assise
+          face au patio ── */}
+      <group position={[5.6, 0, -6.45]} rotation={[0, Math.PI, 0]}>
         <mesh position={[0, 0.4, 0]}>
           <boxGeometry args={[1.5, 0.06, 0.42]} />
           <meshToonMaterial color={C_WOOD_M} gradientMap={toonGradient} />
