@@ -109,9 +109,14 @@ export function SalleDeBain() {
         </mesh>
       ))}
 
-      {/* ── Soubassement d'azulejos talavera (h=1.15, plaqué sur les 4 murs) ── */}
-      <mesh position={[10.4, 0.575, 6.04]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[3.0, 1.15]} />
+      {/* ── Soubassement d'azulejos talavera (h=1.15, plaqué sur les 4 murs,
+          interrompu à la porte x∈[10.2,11.14]) ── */}
+      <mesh position={[9.55, 0.575, 6.04]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[1.3, 1.15]} />
+        <meshToonMaterial map={azulejosTalavera} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[11.52, 0.575, 6.04]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[0.76, 1.15]} />
         <meshToonMaterial map={azulejosTalavera} gradientMap={toonGradient} />
       </mesh>
       <mesh position={[10.4, 0.575, 3.41]}>
@@ -127,7 +132,7 @@ export function SalleDeBain() {
         <meshToonMaterial map={azulejosTalavera} gradientMap={toonGradient} />
       </mesh>
       {/* Liseré bois en haut du soubassement */}
-      {([[10.4, 6.02, 3.0, 0], [10.4, 3.43, 3.0, 0], [8.93, 4.8, 2.8, 1], [11.87, 4.8, 2.8, 1]] as [number, number, number, number][]).map(([px, pz, w, vert], i) => (
+      {([[9.55, 6.02, 1.3, 0], [11.52, 6.02, 0.76, 0], [10.4, 3.43, 3.0, 0], [8.93, 4.8, 2.8, 1], [11.87, 4.8, 2.8, 1]] as [number, number, number, number][]).map(([px, pz, w, vert], i) => (
         <mesh key={i} position={[px, 1.16, pz]}>
           <boxGeometry args={vert ? [0.03, 0.05, w] : [w, 0.05, 0.03]} />
           <meshToonMaterial color={C_WOOD} gradientMap={toonGradient} />
