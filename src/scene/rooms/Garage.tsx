@@ -33,6 +33,13 @@ export function Garage() {
         <planeGeometry args={[6.0, 5.0]} />
         <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
       </mesh>
+      {/* Couverture de tuiles vue de dehors (depuis le patio, par-dessus le
+          mur mitoyen — sinon on voit le ciel à travers le plafond une face) */}
+      <mesh position={[12.0, 2.76, -8.1]}>
+        <boxGeometry args={[6.2, 0.1, 5.2]} />
+        <meshToonMaterial color="#8A4A2A" gradientMap={toonGradient} />
+        <Outlines thickness={0.016} color="black" />
+      </mesh>
 
       {/* ── Mur nord (dos de la façade et de la rue) ── */}
       <mesh position={[12.0, 1.35, -5.62]} rotation={[0, Math.PI, 0]}>

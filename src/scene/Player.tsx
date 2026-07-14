@@ -187,20 +187,20 @@ export function Player() {
     camDir.current.y = 0
     if (camDir.current.lengthSq() > 0.001) camDir.current.normalize()
 
-    // Recul raccourci à la première obstruction (murs + meubles) : les coques
-    // <Outlines> (BackSide, noires) sont visibles de l'intérieur → une caméra
-    // qui pénètre un mesh rend l'écran entièrement noir.
-    const backDist = cameraBackDistance(
-      boyPos.current.x, boyPos.current.z,
-      -camDir.current.x, -camDir.current.z,
-      CAM_BACK,
-    )
-    const rawCamX = boyPos.current.x - camDir.current.x * backDist
-    const rawCamZ = boyPos.current.z - camDir.current.z * backDist
     // Clamp caméra aux murs salon uniquement quand le joueur EST dans le salon.
     // Ailleurs la caméra suit librement (pièces adjacentes ont leurs propres murs).
     const inSalon = boyPos.current.x >= SALON_BOUNDS.minX && boyPos.current.x <= SALON_BOUNDS.maxX
                  && boyPos.current.z >= SALON_BOUNDS.minZ && boyPos.current.z <= SALON_BOUNDS.maxZ
+    // Recul raccourci à la première obstruction (meubles partout, murs du
+    // salon seulement dedans — sinon murs fantômes → caméra collée hors salon).
+    const backDist = cameraBackDistance(
+      boyPos.current.x, boyPos.current.z,
+      -camDir.current.x, -camDir.current.z,
+      CAM_BACK,
+      inSalon,
+    )
+    const rawCamX = boyPos.current.x - camDir.current.x * backDist
+    const rawCamZ = boyPos.current.z - camDir.current.z * backDist
     const [camX, camZ] = inSalon ? clampCameraToRoom(rawCamX, rawCamZ) : [rawCamX, rawCamZ]
     camera.position.x = camX
     camera.position.y = CAM_UP

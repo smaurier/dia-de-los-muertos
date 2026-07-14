@@ -7,8 +7,10 @@
 // Débouche dans le zaguán par une ouverture x∈[7.55,8.55] (mur nord du zaguán).
 // Mur nord percé x∈[4.03,4.97] (porte chambre 1, face à l'arche 2) et
 // x∈[10.2,11.14] (porte chambre 2, celle des parents).
+import * as THREE from 'three'
+import { MeshReflectorMaterial, Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
-import { murAdobeSide, solTomettes } from '../shared/paintedTextures'
+import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
 import { PorteAnimee } from '../shared/PorteAnimee'
 
 const C_CEIL = '#E4D6BC'
@@ -133,6 +135,39 @@ export function Couloir() {
         <planeGeometry args={[5.3, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
+      {/* ── LE MIROIR (indice n°1, spec V10 ch3) — sur le mur extérieur du
+          salon, dans le couloir qui longe la salle de bain. L'enfant s'y
+          reflète. L'adulte, non — mécanique layers à venir (backlog
+          « Mirror robuste ») ; pour l'instant c'est un vrai miroir. ── */}
+      <group position={[7.38, 1.5, 4.3]} rotation={[0, Math.PI / 2, 0]}>
+        {/* Cadre bois mouluré */}
+        <mesh position={[0, 0, -0.015]}>
+          <boxGeometry args={[0.72, 1.04, 0.04]} />
+          <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
+          <Outlines thickness={0.014} color="black" />
+        </mesh>
+        <mesh position={[0, 0.55, -0.005]}>
+          <boxGeometry args={[0.5, 0.07, 0.05]} />
+          <meshToonMaterial color="#5C3010" gradientMap={toonGradient} />
+          <Outlines thickness={0.010} color="black" />
+        </mesh>
+        {/* Verre : reflet planaire réel */}
+        <mesh position={[0, 0, 0.008]}>
+          <planeGeometry args={[0.6, 0.92]} />
+          <MeshReflectorMaterial
+            color="#dfe8ec"
+            resolution={512}
+            mirror={1}
+            mixStrength={1.0}
+            mixBlur={0}
+            blur={[0, 0]}
+            roughness={0.04}
+            metalness={0}
+            depthScale={0}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      </group>
       <mesh position={[7.36, 1.45, -3.1]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[4.4, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />

@@ -112,7 +112,7 @@ export function SalleDeBain() {
           transparent
           opacity={0.68}
           color="#e8f0f4"
-          resolution={512}
+          resolution={256}
           mirror={1}
           mixStrength={1.4}
           mixBlur={0}

@@ -125,6 +125,37 @@ export function Patio() {
 
       {/* (le ciel est le DomeCiel étoilé, monté au niveau de la scène) */}
 
+      {/* ── Toits de tuiles au-dessus des façades (vus du patio — sinon le
+          ciel étoilé apparaît DERRIÈRE la maison, au ras des murs) ── */}
+      {/* Façade du salon (murs à 3,2 m) : pente vers la cour */}
+      <group position={[2.475, 3.3, -6.0]} rotation={[-0.32, 0, 0]}>
+        <mesh>
+          <boxGeometry args={[8.95, 0.07, 1.05]} />
+          <meshToonMaterial color="#8A4A2A" gradientMap={toonGradient} />
+          <Outlines thickness={0.014} color="black" />
+        </mesh>
+        {[-0.32, 0.02, 0.36].map(dz => (
+          <mesh key={dz} position={[0, 0.045, dz]}>
+            <boxGeometry args={[8.95, 0.03, 0.06]} />
+            <meshToonMaterial color="#6E3820" gradientMap={toonGradient} />
+          </mesh>
+        ))}
+      </group>
+      {/* Façade du couloir sud et de la porte verte (murs à 2,9 m) */}
+      <group position={[7.975, 3.0, -5.5] } rotation={[-0.32, 0, 0]}>
+        <mesh>
+          <boxGeometry args={[2.05, 0.07, 0.95]} />
+          <meshToonMaterial color="#8A4A2A" gradientMap={toonGradient} />
+          <Outlines thickness={0.012} color="black" />
+        </mesh>
+        {[-0.26, 0.1].map(dz => (
+          <mesh key={dz} position={[0, 0.04, dz]}>
+            <boxGeometry args={[2.05, 0.03, 0.06]} />
+            <meshToonMaterial color="#6E3820" gradientMap={toonGradient} />
+          </mesh>
+        ))}
+      </group>
+
       {/* ── Enceinte adobe (2,6 m) : sud, ouest + chaperons ── */}
       <mesh position={[3.5, 1.3, -10.6]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[11.0, 2.6]} />

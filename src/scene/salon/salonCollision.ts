@@ -158,6 +158,10 @@ export const ROOM_WALLS: readonly [number, number, number, number][] = [
   [-5.15, -4.55, 8.60, 9.20], // chaise ouest
   [-2.55, -1.85, 11.25, 12.0], // fogón (mur du fond)
   [-7.0,  -6.40, 7.30, 7.90], // ofrenda (mur ouest)
+  [-7.0, -6.25, 10.9, 11.7],  // frigo (coin nord-ouest)
+  [-4.6, -3.4, 11.35, 12.0],  // évier + vaisselle (sous l'étagère murale)
+  [-1.6, -0.9, 11.2, 11.7],   // desserte du coin pierre (bol de pétales)
+  [-1.65, -1.05, 8.0, 8.6],   // panier du chien (vide)
   // ── Mur est x=7 (épais, x∈[7,7.35]) : arche zaguán ouverte z∈[-0.9,0.9] ──
   // x=6.75 (< 7) : obstacle commence avant le mur pour que x=6.8 soit dedans (strict >).
   [ 6.75,  7.4,  0.95, 5.85],  // section nord du mur est
@@ -196,22 +200,28 @@ export function clampCameraToRoom(x: number, z: number): [number, number] {
 // La caméra suit 1,2 m derrière le garçon : sans obstruction, elle entre dans
 // les meubles et les coques <Outlines> (BackSide, noires, visibles de
 // l'intérieur) → écran noir. On raccourcit le recul à la première obstruction :
-// murs (limites CAM_MARGIN) et AABB élargies de CAM_MARGIN.
+// murs du salon (limites CAM_MARGIN) et AABB élargies de CAM_MARGIN.
 // (backX, backZ) : direction normalisée du garçon vers la caméra.
+// clampWalls : n'appliquer les limites MURS que quand le joueur est DANS le
+// salon — hors salon elles sont des murs fantômes qui collaient la caméra
+// (couloir/patio, regard vers l'extérieur des bornes → recul 0).
 export function cameraBackDistance(
   px: number, pz: number,
   backX: number, backZ: number,
   maxBack: number,
+  clampWalls = true,
 ): number {
   let t = maxBack
 
   // Murs : premier franchissement des limites caméra sur chaque axe.
-  const LIMIT_X = WALL_X - CAM_MARGIN
-  const LIMIT_Z = WALL_Z - CAM_MARGIN
-  if (backX > 0) t = Math.min(t, (LIMIT_X - px) / backX)
-  if (backX < 0) t = Math.min(t, (-LIMIT_X - px) / backX)
-  if (backZ > 0) t = Math.min(t, (LIMIT_Z - pz) / backZ)
-  if (backZ < 0) t = Math.min(t, (-LIMIT_Z - pz) / backZ)
+  if (clampWalls) {
+    const LIMIT_X = WALL_X - CAM_MARGIN
+    const LIMIT_Z = WALL_Z - CAM_MARGIN
+    if (backX > 0) t = Math.min(t, (LIMIT_X - px) / backX)
+    if (backX < 0) t = Math.min(t, (-LIMIT_X - px) / backX)
+    if (backZ > 0) t = Math.min(t, (LIMIT_Z - pz) / backZ)
+    if (backZ < 0) t = Math.min(t, (-LIMIT_Z - pz) / backZ)
+  }
 
   // Meubles : entrée du rayon dans chaque AABB élargie (méthode des slabs).
   for (const [mx, Mx, mz, Mz] of SALON_OBSTACLES) {
