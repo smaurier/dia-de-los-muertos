@@ -5,6 +5,7 @@
 // Pièce vide pendant la fête : pénombre, lampes de chevet, clair de lune.
 import * as THREE from 'three'
 import { MeshReflectorMaterial, Outlines } from '@react-three/drei'
+import { ZoneMaterial } from '../shared/ZoneReflector'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
 import { PorteAnimee } from '../shared/PorteAnimee'
@@ -120,19 +121,23 @@ export function Chambre2() {
       {/* Vitre (deux battants de part et d'autre du meneau) — verre du salon */}
       <mesh position={[13.43, 1.6, 9.9]} rotation={[0, -Math.PI / 2, 0]} userData={{ reflectorZone: 'chambre2' }}>
         <planeGeometry args={[1.96, 1.36]} />
-        <MeshReflectorMaterial
-            transparent
-            opacity={0.68}
-            color="#e8f0f4"
-            resolution={256}
-            mirror={1}
-            mixStrength={1.4}
-            mixBlur={0}
-            blur={[0, 0]}
-            roughness={0.06}
-            metalness={0}
-            depthScale={0}
-            side={THREE.DoubleSide}
+        <ZoneMaterial
+            zone="chambre2"
+            active={<MeshReflectorMaterial
+              transparent
+              opacity={0.68}
+              color="#e8f0f4"
+              resolution={256}
+              mirror={1}
+              mixStrength={1.4}
+              mixBlur={0}
+              blur={[0, 0]}
+              roughness={0.06}
+              metalness={0}
+              depthScale={0}
+              side={THREE.DoubleSide}
+            />}
+            fallback={<meshToonMaterial color="#C8DCE8" transparent opacity={0.35} emissive="#4A6080" emissiveIntensity={0.2} gradientMap={toonGradient} side={THREE.DoubleSide} />}
           />
       </mesh>
       {/* Clair de lune qui entre par la grande fenêtre */}
@@ -183,19 +188,23 @@ export function Chambre2() {
       {/* Vitre — mêmes propriétés que la grande fenêtre du salon */}
       <mesh position={[9.1, 1.6, 12.03]} rotation={[0, Math.PI, 0]} userData={{ reflectorZone: 'chambre2' }}>
         <planeGeometry args={[1.56, 1.16]} />
-        <MeshReflectorMaterial
-            transparent
-            opacity={0.68}
-            color="#e8f0f4"
-            resolution={256}
-            mirror={1}
-            mixStrength={1.4}
-            mixBlur={0}
-            blur={[0, 0]}
-            roughness={0.06}
-            metalness={0}
-            depthScale={0}
-            side={THREE.DoubleSide}
+        <ZoneMaterial
+            zone="chambre2"
+            active={<MeshReflectorMaterial
+              transparent
+              opacity={0.68}
+              color="#e8f0f4"
+              resolution={256}
+              mirror={1}
+              mixStrength={1.4}
+              mixBlur={0}
+              blur={[0, 0]}
+              roughness={0.06}
+              metalness={0}
+              depthScale={0}
+              side={THREE.DoubleSide}
+            />}
+            fallback={<meshToonMaterial color="#C8DCE8" transparent opacity={0.35} emissive="#4A6080" emissiveIntensity={0.2} gradientMap={toonGradient} side={THREE.DoubleSide} />}
           />
       </mesh>
 

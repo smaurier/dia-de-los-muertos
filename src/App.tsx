@@ -9,7 +9,7 @@ import { Suspense, useState, useEffect, useRef } from 'react'
 import { Player } from './scene/Player'
 import { Salon } from './scene/salon/Salon'
 import { Subtitles } from './scene/ui/Subtitles'
-import { ReflectorThrottle } from './scene/shared/ReflectorThrottle'
+import { SalonReflectorScope } from './scene/shared/ZoneReflector'
 import { DoorHint } from './scene/ui/DoorHint'
 import { INTERACT_KEY } from './game/controlsConfig'
 
@@ -202,7 +202,7 @@ export default function App() {
             <fog attach="fog" args={[TOON_RICHE.fogColor, TOON_RICHE.fogNear, TOON_RICHE.fogFar]} />
           )}
           <ReflectionsSansFog />
-          <ReflectorThrottle />
+          <SalonReflectorScope />
           {NOFX && <ManualRender />}
           <Suspense fallback={null}>
             {PHOTO ? <PhotoCamera conf={PHOTO} /> : <Player />}

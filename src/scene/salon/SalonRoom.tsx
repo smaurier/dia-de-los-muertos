@@ -30,7 +30,8 @@ import { Patio } from '../rooms/Patio'
 import { Garage } from '../rooms/Garage'
 import { DomeCiel } from '../shared/DomeCiel'
 import { SceneAuditProbe } from '../debug/sceneAudit'
-import { NO_PAPEL, NO_REFLECT } from '../debug/perfFlags'
+import { NO_PAPEL } from '../debug/perfFlags'
+import { ZoneMaterial } from '../shared/ZoneReflector'
 import { PerfProbe } from '../debug/PerfProbe'
 import { Couffin } from './Couffin'
 
@@ -382,10 +383,9 @@ export function SalonRoom() {
           mirent dans les tomettes cirées. Seule entorse au toon, assumée. */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} userData={{ reflectorScope: 'salon', reflectorZone: 'salon' }}>
         <planeGeometry args={[14, 11.6]} />
-        {NO_REFLECT ? (
-          <meshPhongMaterial map={solTomettes} normalMap={solTomettesNormal} shininess={30} />
-        ) : (
-          <MeshReflectorMaterial
+        <ZoneMaterial
+          zone="salon"
+          active={<MeshReflectorMaterial
             map={solTomettes}
             normalMap={solTomettesNormal}
             normalScale={new THREE.Vector2(0.7, 0.7)}
@@ -401,8 +401,9 @@ export function SalonRoom() {
             depthScale={0.6}
             minDepthThreshold={0.5}
             maxDepthThreshold={1.2}
-          />
-        )}
+          />}
+          fallback={<meshPhongMaterial map={solTomettes} normalMap={solTomettesNormal} shininess={30} />}
+        />
       </mesh>
 
       {/* ─── Plafond + vigas (poutres bois, ref salon-vue-entree-01) ────────── */}
@@ -671,10 +672,9 @@ export function SalonRoom() {
             planaire — de nuit l'intérieur éclairé se mire dans le verre */}
         <mesh position={[-7.085, 1.8, 0]} rotation={[0, Math.PI / 2, 0]} userData={{ reflectorScope: 'salon', reflectorZone: 'salon' }}>
           <planeGeometry args={[3.36, 2.04]} />
-          {NO_REFLECT ? (
-            <meshToonMaterial color="#C8DCE8" transparent opacity={0.35} gradientMap={toonGradient} side={THREE.DoubleSide} />
-          ) : (
-            <MeshReflectorMaterial
+          <ZoneMaterial
+            zone="salon"
+            active={<MeshReflectorMaterial
               transparent
               opacity={0.68}
               color="#e8f0f4"
@@ -687,8 +687,9 @@ export function SalonRoom() {
               metalness={0}
               depthScale={0}
               side={THREE.DoubleSide}
-            />
-          )}
+            />}
+            fallback={<meshToonMaterial color="#C8DCE8" transparent opacity={0.35} gradientMap={toonGradient} side={THREE.DoubleSide} />}
+          />
         </mesh>
         {/* Rejas — fer forgé scellé dans la maçonnerie, PROFOND dans l'embrasure
             (côté extérieur, comme en vrai : la menuiserie est intérieure, la

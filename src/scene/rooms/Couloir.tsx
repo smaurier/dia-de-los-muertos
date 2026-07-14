@@ -12,7 +12,7 @@ import { MeshReflectorMaterial, Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
 import { PorteAnimee } from '../shared/PorteAnimee'
-import { NO_REFLECT } from '../debug/perfFlags'
+import { ZoneMaterial } from '../shared/ZoneReflector'
 
 const C_CEIL = '#E4D6BC'
 
@@ -159,10 +159,9 @@ export function Couloir() {
             joueur est dans le couloir ou une zone adjacente */}
         <mesh position={[0, 0, 0.008]} userData={{ reflectorZone: 'couloir' }}>
           <planeGeometry args={[0.8, 1.7]} />
-          {NO_REFLECT ? (
-            <meshToonMaterial color="#9FB4C4" gradientMap={toonGradient} />
-          ) : (
-            <MeshReflectorMaterial
+          <ZoneMaterial
+            zone="couloir"
+            active={<MeshReflectorMaterial
               color="#dfe8ec"
               resolution={512}
               mirror={1}
@@ -173,8 +172,9 @@ export function Couloir() {
               metalness={0}
               depthScale={0}
               side={THREE.DoubleSide}
-            />
-          )}
+            />}
+            fallback={<meshToonMaterial color="#9FB4C4" gradientMap={toonGradient} />}
+          />
         </mesh>
       </group>
       <mesh position={[7.36, 1.45, -3.1]} rotation={[0, Math.PI / 2, 0]}>
