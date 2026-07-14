@@ -11,6 +11,8 @@
 import { useEffect } from 'react'
 import { useThree } from '@react-three/fiber'
 import * as THREE from 'three'
+import { isZoneVisible, type ZoneId } from '../../game/systems/roomZones'
+import { usePlayerStore } from '../../game/store/playerStore'
 
 const DISABLED = new URLSearchParams(window.location.search).has('nothrottle')
 
@@ -37,11 +39,19 @@ export function ReflectorThrottle() {
         const myPhase = phase++
         // Scope 'salon' (sol, fenêtre) : leur reflet ne montre que le salon —
         // les 10 pièces satellites sont masquées PENDANT la passe (bissection :
-        // re-rendre la maison entière coûtait ~35 ms/frame). Le miroir du
-        // couloir (sans scope) continue de tout refléter.
+        // re-rendre la maison entière coûtait ~35 ms/frame).
         const salonOnly = mesh.userData?.reflectorScope === 'salon'
+        // Zone : la passe ne tourne que si le joueur peut VOIR ce réflecteur
+        // (zone courante ou adjacente — roomZones). Hors zone, le reflet garde
+        // sa dernière image : personne ne le regarde. Ça rend les réflecteurs
+        // quasi gratuits loin d'eux → toutes les vitres ont le vrai verre.
+        const zone = mesh.userData?.reflectorZone as ZoneId | undefined
         mesh.onBeforeRender = function (...args) {
           if (frame % 2 !== myPhase % 2) return
+          if (zone) {
+            const [px, , pz] = usePlayerStore.getState().position
+            if (!isZoneVisible(zone, px, pz)) return
+          }
           if (salonOnly && satellites) {
             satellites.visible = false
             original.apply(this, args)

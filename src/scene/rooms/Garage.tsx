@@ -5,7 +5,7 @@
 // la rue, nez vers l'arche du patio (mur mitoyen ouest, porte en bois
 // ouvrable id 'garage', définie dans Patio.tsx).
 import * as THREE from 'three'
-import { Outlines } from '@react-three/drei'
+import { MeshReflectorMaterial, Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide } from '../shared/paintedTextures'
 
@@ -94,9 +94,22 @@ export function Garage() {
               <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
             </mesh>
           ))}
-          <mesh position={[px, 1.85, -10.65]}>
+          <mesh position={[px, 1.85, -10.65]} userData={{ reflectorZone: 'garage' }}>
             <planeGeometry args={[0.96, 0.66]} />
-            <meshToonMaterial color="#C8DCE8" transparent opacity={0.35} emissive="#4A6080" emissiveIntensity={0.2} gradientMap={toonGradient} side={THREE.DoubleSide} />
+            <MeshReflectorMaterial
+            transparent
+            opacity={0.68}
+            color="#e8f0f4"
+            resolution={256}
+            mirror={1}
+            mixStrength={1.4}
+            mixBlur={0}
+            blur={[0, 0]}
+            roughness={0.06}
+            metalness={0}
+            depthScale={0}
+            side={THREE.DoubleSide}
+          />
           </mesh>
         </group>
       ))}

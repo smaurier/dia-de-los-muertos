@@ -155,8 +155,9 @@ export function Couloir() {
           <meshToonMaterial color="#5C3010" gradientMap={toonGradient} />
           <Outlines thickness={0.010} color="black" />
         </mesh>
-        {/* Verre : reflet planaire réel */}
-        <mesh position={[0, 0, 0.008]}>
+        {/* Verre : reflet planaire réel — passe active seulement si le
+            joueur est dans le couloir ou une zone adjacente */}
+        <mesh position={[0, 0, 0.008]} userData={{ reflectorZone: 'couloir' }}>
           <planeGeometry args={[0.8, 1.7]} />
           {NO_REFLECT ? (
             <meshToonMaterial color="#9FB4C4" gradientMap={toonGradient} />
