@@ -142,3 +142,28 @@ reviendront) ; enfants debout sur les chaises = choix assumé hors spec.
 | 7 | Bébé + compte 22 (B5) | casting | S |
 | 8 | Décisions topologie ch7-ch9 (B2, B3) | design | discussion |
 | 9 | Démontage pièces éloignées (B7) | perf | M |
+
+---
+
+## D. Décisions actées avec Sylvain (matin suivant)
+
+- **Fixes 1, 2, 3 : appliqués** (caméra hors salon, vitres 256, toitures).
+- **Miroir (B1) : posé** — mur extérieur du salon, couloir longeant la SDB.
+  Vrai reflet pour l'instant ; « pas de reflet de l'adulte » = layers, backlog.
+- **Cuisine (B4) : complétée** — flicker, vaporera, frigo+aimants, évier+
+  vaisselle, radio éteinte, Virgen+calendrier, bol de pétales, panier chien.
+- **Bébé (B5) : couffin** au pied du fauteuil de Rosa (pas de portage
+  Mixamo). 22 présents rétablis.
+- **Ch7 (B3) : reste le débarras du nord.** L'idée garage a été écartée :
+  son seul accès passe par le patio → spoil du ch8. À la place, le chemin
+  de pétales NAÎT au débarras et court jusqu'à la porte verte — la tension
+  tient dans les couloirs sombres, la porte verte est le seuil vers la nuit.
+- **Ch9 (B2) : retour par le JARDIN** — validé. Le jardin (à construire,
+  fiche à écrire) fera le tour ouest/sud-ouest : ofrenda → patio →
+  ouverture dans l'enceinte ouest → jardin → porte bleue (déverrouillée au
+  ch9) → cuisine → salon. Beat possible : la fenêtre du salon vue de
+  dehors, la famille en ombres derrière les rideaux.
+- **Option C (porte apparue dans la maison grandie) : abandonnée** — trop
+  proche d'un bug perçu, « jamais d'étrange frontal » (V10).
+- **Bug texture (A4) : résolu** — c'était le coin patio/garage : la façade
+  x∈[8.75,9] avait disparu au raccourcissement du patio ; pilier posé.

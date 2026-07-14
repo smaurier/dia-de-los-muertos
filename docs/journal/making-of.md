@@ -170,6 +170,31 @@ Neuf portes s'ouvrent avec F. Le décor attend le scénario.
 > moment tu as su qu'on irait jusqu'au bout — et ça fait quoi de se
 > promener dans une maison complète qui n'existait pas ce matin ?]*
 
+**Le lendemain matin — l'audit et le garage de papa.** Nuit d'audit :
+outils de détection (z-fighting, murs fantômes, tests d'intégrité des
+collisions), rapport complet, et au réveil les corrections validées une à
+une. Le bébé a trouvé sa place : un couffin en osier au pied du fauteuil
+de la grande-tante Rosa — pas de portage possible avec Mixamo, alors il
+dort, et sa couverture respire doucement. C'est mieux comme ça.
+
+En discutant du chapitre 7 (la pièce de la mémoire refoulée — cartons,
+vélo trop petit, photos face contre le mur), l'idée du garage est passée
+sur la table. Sylvain : « mon papa est garagiste, et comme beaucoup de
+papas très bricoleurs, il ne jetait pas beaucoup de choses en disant que
+ça servirait. Comme on était 4 enfants à la maison, les vélos restaient
+longtemps aussi. On se les passait. » Le vélo trop petit de la spec
+n'est pas un accessoire générique — c'est un vélo qui a eu quatre
+propriétaires successifs et que personne n'a eu le cœur de jeter.
+L'idée garage-chapitre est finalement tombée (on ne peut y accéder que
+par le patio, ça aurait grillé le chapitre 8) — mais le vélo, lui,
+restera. Et le jardin est né dans la même conversation : le chemin de
+pétales du retour passera dehors, le long des murs de la maison, jusqu'à
+la porte bleue de la cuisine.
+
+> *[Un vélo à quatre enfants dans un débarras : c'est le genre de détail
+> que ta fille reconnaîtra un jour ? Il y a d'autres objets de TON enfance
+> que tu veux glisser dans la maison ?]*
+
 ---
 
 ## Ce qui reste
