@@ -149,6 +149,27 @@ belle, très Día de Muertos.
 > *[Huit enfants immobiles debout sur des chaises dans la pénombre — tu as vu
 > l'image en le demandant, ou c'est le hasard de la praticité ?]*
 
+**Suite de la même journée — la maison se termine.** Une pièce à la fois,
+validation visuelle à chaque pas, et en une session marathon : chambre 1
+(deux lits sarape — vérification faite dans la spec : Emilio a bien UNE
+sœur, Sofía), la grande chambre des parents avec sa photo de mariage,
+la salle de bain aux azulejos, le débarras et son fauteuil couvert d'un
+drap, le bureau à la lampe de banquier verte, l'entrée rétrécie à la
+largeur de l'arche, la porte principale coloniale (cantera, clavos côté
+rue — corrigée après coup : on la voit de l'intérieur, donc planches et
+pentures), le patio nocturne avec l'ofrenda discrète contre le mur ouest
+— bougies éteintes, photo illisible de loin, exactement l'anti-spoiler de
+la spec — les guirlandes d'ampoules, le bassin qui reflète la nuit, le
+garage avec le vocho vert, et une bulle de ciel étoilé par-dessus tout.
+
+**La maison entière est jouable.** Salon, cuisine, cellier, couloirs,
+deux chambres, salle de bain, débarras, bureau, zaguán, patio, garage.
+Neuf portes s'ouvrent avec F. Le décor attend le scénario.
+
+> *[La maison a été finie en une seule journée de session continue. À quel
+> moment tu as su qu'on irait jusqu'au bout — et ça fait quoi de se
+> promener dans une maison complète qui n'existait pas ce matin ?]*
+
 ---
 
 ## Ce qui reste
