@@ -1,7 +1,7 @@
 // src/scene/salon/NappeCloth.tsx
 //
-// Nappe grande table de fête — géométrie statique minimale.
-// 1 dessus + 4 panneaux pleine largeur qui se croisent naturellement aux coins.
+// Tablecloth for the main feast table — minimal static geometry.
+// 1 top panel + 4 full-width side panels that naturally overlap at corners.
 
 import { useMemo } from 'react'
 import * as THREE from 'three'
@@ -18,7 +18,7 @@ const TABLE_D    = TABLE_ZMAX - TABLE_ZMIN
 const TABLE_CX   = (TABLE_XMIN + TABLE_XMAX) / 2
 const TABLE_CZ   = (TABLE_ZMIN + TABLE_ZMAX) / 2
 
-const SKIRT_BOT  = 0.30   // ~30cm du sol → pieds de table bien visibles
+const SKIRT_BOT  = 0.30   // ~30cm off floor → table legs clearly visible
 const SKIRT_H    = TABLE_Y - SKIRT_BOT
 const SKIRT_CY   = (TABLE_Y + SKIRT_BOT) / 2
 
@@ -51,13 +51,13 @@ export function NappeCloth() {
 
   return (
     <group>
-      {/* ── Dessus ── */}
+      {/* ── Top ── */}
       <mesh position={[TABLE_CX, TABLE_Y, TABLE_CZ]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[TABLE_W, TABLE_D]} />
         <meshToonMaterial map={tex} {...matProps} />
       </mesh>
 
-      {/* ── Panneaux latéraux — pleine largeur, croisement naturel aux coins ── */}
+      {/* ── Side panels — full width, natural overlap at corners ── */}
       <mesh position={[TABLE_CX, SKIRT_CY, TABLE_ZMIN]}>
         <planeGeometry args={[TABLE_W, SKIRT_H]} />
         <meshToonMaterial map={texSide} {...matProps} />

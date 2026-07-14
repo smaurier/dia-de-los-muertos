@@ -1,6 +1,6 @@
 // src/scene/salon/Chien.tsx
-// Chiot stylisé (Sketchfab) — 5 clips : IdleLayDown / IdleEnergetic / Walk / Run / TPOSE.
-// Phase salon sandbox : couché à côté de la table côté TV, head-look passif.
+// Stylized puppy (Sketchfab) — 5 clips: IdleLayDown / IdleEnergetic / Walk / Run / TPOSE.
+// Salon sandbox phase: lying next to the table on the TV side, passive head-look.
 
 import { useRef, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
@@ -35,7 +35,7 @@ export function Chien() {
         color: old.map ? '#ffffff' : '#C4824A',
         gradientMap: toonGradient,
       })
-      mesh.frustumCulled = false // skinned : les sphères cullent à tort
+      mesh.frustumCulled = false // skinned: bounding spheres cull incorrectly
       mesh.geometry.computeVertexNormals()
     })
     neckBoneRef.current = scene.getObjectByName(HEAD_BONE) ?? null
@@ -51,7 +51,7 @@ export function Chien() {
     const group = groupRef.current
     if (!group) return
 
-    // Regard passif vers la caméra si proche (<4 m)
+    // Passive look toward camera if nearby (<4 m)
     const bone = neckBoneRef.current
     if (!bone) return
     const dx = camera.position.x - group.position.x

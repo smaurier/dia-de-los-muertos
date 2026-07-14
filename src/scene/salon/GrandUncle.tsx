@@ -11,13 +11,13 @@ import { shouldTurnTowardPlayer, pickScenario } from '../../game/systems/npcSyst
 import type { Scenario } from '../../game/systems/npcSystem'
 
 const GRAND_UNCLE_POSITIONS: Record<string, [number, number, number]> = {
-  couch: [-2.62, 0, -3.7],  // fond de l'assise, interpolé avec le recul du canapé (+0.2)
-  buffet: [3.2, 0, 4.6],    // buffet au mur nord
+  couch: [-2.62, 0, -3.7],  // back of seat, offset by sofa depth (+0.2)
+  buffet: [3.2, 0, 4.6],    // sideboard on north wall
   window: [-6, 0, 2],
 }
 
-// Modèle 3D v2 (Hunyuan texturé + visage projeté + moustache 3D → Mixamo).
-// Origine aux pieds, 1,75 m, texture 2048 embarquée. 7 clips : sitting-idle,
+// 3D model v2 (Hunyuan textured + projected face + 3D moustache → Mixamo).
+// Origin at feet, 1.75 m, embedded 2048 texture. 7 clips: sitting-idle,
 // sit-to-stand, stand-to-sit, sitting-clap, sitting-disbelief, standing-idle,
 // happy-walk (in-place).
 const MODEL_URL = '/models/characters/grand-oncle.glb?v=3'
@@ -27,7 +27,7 @@ const MODEL_TUNING = {
   color: '#EDE8DE',
 }
 
-// Tuning par position : offset, rotation, clip
+// Per-position tuning: offset, rotation, clip
 const POSITION_TUNING: Record<string, {
   offset: [number, number, number]
   rotationY: number
@@ -75,8 +75,8 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
   const { scene, animations } = useGLTF(MODEL_URL)
   const { actions, names } = useAnimations(animations, ref)
 
-  // Matériaux toon : texture du GLB quand elle existe (corps), couleur du
-  // matériau source sinon (moustache 3D) + repère le bone tête
+  // Toon materials: GLB texture when present (body), source material color
+  // otherwise (3D moustache) + locate head bone
   useEffect(() => {
     scene.traverse(obj => {
       if ((obj as THREE.Mesh).isMesh) {
@@ -87,7 +87,7 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
           color: old.map ? '#ffffff' : (old.color ?? new THREE.Color(MODEL_TUNING.color)),
           gradientMap: toonGradient,
         })
-        mesh.frustumCulled = false // skinned : les sphères cullent à tort
+        mesh.frustumCulled = false // skinned: bounding spheres cull incorrectly
       }
     })
     headBoneRef.current =
@@ -96,11 +96,11 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
       null
   }, [scene])
 
-  // Animation selon position (sitting-idle au canapé, standing-idle ailleurs)
+  // Animation by position (sitting-idle on sofa, standing-idle elsewhere)
   useEffect(() => {
     const tuning = POSITION_TUNING[grandUnclePosition]
     const clipName = tuning?.clip ?? CLIP_SIT
-    // Arrêter toutes les actions actives avant d'en démarrer une nouvelle
+    // Stop all active actions before starting a new one
     Object.values(actions).forEach(a => a?.fadeOut(0.3))
     const action = actions[clipName] ?? actions[names[0]]
     action?.reset().fadeIn(0.3).setLoop(THREE.LoopRepeat, Infinity).play()
@@ -126,7 +126,7 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
 
     npcPositions.set('grand-uncle', [group.position.x, group.position.z])
 
-    // Head turn toward player when nearby — appliqué sur le bone tête, après le mixer
+    // Head turn toward player when nearby — applied on head bone, after mixer
     const playerPos: [number, number, number] = [camera.position.x, camera.position.y, camera.position.z]
     const pos = group.position
     const npcPos: [number, number, number] = [pos.x, pos.y, pos.z]

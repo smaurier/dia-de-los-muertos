@@ -1,11 +1,11 @@
 // src/scene/salon/PorteEntree.tsx
-// La porte principale de la maison — pièce maîtresse du zaguán.
-// Porte coloniale mexicaine : deux vantaux de bois massif à panneaux
-// moulurés, clavos (clous forgés) en quinconce, pentures et heurtoirs à
-// anneau, encadrement en cantera (pierre sculptée crème), imposte à
-// barreaux forgés derrière laquelle passe la lumière de la rue, seuil de
-// pierre usée, farol en fer forgé suspendu au plafond du couloir d'entrée.
-// Coordonnées monde : mur est x=10, ouverture z∈[-0.9,0.9].
+// Main house door — centrepiece of the zaguán.
+// Mexican colonial door: two solid-wood panelled leaves with
+// forged-nail (clavo) diamond pattern, strap hinges and ring knockers,
+// cantera (cream carved stone) frame, fanlight with wrought-iron bars
+// through which street light enters, worn stone threshold,
+// farol (wrought-iron lantern) hanging from the entry-corridor ceiling.
+// World coordinates: east wall x=10, opening z∈[-0.9,0.9].
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
@@ -21,31 +21,30 @@ const C_CANTERA  = '#C9B8A2'
 const C_CANTERA2 = '#B8A288'
 const C_GLOW     = '#F0C060'
 
-// Un vantail — VU DE L'INTÉRIEUR de la maison : la face qu'on voit est la
-// structure (planches verticales, traverses, pentures forgées, gonds). Les
-// clavos, heurtoirs et caissons moulurés sont la parure de la rue — sur la
-// face est (x+), invisible d'ici mais cohérente si la porte s'ouvre un jour.
-// side=+1 : vantail nord (z>0), gonds côté jambage nord. side=-1 : miroir.
-function Vantail({ side }: { side: 1 | -1 }) {
-  const zc = side * 0.45 // centre du vantail (z de ±0.02 à ±0.88)
+// One door leaf — VIEWED FROM INSIDE the house: the visible face is the
+// structure (vertical planks, rails, forged strap hinges, pintles). Clavos,
+// knockers and moulded panels are the street-side decoration — on the east
+// face (x+), invisible from here but consistent if the door ever opens.
+// side=+1: north leaf (z>0), hinge side on north jamb. side=-1: mirror.
+function DoorLeaf({ side }: { side: 1 | -1 }) {
+  const zc = side * 0.45 // leaf center (z from ±0.02 to ±0.88)
   return (
     <group position={[9.94, 0, zc]}>
-      {/* Panneau principal — 0.90 : jointif au centre (z=0), affleure le
-          jambage (±0.9). Aucun jour entre les vantaux. */}
+      {/* Main panel — 0.90: flush at center (z=0), meets jamb (±0.9). No gap between leaves. */}
       <mesh position={[0, 1.1, 0]}>
         <boxGeometry args={[0.1, 2.1, 0.9]} />
         <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
         <Outlines thickness={0.016} color="black" />
       </mesh>
-      {/* ── Face intérieure (-x, celle qu'on voit) : structure ── */}
-      {/* Rainures des planches verticales */}
+      {/* ── Interior face (-x, the visible side): structure ── */}
+      {/* Vertical plank grooves */}
       {[-0.28, -0.09, 0.09, 0.28].map(dz => (
         <mesh key={dz} position={[-0.052, 1.1, dz]}>
           <boxGeometry args={[0.008, 2.02, 0.018]} />
           <meshToonMaterial color={C_WOOD_DK} gradientMap={toonGradient} />
         </mesh>
       ))}
-      {/* Traverses basse, médiane, haute */}
+      {/* Bottom, mid, and top rails */}
       {[0.36, 1.13, 1.92].map(py => (
         <mesh key={py} position={[-0.065, py, 0]}>
           <boxGeometry args={[0.03, 0.16, 0.78]} />
@@ -53,7 +52,7 @@ function Vantail({ side }: { side: 1 | -1 }) {
           <Outlines thickness={0.008} color="black" />
         </mesh>
       ))}
-      {/* Pentures forgées sur les traverses, ancrées côté gonds */}
+      {/* Forged strap hinges on bottom and top rails, anchored on hinge side */}
       {[0.36, 1.92].map(py => (
         <group key={py}>
           <mesh position={[-0.085, py, side * 0.16]}>
@@ -61,27 +60,27 @@ function Vantail({ side }: { side: 1 | -1 }) {
             <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
             <Outlines thickness={0.006} color="black" />
           </mesh>
-          {/* Bout en goutte */}
+          {/* Teardrop end */}
           <mesh position={[-0.085, py, side * -0.13]} rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[0.035, 0.035, 0.012, 6]} />
             <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
           </mesh>
         </group>
       ))}
-      {/* Poignée intérieure en fer (près du montant central) */}
+      {/* Interior iron handle (near center stile) */}
       <mesh position={[-0.08, 1.15, side * -0.3]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[0.045, 0.011, 6, 12, Math.PI]} />
         <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
         <Outlines thickness={0.006} color="black" />
       </mesh>
-      {/* Gonds visibles côté jambage */}
+      {/* Visible pintles on hinge side */}
       {[0.45, 1.8].map(py => (
         <mesh key={py} position={[-0.02, py, side * 0.42]}>
           <cylinderGeometry args={[0.022, 0.022, 0.12, 6]} />
           <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
         </mesh>
       ))}
-      {/* ── Face rue (+x, invisible d'ici) : caissons + clavos + heurtoir ── */}
+      {/* ── Street face (+x, invisible from here): raised panels + clavos + knocker ── */}
       {[[1.62, 0.72], [0.68, 0.62]].map(([py, ph], i) => (
         <mesh key={i} position={[0.058, py, 0]}>
           <boxGeometry args={[0.025, ph, 0.62]} />
@@ -110,7 +109,7 @@ function Vantail({ side }: { side: 1 | -1 }) {
   )
 }
 
-// Flamme du farol : scintillement doux (bougie à l'abri du verre).
+// Farol flame: gentle flicker (candle sheltered behind glass).
 function FarolFlame() {
   const lightRef = useRef<THREE.PointLight>(null)
   const t = useRef(0)
@@ -127,14 +126,14 @@ function FarolFlame() {
 export function PorteEntree() {
   return (
     <group>
-      {/* ── Seuil de pierre usée (déborde dans le couloir) ── */}
+      {/* ── Worn stone threshold (extends into corridor) ── */}
       <mesh position={[9.85, 0.025, 0]}>
         <boxGeometry args={[0.45, 0.05, 2.0]} />
         <meshToonMaterial color={C_CANTERA2} gradientMap={toonGradient} />
         <Outlines thickness={0.012} color="black" />
       </mesh>
 
-      {/* ── Encadrement en cantera : jambages sculptés + socles ── */}
+      {/* ── Cantera frame: carved jambs + plinths ── */}
       {[-0.99, 0.99].map(pz => (
         <group key={pz}>
           <mesh position={[9.9, 1.3, pz]}>
@@ -142,7 +141,7 @@ export function PorteEntree() {
             <meshToonMaterial color={C_CANTERA} gradientMap={toonGradient} />
             <Outlines thickness={0.014} color="black" />
           </mesh>
-          {/* Socle et chapiteau du jambage */}
+          {/* Jamb plinth and capital */}
           <mesh position={[9.88, 0.16, pz]}>
             <boxGeometry args={[0.32, 0.32, 0.28]} />
             <meshToonMaterial color={C_CANTERA2} gradientMap={toonGradient} />
@@ -153,14 +152,14 @@ export function PorteEntree() {
             <meshToonMaterial color={C_CANTERA2} gradientMap={toonGradient} />
             <Outlines thickness={0.012} color="black" />
           </mesh>
-          {/* Cannelure décorative */}
+          {/* Decorative flute */}
           <mesh position={[9.86, 1.3, pz]}>
             <boxGeometry args={[0.02, 2.1, 0.06]} />
             <meshToonMaterial color={C_CANTERA2} gradientMap={toonGradient} />
           </mesh>
         </group>
       ))}
-      {/* Corniche moulurée au-dessus de l'imposte */}
+      {/* Moulded cornice above fanlight */}
       <mesh position={[9.88, 2.68, 0]}>
         <boxGeometry args={[0.3, 0.14, 2.42]} />
         <meshToonMaterial color={C_CANTERA} gradientMap={toonGradient} />
@@ -170,28 +169,27 @@ export function PorteEntree() {
         <boxGeometry args={[0.28, 0.05, 2.3]} />
         <meshToonMaterial color={C_CANTERA2} gradientMap={toonGradient} />
       </mesh>
-      {/* Clé sculptée au centre de la corniche */}
+      {/* Carved keystone at cornice center */}
       <mesh position={[9.85, 2.68, 0]}>
         <boxGeometry args={[0.3, 0.2, 0.18]} />
         <meshToonMaterial color={C_CANTERA2} gradientMap={toonGradient} />
         <Outlines thickness={0.010} color="black" />
       </mesh>
 
-      {/* ── Traverse bois entre vantaux et imposte ── */}
+      {/* ── Wood rail between leaves and fanlight ── */}
       <mesh position={[9.94, 2.18, 0]}>
         <boxGeometry args={[0.12, 0.12, 1.8]} />
         <meshToonMaterial color={C_WOOD_DK} gradientMap={toonGradient} />
         <Outlines thickness={0.012} color="black" />
       </mesh>
 
-      {/* ── Imposte PLEINE : panneau de bois mouluré (le verre en hauteur ne
-          se lisait pas — fermé, sans barreaux) ── */}
+      {/* ── SOLID fanlight: moulded wood panel (glazing was too small to read — closed, no bars) ── */}
       <mesh position={[9.94, 2.42, 0]}>
         <boxGeometry args={[0.1, 0.4, 1.8]} />
         <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
         <Outlines thickness={0.012} color="black" />
       </mesh>
-      {/* Trois caissons moulurés en relief */}
+      {/* Three raised moulded panels */}
       {[-0.58, 0, 0.58].map(pz => (
         <mesh key={pz} position={[9.885, 2.42, pz]}>
           <boxGeometry args={[0.02, 0.26, 0.42]} />
@@ -200,31 +198,31 @@ export function PorteEntree() {
         </mesh>
       ))}
 
-      {/* ── Les deux vantaux ── */}
-      <Vantail side={1} />
-      <Vantail side={-1} />
+      {/* ── The two door leaves ── */}
+      <DoorLeaf side={1} />
+      <DoorLeaf side={-1} />
 
-      {/* ── Couvre-joint de battement : baguette bois sur le joint central ── */}
+      {/* ── Astragal: wood bead covering center joint ── */}
       <mesh position={[9.94, 1.1, 0]}>
         <boxGeometry args={[0.13, 2.06, 0.09]} />
         <meshToonMaterial color={C_WOOD_DK} gradientMap={toonGradient} />
         <Outlines thickness={0.010} color="black" />
       </mesh>
 
-      {/* ── Verrou central : targette forgée entre les deux heurtoirs ── */}
+      {/* ── Center bolt: forged flush bolt between the two knockers ── */}
       <mesh position={[9.87, 1.08, 0]}>
         <boxGeometry args={[0.03, 0.16, 0.1]} />
         <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
         <Outlines thickness={0.008} color="black" />
       </mesh>
 
-      {/* ── Farol : lanterne hexagonale en fer forgé suspendue au plafond ── */}
+      {/* ── Farol: hexagonal wrought-iron lantern suspended from ceiling ── */}
       <group position={[9.2, 0, 0]}>
         <mesh position={[0, 2.76, 0]}>
           <cylinderGeometry args={[0.012, 0.012, 0.28, 6]} />
           <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
         </mesh>
-        {/* Chapeau + corps vitré + socle */}
+        {/* Cap + glazed body + base */}
         <mesh position={[0, 2.58, 0]}>
           <coneGeometry args={[0.14, 0.12, 6]} />
           <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
@@ -242,7 +240,7 @@ export function PorteEntree() {
           />
           <Outlines thickness={0.010} color="black" />
         </mesh>
-        {/* Montants du corps */}
+        {/* Body uprights */}
         {Array.from({ length: 6 }, (_, i) => (i * Math.PI) / 3).map((a, i) => (
           <mesh key={i} position={[Math.cos(a) * 0.105, 2.4, Math.sin(a) * 0.105]}>
             <boxGeometry args={[0.014, 0.26, 0.014]} />

@@ -28,7 +28,7 @@ function applyToon(scene: THREE.Object3D, meshColor: string) {
     if ((mesh.material as THREE.Material[]).length === 1) {
       mesh.material = (mesh.material as THREE.Material[])[0]
     }
-    mesh.frustumCulled = false // skinned : les sphères cullent à tort
+    mesh.frustumCulled = false // skinned: bounding spheres cull incorrectly
     mesh.geometry.computeVertexNormals()
   })
 }

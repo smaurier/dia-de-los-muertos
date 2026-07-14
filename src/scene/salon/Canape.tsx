@@ -16,17 +16,17 @@ const TEXTURE_URLS = [
   '/textures/coussin-violet-01.png',
 ] as const
 
-// UV des coussin-*.glb : toutes faces en [0.27, 0.73]
-// Rescaling → [0, 1] : motif couvre toute la face
+// UVs of coussin-*.glb: all faces in [0.27, 0.73]
+// Rescaling → [0, 1]: pattern covers entire face
 const UV_MIN = 0.27
 const UV_RANGE = 0.46  // 0.73 - 0.27
 const UV_REPEAT = 1 / UV_RANGE      // ≈ 2.174
 const UV_OFFSET = -UV_MIN / UV_RANGE // ≈ -0.587
 
-// Positions en espace LOCAL GLB (avant scale) — issues de delete_cushions.py
-// À remplacer par les valeurs POSITIONS_JSON du script après exécution
-// Positions en espace Three.js Y-up (conversion depuis Blender Z-up : x,y,z → x,z,-y)
-// Rotations : Blender (rx,ry,rz) → Three.js (rx, rz, -ry)
+// Positions in local GLB space (before scale) — from delete_cushions.py
+// To replace with POSITIONS_JSON values from script after execution
+// Positions in Three.js Y-up space (converted from Blender Z-up: x,y,z → x,z,-y)
+// Rotations: Blender (rx,ry,rz) → Three.js (rx, rz, -ry)
 const CUSHION_DEFS = [
   {
     label: 'rouge',
@@ -58,17 +58,17 @@ export function Canape({
   targetLength?: number
 }) {
   const { scene: bodyScene } = useGLTF(BODY_URL)
-  const { scene: rougeScene } = useGLTF(CUSHION_URLS[0])
-  const { scene: cremeScene } = useGLTF(CUSHION_URLS[1])
-  const { scene: violetScene } = useGLTF(CUSHION_URLS[2])
+  const { scene: redScene }    = useGLTF(CUSHION_URLS[0])
+  const { scene: creamScene }  = useGLTF(CUSHION_URLS[1])
+  const { scene: purpleScene } = useGLTF(CUSHION_URLS[2])
 
   const bodyObj = useMemo(() => bodyScene.clone(true), [bodyScene])
   const cushionObjs = useMemo(
-    () => [rougeScene, cremeScene, violetScene].map(s => s.clone(true)),
-    [rougeScene, cremeScene, violetScene],
+    () => [redScene, creamScene, purpleScene].map(s => s.clone(true)),
+    [redScene, creamScene, purpleScene],
   )
 
-  const [texRouge, texCreme, texViolet] = useTexture(TEXTURE_URLS)
+  const [texRed, texCream, texPurple] = useTexture(TEXTURE_URLS)
 
   const { scale, yOffset } = useMemo(() => {
     const box = new THREE.Box3().setFromObject(bodyObj)
@@ -78,7 +78,7 @@ export function Canape({
     return { scale: s, yOffset: -box.min.y * s }
   }, [bodyObj, targetLength])
 
-  // Body : toon sur texture Hunyuan
+  // Body: toon over Hunyuan texture
   useEffect(() => {
     bodyObj.traverse(o => {
       if (!(o as THREE.Mesh).isMesh) return
@@ -93,9 +93,9 @@ export function Canape({
     })
   }, [bodyObj])
 
-  // Coussins : motif plein cadre via UV rescaling [0.27-0.73] → [0,1]
+  // Cushions: full-frame pattern via UV rescaling [0.27-0.73] → [0,1]
   useEffect(() => {
-    const textures = [texRouge, texCreme, texViolet]
+    const textures = [texRed, texCream, texPurple]
     cushionObjs.forEach((obj, i) => {
       const tex = textures[i].clone()
       tex.wrapS = THREE.ClampToEdgeWrapping
@@ -111,7 +111,7 @@ export function Canape({
         mesh.material = new THREE.MeshToonMaterial({ map: tex, gradientMap: toonGradient })
       })
     })
-  }, [cushionObjs, texRouge, texCreme, texViolet])
+  }, [cushionObjs, texRed, texCream, texPurple])
 
   return (
     <group

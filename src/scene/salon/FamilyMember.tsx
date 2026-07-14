@@ -14,7 +14,7 @@ import {
 } from '../../game/systems/npcSystem'
 import type { NPCConfig, NPCState } from '../../game/systems/npcSystem'
 
-// Hash déterministe sur l'id → couleurs vestimentaires stables entre reloads
+// Deterministic hash on id → stable clothing colors across reloads
 function nameHash(s: string): number {
   let h = 0
   for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0
@@ -65,7 +65,7 @@ function FamilyMemberGeometry({ config }: FamilyMemberProps) {
     const group = groupRef.current
     if (!group) return
 
-    // Tier 3 — statique
+    // Tier 3 — static
     npcPositions.set(config.id, [group.position.x, group.position.z])
     if (config.tier === 3) return
 
@@ -85,7 +85,7 @@ function FamilyMemberGeometry({ config }: FamilyMemberProps) {
       )
     }
 
-    // Y offset : lerp vers SEATED_Y quand assis, retour à 0 sinon
+    // Y offset: lerp toward SEATED_Y when sitting, back to 0 otherwise
     const targetY = npcState.current === 'sitting' ? SEATED_Y : 0
     group.position.y = THREE.MathUtils.lerp(group.position.y, targetY, delta * 5)
 
@@ -96,7 +96,7 @@ function FamilyMemberGeometry({ config }: FamilyMemberProps) {
 
     if (shouldUpdatePosition(npcState.current) && targetPos.current) {
       walkDirRef.current.copy(targetPos.current).sub(group.position)
-      walkDirRef.current.y = 0  // ignorer axe Y pour le déplacement horizontal
+      walkDirRef.current.y = 0  // ignore Y axis for horizontal movement
       if (walkDirRef.current.length() < 0.1) {
         group.position.x = targetPos.current.x
         group.position.z = targetPos.current.z
@@ -147,7 +147,7 @@ function FamilyMemberGeometry({ config }: FamilyMemberProps) {
           npcState.current = 'walking'
           sitPendingRef.current = true
         } else {
-          // under-table ou cible inconnue : s'asseoir sur place
+          // under-table or unknown target: sit in place
           npcState.current = 'sitting'
         }
         stepIndex.current += 1
@@ -165,7 +165,7 @@ function FamilyMemberGeometry({ config }: FamilyMemberProps) {
   const headY = isBaby ? 0.55 : isChild ? 1.15 : 1.75
   const headR = capsuleR * 0.72
 
-  // Vêtements : pantalon = bas du corps, chemise = haut du corps
+  // Clothing: pants = lower body, shirt = upper body
   const pantsH = bodyY - 0.04
   const pantsY = 0.02 + pantsH / 2
   const shirtH = headY - headR * 0.6 - bodyY
@@ -179,13 +179,13 @@ function FamilyMemberGeometry({ config }: FamilyMemberProps) {
 
   return (
     <group ref={groupRef} position={config.startPosition}>
-      {/* Pantalon / bas */}
+      {/* Pants / lower body */}
       <mesh position={[0, pantsY, 0]}>
         <cylinderGeometry args={[capsuleR, capsuleR, pantsH, 8]} />
         <meshToonMaterial color={isBaby ? config.meshColor : pantsColor} gradientMap={toonGradient} />
         <Outlines thickness={0.025} color="black" />
       </mesh>
-      {/* Chemise / haut — pas pour bébé */}
+      {/* Shirt / upper body — not for baby */}
       {!isBaby && (
         <mesh position={[0, shirtY, 0]}>
           <cylinderGeometry args={[capsuleR * 1.04, capsuleR, shirtH, 8]} />
@@ -193,13 +193,13 @@ function FamilyMemberGeometry({ config }: FamilyMemberProps) {
           <Outlines thickness={0.025} color="black" />
         </mesh>
       )}
-      {/* Tête — couleur peau */}
+      {/* Head — skin color */}
       <mesh ref={headRef} position={[0, headY, 0]}>
         <sphereGeometry args={[headR, 8, 8]} />
         <meshToonMaterial color={config.meshColor} gradientMap={toonGradient} />
         <Outlines thickness={0.030} color="black" />
       </mesh>
-      {/* Cheveux — calotte sphérique (thetaLength < PI/2 → juste le dessus) */}
+      {/* Hair — spherical cap (thetaLength < PI/2 → top only) */}
       {!isBaby && (
         <mesh position={[0, headY + headR * 0.1, 0]}>
           <sphereGeometry args={[hairR, 8, 4, 0, Math.PI * 2, 0, Math.PI * 0.52]} />

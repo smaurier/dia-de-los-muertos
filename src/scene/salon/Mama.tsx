@@ -4,14 +4,14 @@ import * as THREE from 'three'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { shouldTurnTowardPlayer } from '../../game/systems/npcSystem'
-// SEATED_Y non utilisé ici : le modèle mama.glb animé gère sa propre hauteur
+// SEATED_Y not used here: the animated mama.glb model manages its own height
 
 const MODEL_URL = '/models/characters/mama.glb?v=3'
 
-// chair-1 (nord table) — assise face au centre de la pièce (sud)
-// y=0 : l'animation sitting-idle place les hanches à y≈0.4 local → sol visible, pas sous les tomettes
+// chair-1 (north table) — seated facing room center (south)
+// y=0: sitting-idle animation places hips at y≈0.4 local → floor visible, not below tiles
 const POSITION: [number, number, number] = [-3.05, 0, 2.60]
-const ROTATION_Y = Math.PI   // mixamorig face +Z par défaut → PI = face sud
+const ROTATION_Y = Math.PI   // mixamorig faces +Z by default → PI = facing south
 
 const CLIP_IDLE = 'sitting-idle-1'
 
@@ -35,14 +35,14 @@ export function Mama() {
         color: old.map ? '#ffffff' : '#c68642',
         gradientMap: toonGradient,
       })
-      mesh.frustumCulled = false // skinned : les sphères cullent à tort
+      mesh.frustumCulled = false // skinned: bounding spheres cull incorrectly
     })
     headBoneRef.current =
       scene.getObjectByName('mixamorigHead') ??
       scene.getObjectByName('mixamorig:Head') ??
       null
 
-    // Trouver les bones de jupe pour spring simulation
+    // Find skirt bones for spring simulation
     const SKIRT_NAMES = ['SkirtFront', 'SkirtBack', 'SkirtLeft', 'SkirtRight']
     skirtBonesRef.current = []
     scene.traverse(obj => {
@@ -75,17 +75,17 @@ export function Mama() {
       head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, localYaw, delta * 4)
     }
 
-    // Spring simulation jupe : contre-balancer la rotation Hips vers la gravité
+    // Skirt spring simulation: counteract Hips rotation toward gravity
     const STIFFNESS = 0.10
     const worldDown = new THREE.Vector3(0, -1, 0)
     for (const bone of skirtBonesRef.current) {
       if (!bone.parent) continue
       bone.parent.updateMatrixWorld(true)
       const parentInvMatrix = new THREE.Matrix4().copy(bone.parent.matrixWorld).invert()
-      // Exprimer world-down dans l'espace local du parent du bone
+      // Express world-down in the bone's parent local space
       const localDown = worldDown.clone().transformDirection(parentInvMatrix).normalize()
-      // Le bone devrait pointer vers localDown (direction "bas" dans son espace parent)
-      // Rotation actuelle du bone = identité quand au repos (pointe vers -Y local)
+      // The bone should point toward localDown ("down" direction in parent space)
+      // Current bone rotation = identity at rest (points toward local -Y)
       const restDir = new THREE.Vector3(0, -1, 0)
       const targetQuat = new THREE.Quaternion().setFromUnitVectors(restDir, localDown)
       bone.quaternion.slerp(targetQuat, STIFFNESS)

@@ -12,8 +12,8 @@ import { useAudioLayers } from '../../hooks/useAudioLayers'
 import { getGrandUnclePosition } from '../../game/systems/npcSystem'
 import { NO_NPC } from '../debug/perfFlags'
 
-const ARC_TIMINGS = [240, 480] // secondes : phase 0→1 à 4min, phase 1→2 à 8min
-const SALON_RADIUS = 8  // m — au-delà = joueur a quitté le salon
+const ARC_TIMINGS = [240, 480] // seconds: phase 0→1 at 4min, phase 1→2 at 8min
+const SALON_RADIUS = 8  // m — beyond this = player has left the salon
 
 export function Salon() {
   const arcTimer   = useRef(0)
@@ -35,7 +35,7 @@ export function Salon() {
       setSalonArcPhase(2)
     }
 
-    // Grand-oncle : change de position quand le joueur quitte le salon
+    // Grand-uncle: repositions when player leaves the salon
     const dist = Math.sqrt(camera.position.x ** 2 + camera.position.z ** 2)
     const inside = dist <= SALON_RADIUS
     if (wasInside.current && !inside) {
@@ -48,7 +48,7 @@ export function Salon() {
   return (
     <group>
       <SalonRoom />
-      {/* ?nonpc : bissection perf — coupe tous les personnages */}
+      {/* ?nonpc: perf bisect — cuts all characters */}
       {!NO_NPC && (
         <>
           <GrandUncle />

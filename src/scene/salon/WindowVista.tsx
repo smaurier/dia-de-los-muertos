@@ -5,11 +5,11 @@ import {
   cielNuitTexture, nuagesTexture, montagnesTexture, collinesVillageTexture,
 } from '../shared/vistaTextures'
 
-// Diorama extérieur derrière la fenêtre ouest : couches étagées en profondeur
-// réelle (18 → 45 m) pour une vraie parallaxe quand le joueur se déplace.
-// Tout est en meshBasicMaterial fog={false} : l'extérieur est un décor
-// auto-lumineux nocturne, le fog brun de la pièce ne doit pas l'avaler.
-// Le mur ouest occulte naturellement tout ce qui déborde de l'ouverture.
+// Exterior diorama behind the west window: layered planes at real depth
+// (18 → 45 m) for genuine parallax as the player moves.
+// All meshBasicMaterial fog={false}: the exterior is a self-lit night backdrop;
+// the room's brown fog must not swallow it.
+// The west wall naturally occludes anything that extends beyond the opening.
 
 const AGAVES: { x: number; z: number; s: number; r: number }[] = [
   { x: -9.2, z: -1.3, s: 1.0, r: 0.4 },
@@ -18,7 +18,7 @@ const AGAVES: { x: number; z: number; s: number; r: number }[] = [
 ]
 
 function Agave({ x, z, s, r }: { x: number; z: number; s: number; r: number }) {
-  // Rosette de feuilles effilées : cônes aplatis inclinés autour du pied.
+  // Rosette of tapered leaves: flattened cones tilted outward from the base.
   const leaves = 7
   return (
     <group position={[x, 0, z]} scale={s} rotation={[0, r, 0]}>
@@ -52,37 +52,37 @@ export function WindowVista() {
 
   return (
     <group>
-      {/* Ciel étoilé + lune (fond, 45 m) */}
+      {/* Starry sky + moon (background, 45 m) */}
       <mesh position={[-45, 11, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[90, 34]} />
         <meshBasicMaterial map={cielNuitTexture} fog={false} />
       </mesh>
 
-      {/* Nuages fins dérivants (38 m) */}
+      {/* Thin drifting clouds (38 m) */}
       <mesh position={[-38, 9, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[76, 12]} />
         <meshBasicMaterial ref={clouds} map={nuagesTexture} transparent depthWrite={false} fog={false} />
       </mesh>
 
-      {/* Montagnes (32 m) */}
+      {/* Mountains (32 m) */}
       <mesh position={[-32, 3.6, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[64, 13]} />
         <meshBasicMaterial map={montagnesTexture} transparent fog={false} />
       </mesh>
 
-      {/* Collines + village aux fenêtres chaudes (18 m) */}
+      {/* Hills + village with warm windows (18 m) */}
       <mesh position={[-18, 1.7, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[36, 7]} />
         <meshBasicMaterial map={collinesVillageTexture} transparent fog={false} />
       </mesh>
 
-      {/* Sol extérieur : terre sombre sous clair de lune */}
+      {/* Exterior ground: dark earth under moonlight */}
       <mesh position={[-26, -0.03, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[40, 44]} />
         <meshBasicMaterial color="#0b1119" fog={false} />
       </mesh>
 
-      {/* Agaves proches : la couche de parallaxe la plus forte */}
+      {/* Close agaves: the strongest parallax layer */}
       {AGAVES.map((a, i) => <Agave key={i} {...a} />)}
     </group>
   )

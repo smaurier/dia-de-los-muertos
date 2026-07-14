@@ -1,9 +1,9 @@
 // src/scene/salon/familyConfig.ts
 import type { NPCConfig, Scenario } from '../../game/systems/npcSystem'
 
-// ─── Scénarios par type ────────────────────────────────────────────────
+// ─── Scenarios by type ────────────────────────────────────────────────
 
-const mamanScenarios: Scenario[] = [
+const momScenarios: Scenario[] = [
   {
     id: 'maman_sert', weight: 3, duration: [8, 15],
     steps: [
@@ -17,7 +17,7 @@ const mamanScenarios: Scenario[] = [
     id: 'maman_cuisine', weight: 2, duration: [10, 18],
     steps: [
       { type: 'dialogue', text: 'Voy a la cocina un momento.', speakerName: 'Mamá Elena' },
-      { type: 'walk', target: [-2.5, 0, 4.6] },  // devant l'arche de la cuisine (mur nord)
+      { type: 'walk', target: [-2.5, 0, 4.6] },  // in front of kitchen arch (north wall)
       { type: 'idle', duration: 6 },
       { type: 'walk', target: [-5.5, 0, 0] },
     ],
@@ -40,7 +40,7 @@ const mamanScenarios: Scenario[] = [
   },
 ]
 
-const papaScenarios: Scenario[] = [
+const dadScenarios: Scenario[] = [
   {
     id: 'papa_assis', weight: 5, duration: [15, 25],
     steps: [
@@ -69,7 +69,7 @@ const papaScenarios: Scenario[] = [
   },
 ]
 
-const oncleScenarios: Scenario[] = [
+const uncleScenarios: Scenario[] = [
   {
     id: 'oncle_rit', weight: 4, duration: [8, 14],
     steps: [
@@ -104,10 +104,9 @@ const oncleScenarios: Scenario[] = [
   },
 ]
 
-// Scénarios spécifiques par oncle (speakerName individualisé dans NPCConfig via name)
-// Les oncleScenarios utilisent 'Tío' générique — le système affiche NPC.name au runtime
+// uncleScenarios use generic 'Tío' — the system displays NPC.name at runtime
 
-const tanteScenarios: Scenario[] = [
+const auntScenarios: Scenario[] = [
   {
     id: 'tante_parle', weight: 4, duration: [10, 16],
     steps: [
@@ -135,8 +134,8 @@ const tanteScenarios: Scenario[] = [
   },
 ]
 
-// tanteScenarios/oncleScenarios utilisent 'Tío'/'Tía' générique.
-// Le speakerName affiché à l'écran vient de NPC.name (individualisé ci-dessous).
+// auntScenarios/uncleScenarios use generic 'Tío'/'Tía'.
+// The speakerName shown on screen comes from NPC.name (individualized below).
 
 const cousinScenarios: Scenario[] = [
   {
@@ -172,7 +171,7 @@ const cousinScenarios: Scenario[] = [
   },
 ]
 
-const enfantScenarios: Scenario[] = [
+const childScenarios: Scenario[] = [
   {
     id: 'enfant_court', weight: 4, duration: [4, 7],
     steps: [
@@ -208,7 +207,7 @@ const enfantScenarios: Scenario[] = [
   },
 ]
 
-const oncleJeuneSeatedScenarios: Scenario[] = [
+const youngUncleSeatedScenarios: Scenario[] = [
   {
     id: 'oncle_jeune_assis', weight: 5, duration: [15, 25],
     steps: [
@@ -233,7 +232,7 @@ const oncleJeuneSeatedScenarios: Scenario[] = [
   },
 ]
 
-const tanteJeuneSeatedScenarios: Scenario[] = [
+const youngAuntSeatedScenarios: Scenario[] = [
   {
     id: 'tante_jeune_assise', weight: 5, duration: [15, 25],
     steps: [
@@ -258,17 +257,17 @@ const tanteJeuneSeatedScenarios: Scenario[] = [
   },
 ]
 
-// ─── Config des 20 NPCs ────────────────────────────────────────────────
-// Tier 2 : startPosition = leur chaise de sit target (démarrent là, bougent selon scénario)
-// Tier 3 : startPosition avec y=-0.45 (assis dès le spawn — Tier 3 ne passe pas par le lerp Y)
+// ─── Config for 20 NPCs ───────────────────────────────────────────────
+// Tier 2: startPosition = their sit-target chair (spawn there, move per scenario)
+// Tier 3: startPosition with y=-0.45 (seated from spawn — Tier 3 skips Y lerp)
 
 export const familyConfig: NPCConfig[] = [
-  // ── Tier 2 — semi-actifs ────────────────────────────────────────────────────────
+  // ── Tier 2 — semi-active ────────────────────────────────────────────────────────
   {
     id: 'maman', name: 'Mamá Elena', tier: 2,
     startPosition: [-3.05, 0, 2.60],
     waypoints: [],
-    scenarios: mamanScenarios,
+    scenarios: momScenarios,
     meshColor: '#c8956c',
     modelUrl: '/models/characters/base-03.glb?v=3',
     clipIdle: 'Sitting Idle(4)',
@@ -278,7 +277,7 @@ export const familyConfig: NPCConfig[] = [
     id: 'papa', name: 'Papá Carlos', tier: 2,
     startPosition: [-2.05, 0, 2.60],
     waypoints: [],
-    scenarios: papaScenarios,
+    scenarios: dadScenarios,
     meshColor: '#8B6543',
     modelUrl: '/models/characters/base-01.glb?v=3',
     clipIdle: 'Sitting Idle(4)',
@@ -288,7 +287,7 @@ export const familyConfig: NPCConfig[] = [
     id: 'oncle1', name: 'Tío Héctor', tier: 2,
     startPosition: [-1.05, 0, 2.60],
     waypoints: [],
-    scenarios: oncleScenarios,
+    scenarios: uncleScenarios,
     meshColor: '#7A5533',
     modelUrl: '/models/characters/base-01.glb?v=3',
     clipIdle: 'Sitting Idle(4)',
@@ -298,7 +297,7 @@ export const familyConfig: NPCConfig[] = [
     id: 'oncle2', name: 'Tío Ramón', tier: 2,
     startPosition: [-0.05, 0, 2.60],
     waypoints: [],
-    scenarios: oncleScenarios,
+    scenarios: uncleScenarios,
     meshColor: '#6B4423',
     modelUrl: '/models/characters/base-02.glb?v=3',
     clipIdle: 'Sitting Idle(4)',
@@ -308,7 +307,7 @@ export const familyConfig: NPCConfig[] = [
     id: 'oncle3', name: 'Tío Beto', tier: 2,
     startPosition: [0.95, 0, 2.60],
     waypoints: [],
-    scenarios: oncleScenarios,
+    scenarios: uncleScenarios,
     meshColor: '#8B6040',
     modelUrl: '/models/characters/base-02.glb?v=3',
     clipIdle: 'Sitting Idle(4)',
@@ -318,7 +317,7 @@ export const familyConfig: NPCConfig[] = [
     id: 'tante1', name: 'Tía Lupita', tier: 2,
     startPosition: [1.95, 0, 2.60],
     waypoints: [],
-    scenarios: tanteScenarios,
+    scenarios: auntScenarios,
     meshColor: '#C27B5A',
     modelUrl: '/models/characters/base-03.glb?v=3',
     clipIdle: 'Sitting Idle(4)',
@@ -328,7 +327,7 @@ export const familyConfig: NPCConfig[] = [
     id: 'tante2', name: 'Tía Consuelo', tier: 2,
     startPosition: [2.95, 0, 2.60],
     waypoints: [],
-    scenarios: tanteScenarios,
+    scenarios: auntScenarios,
     meshColor: '#B8705A',
     modelUrl: '/models/characters/base-03.glb?v=3',
     clipIdle: 'Sitting Idle(4)',
@@ -336,17 +335,17 @@ export const familyConfig: NPCConfig[] = [
   },
   {
     id: 'enfant4', name: 'Mariana', tier: 3, isChild: true,
-    // debout SUR sa chaise (bout est) : y = hauteur d'assise
+    // standing ON her chair (east end): y = seat height
     startPosition: [4.65, 0.45, 0.60],
     waypoints: [],
     scenarios: [],
     meshColor: '#D4956A',
-    rotationY: -Math.PI / 2,  // bout EST de la table → face -x (vers la table)
+    rotationY: -Math.PI / 2,  // east END of table → facing -x (toward table)
   },
-  // ── Tier 1 — actifs (roaming) ───────────────────────────────────────────────────
+  // ── Tier 1 — active (roaming) ───────────────────────────────────────────────────
   {
     id: 'cousin1', name: 'Toño', tier: 3, isChild: true,
-    // debout SUR sa chaise (rangée sud) : y = hauteur d'assise
+    // standing ON his chair (south row): y = seat height
     startPosition: [-3.05, 0.45, -0.60],
     waypoints: [],
     scenarios: [],
@@ -354,7 +353,7 @@ export const familyConfig: NPCConfig[] = [
   },
   {
     id: 'cousine1', name: 'Fernanda', tier: 3, isChild: true,
-    // debout SUR sa chaise (rangée sud) : y = hauteur d'assise
+    // standing ON her chair (south row): y = seat height
     startPosition: [-2.05, 0.45, -0.60],
     waypoints: [],
     scenarios: [],
@@ -362,7 +361,7 @@ export const familyConfig: NPCConfig[] = [
   },
   {
     id: 'cousine2', name: 'Camila', tier: 3, isChild: true,
-    // debout SUR sa chaise (rangée sud) : y = hauteur d'assise
+    // standing ON her chair (south row): y = seat height
     startPosition: [-1.05, 0.45, -0.60],
     waypoints: [],
     scenarios: [],
@@ -372,25 +371,25 @@ export const familyConfig: NPCConfig[] = [
     id: 'oncle-jeune', name: 'Tío Andrés', tier: 2,
     startPosition: [-4.55, 0, 1.40],
     waypoints: [],
-    scenarios: oncleJeuneSeatedScenarios,
+    scenarios: youngUncleSeatedScenarios,
     meshColor: '#7B5535',
     modelUrl: '/models/characters/base-01.glb?v=3',
     clipIdle: 'Sitting Idle(4)',
-    rotationY: Math.PI / 2,  // bout OUEST de la table → face +x (vers la table)
+    rotationY: Math.PI / 2,  // WEST end of table → facing +x (toward table)
   },
   {
     id: 'tante-jeune', name: 'Tía Verónica', tier: 2,
     startPosition: [-4.55, 0, 0.60],
     waypoints: [],
-    scenarios: tanteJeuneSeatedScenarios,
+    scenarios: youngAuntSeatedScenarios,
     meshColor: '#C07060',
     modelUrl: '/models/characters/base-03.glb?v=3',
     clipIdle: 'Sitting Idle(4)',
-    rotationY: Math.PI / 2,  // bout OUEST de la table → face +x (vers la table)
+    rotationY: Math.PI / 2,  // WEST end of table → facing +x (toward table)
   },
   {
     id: 'enfant1', name: 'Mateo', tier: 3, isChild: true,
-    // debout SUR sa chaise (rangée sud) : y = hauteur d'assise
+    // standing ON his chair (south row): y = seat height
     startPosition: [-0.05, 0.45, -0.60],
     waypoints: [],
     scenarios: [],
@@ -398,7 +397,7 @@ export const familyConfig: NPCConfig[] = [
   },
   {
     id: 'enfant2', name: 'Valentina', tier: 3, isChild: true,
-    // debout SUR sa chaise (rangée sud) : y = hauteur d'assise
+    // standing ON her chair (south row): y = seat height
     startPosition: [0.95, 0.45, -0.60],
     waypoints: [],
     scenarios: [],
@@ -406,29 +405,29 @@ export const familyConfig: NPCConfig[] = [
   },
   {
     id: 'enfant3', name: 'Diego', tier: 3, isChild: true,
-    // debout SUR sa chaise (rangée sud) : y = hauteur d'assise
+    // standing ON his chair (south row): y = seat height
     startPosition: [2.95, 0.45, -0.60],
     waypoints: [],
     scenarios: [],
     meshColor: '#C88050',
   },
-  // ── Tier 3 — statiques ──────────────────────────────────────────────────────────
+  // ── Tier 3 — static ────────────────────────────────────────────────────────────
   {
     id: 'soeur', name: 'Sofía', tier: 3, isChild: true,
-    // debout SUR sa chaise (rangée sud) : y = hauteur d'assise
+    // standing ON her chair (south row): y = seat height
     startPosition: [1.95, 0.45, -0.60],
     waypoints: [],
     scenarios: [],
     meshColor: '#E0A888',
   },
   {
-    id: 'grande-tante', name: 'Tía Abuela Rosa', tier: 3,  // assoupie dans le fauteuil du buffet
-    startPosition: [-6.42, 0, -0.6],   // fauteuil ouest — sa chaise de table (x=3.95 nord) est vide
+    id: 'grande-tante', name: 'Tía Abuela Rosa', tier: 3,  // dozing in the sideboard armchair
+    startPosition: [-6.42, 0, -0.6],   // west armchair — her table chair (x=3.95 north) is empty
     waypoints: [],
     scenarios: [],
     meshColor: '#A88068',
     modelUrl: '/models/characters/base-04.glb?v=3',
     clipIdle: 'Sitting Idle(4)',
-    rotationY: Math.PI / 2,  // fauteuil face est (+x) — idle "dort" à venir
+    rotationY: Math.PI / 2,  // armchair faces east (+x) — "sleeping" idle to come
   },
 ]
