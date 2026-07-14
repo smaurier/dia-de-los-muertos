@@ -15,6 +15,7 @@ import { Prop } from '../shared/Prop'
 import { Sofa } from './Sofa'
 import { SALON_OBSTACLES } from './livingRoomCollision'
 import { TVScreen } from './shell/TVScreen'
+import { LeafyPlant } from './shell/LeafyPlant'
 import { Tablecloth } from './Tablecloth'
 import { PhotoFrame } from '../shared/PhotoFrame'
 import { Kitchen } from '../rooms/Kitchen'
@@ -47,29 +48,6 @@ import {
 } from './shell/livingRoomConstants'
 
 // ─── Composants ───────────────────────────────────────────────────────────────
-
-function PlanteFeuillue({ position }: { position: [number, number, number] }) {
-  return (
-    <group position={position}>
-      <mesh position={[0, 0.20, 0]}>
-        <cylinderGeometry args={[0.20, 0.15, 0.40, 9]} />
-        <meshToonMaterial color={C_POT} gradientMap={toonGradient} />
-        <Outlines thickness={0.018} color="black" />
-      </mesh>
-      <mesh position={[0, 0.42, 0]}>
-        <cylinderGeometry args={[0.22, 0.20, 0.04, 9]} />
-        <meshToonMaterial color="#B06830" gradientMap={toonGradient} />
-      </mesh>
-      {([[0, 0.85, 0, 0.26], [-0.18, 0.72, 0.08, 0.18], [0.16, 0.70, -0.10, 0.17], [0.02, 0.68, 0.17, 0.15]] as [number, number, number, number][]).map(([px, py, pz, r], i) => (
-        <mesh key={i} position={[px, py, pz]} scale={[1, 1.25, 1]}>
-          <sphereGeometry args={[r, 9, 9]} />
-          <meshToonMaterial color={C_LEAF} gradientMap={toonGradient} />
-          <Outlines thickness={0.016} color="black" />
-        </mesh>
-      ))}
-    </group>
-  )
-}
 
 // Papel picado — guirlande en caténaire, drapeaux perforés (alphaMap) suspendus
 // à la ficelle, chacun pivotant à son attache avec une phase propre (vent doux).
@@ -1233,9 +1211,9 @@ export function LivingRoomShell() {
       ))}
 
       {/* ─── Plantes feuillues : mur est + de part et d'autre de la fenêtre (ref) ── */}
-      <PlanteFeuillue position={[6.5, 0, 2.8]} />
-      <PlanteFeuillue position={[-6.35, 0, 2.35]} />
-      <PlanteFeuillue position={[-6.4, 0, -1.6]} />
+      <LeafyPlant position={[6.5, 0, 2.8]} />
+      <LeafyPlant position={[-6.35, 0, 2.35]} />
+      <LeafyPlant position={[-6.4, 0, -1.6]} />
 
       {/* ─── Petite commode + lampe de chevet + mini plante — ENTRE le bout du
           retour du canapé et la TV, contre le mur sud (position B validée) ──── */}
