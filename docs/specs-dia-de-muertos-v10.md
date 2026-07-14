@@ -1,6 +1,11 @@
 # Spécification V10 — Sans titre encore
 *Document de référence. Mise à jour : 2026-06-20.*  
-*V9 → V10 : direction artistique cel-shading, salon enrichi, le grand-oncle, casting voix, prototype mis à jour.*
+*V9 → V10 : direction artistique cel-shading, salon enrichi, le grand-oncle, casting voix, prototype mis à jour.*  
+*Révision 2026-07-14 (maison construite, décisions actées) : le bébé dort
+dans un couffin (pas porté) ; ch7 = débarras, les pétales y naissent et
+courent jusqu'à la porte verte ; ch8 = on entre au patio par la porte
+verte ; ch9 = retour par le JARDIN (patio → jardin → porte bleue →
+cuisine → salon). Une sœur (Sofía), pas « des sœurs ».*
 
 ---
 
@@ -81,7 +86,7 @@ Il est dans le salon, sur le canapé de la zone TV, pieds sur le repose-pied. Vi
 
 Ce qui le distingue n'est pas son comportement — il réagit comme n'importe quel adulte. C'est l'absence d'intégration sociale :
 
-- **20 chaises à table = 22 présents − bébé − grand-oncle.** Coin adulte (côté nord) : papa, maman, oncles, tantes, oncle jeune, tante jeune. Coin enfant (côté sud) : sœurs, cousin, cousines, enfants du couple jeune, Emi. Le grand-oncle n'a pas de place. Personne n'a prévu qu'il serait là. Le jeu ne le signale pas.
+- **20 chaises à table = 22 présents − bébé − grand-oncle.** Coin adulte (côté nord) : papa, maman, oncles, tantes, oncle jeune, tante jeune. Coin enfant (côté sud) : sœur, cousin, cousines, enfants du couple jeune, Emi. Le grand-oncle n'a pas de place. Personne n'a prévu qu'il serait là. Le jeu ne le signale pas.
 - **Personne ne l'appelle. Personne ne lui adresse la parole.** Les scénarios NPC ne le ciblent jamais comme destinataire. Il existe en parallèle de la soirée, pas dedans.
 - **Il a bougé.** Si le joueur quitte le salon et revient, le grand-oncle peut se trouver debout près du buffet, ou côté fenêtre. Aucune explication.
 
@@ -142,7 +147,7 @@ L'inversion n'est pas expliquée.
 
 Des chaises qui raclent. Des voix en espagnol qui se coupent. Des rires trop forts. Des couverts. *"¡Ven a comer!"* crié plusieurs fois. L'odeur de nourriture par vagues.
 
-**22 personnes :** Papa, Maman, une sœur, trois oncles, deux tantes, un oncle jeune avec ses quatre enfants, deux cousines, un cousin, une grande-tante assoupie dans le fauteuil du buffet, un bébé dans les bras, des enfants qui courent. Et le grand-oncle sur le canapé.
+**22 personnes :** Papa, Maman, une sœur, trois oncles, deux tantes, un oncle jeune avec ses quatre enfants, deux cousines, un cousin, une grande-tante assoupie dans le fauteuil du buffet, un bébé endormi dans son couffin au pied du fauteuil de la grande-tante (pas porté — il dort, sa couverture respire), des enfants qui courent. Et le grand-oncle sur le canapé.
 
 **L'adulte** est debout près de la table, légèrement en retrait, riant avec les autres. Périphérique. Naturel.
 
@@ -156,7 +161,7 @@ Le salon est toujours présent en fond sonore. Sa distance change. Quand il disp
 |------|------------|--------------|
 | 1 — Actifs (8) | Cousins, enfants, oncle jeune, tante jeune | Bougent dans la pièce, scénarios pondérés, boucles 4–12s |
 | 2 — Semi-actifs (8) | Papa, Maman, Oncles 1-3, Tantes 1-2, Enfant 4 | Idle animé, tête tourne si joueur proche (<2m) |
-| 3 — Statiques (4) | Sœurs, Bébé, Grande tante | Mesh fixe, aucune logique frame |
+| 3 — Statiques (4) | Sœur, Bébé (couffin), Grande tante | Mesh fixe, aucune logique frame |
 
 **Modèle scénarios (pas state machine) :** Chaque NPC tire un scénario pondéré (`pickScenario(scenarios, seed)`). Un scénario = liste d'étapes (`walk`, `sit`, `idle`, `dialogue`). La prise de parole est dans le scénario — pas conditionnée à la proximité. Un oncle peut appeler quelqu'un depuis l'autre bout de la pièce.
 
@@ -414,7 +419,10 @@ Cartons. Vélo trop petit. Photos faces contre le mur. Dans l'une d'elles, quelq
 
 Les sons du salon sont très loin. Presque inaudibles.
 
-Au sol : des pétales orange profond. Un chemin.
+Au sol : des pétales orange profond. Un chemin. Il naît ici, entre les
+cartons, et court sous la porte — le long des couloirs sombres, jusqu'à
+la porte verte au bout du couloir sud. La tension ne retombe pas en
+chemin : elle tient jusqu'au seuil.
 
 *Son ajouté :* Silence lourd. Le salon presque inaudible.
 
@@ -422,6 +430,10 @@ Au sol : des pétales orange profond. Un chemin.
 
 ### Chapitre 8 — Le patio
 *Le moment le plus fort.*
+
+L'enfant pousse la porte verte — du couloir le plus sombre à la nuit
+ouverte : ciel étoilé, guirlandes d'ampoules, l'ofrenda contre le mur
+ouest de la cour.
 
 Un cousin est assis sur les marches de l'ofrenda, mange une pomme.
 *"¡No puedes, es para ellos!"*
@@ -450,7 +462,14 @@ La chanson — complète pour la première fois.
 
 Les chaises raclent depuis le salon. *"Ya nos vamos."*
 
-Le chien mène l'enfant vers le couloir. Ou les pétales. Ou l'enfant trouve seul.
+Le chien mène l'enfant. Ou les pétales. Ou l'enfant trouve seul.
+
+**Le retour passe par le jardin :** le chemin de pétales traverse le
+patio, franchit l'ouverture dans l'enceinte ouest, longe la maison dans
+la nuit — la grande fenêtre du salon éclairée de l'intérieur, la famille
+en ombres derrière les rideaux — et rentre par la porte bleue de la
+cuisine, déverrouillée maintenant. Le salon était à quinze mètres depuis
+le début.
 
 **Dans le couloir :** la photo sur le mur. Cette fois on la voit mieux. Juste assez.
 

@@ -55,13 +55,13 @@ Un fichier par pièce : `docs/superpowers/specs/rooms/<pièce>.md`. Six volets o
                     SUD (entrée)
 ```
 
-**Connexions :**
+**Connexions (amendées 2026-07-14 — maison construite) :**
 - Salon ↔ cuisine : passage large, direct (odeurs, « ¡Ven a comer! », circulation du chien)
-- Salon ↔ couloir : l'axe de l'adulte (toilettes = sa raison ordinaire ch3), miroir mur ouest
+- Salon ↔ couloir : l'axe de l'adulte (la salle de bain = sa raison ordinaire ch3), **miroir posé sur le mur extérieur du salon, dans le couloir qui longe la salle de bain**
 - Couloir → couloir intérieur : la frontière. Avant ch5 : porte fermée, triviale (pas verrouillée-mystère). « Por allá no vayas »
 - Couloir intérieur → chambre, débarras
-- Débarras → patio : on émerge du point le plus étouffé vers la nuit ouverte — contraste maximal, voulu
-- **Patio ↔ cuisine : le retour court.** Porte visible dès ch2, banale, **ouvrable**. Le chemin de pétales ramène par là au ch9 : le salon était à 15 mètres depuis le début
+- ~~Débarras → patio~~ **Débarras → porte verte → patio** : le débarras (nord) et le patio (sud) ne sont pas adjacents dans la maison construite. Le chemin de pétales NAÎT au débarras et court le long des couloirs sombres jusqu'à la porte verte, au bout du couloir sud — la tension tient jusqu'au seuil, puis la nuit s'ouvre. (Le garage a été envisagé comme pièce du ch7 puis écarté : son seul accès traverse le patio → spoil du ch8.)
+- **Patio ↔ JARDIN ↔ cuisine : le retour court (ch9).** Le jardin (pièce à construire, fiche à écrire) fait le tour ouest/sud-ouest de la maison : ouverture dans l'enceinte ouest du patio → jardin → porte bleue de la cuisine, déverrouillée au ch9. Le chemin de pétales passe dehors, dans la nuit, le long des murs — beat possible : la grande fenêtre du salon éclairée, la famille en ombres derrière les rideaux. Le salon était à 15 mètres depuis le début
 
 **Anti-spoiler ch8 — l'ofrenda a des états, pas la porte un verrou :** un joueur qui sort au patio dès ch2 trouve une cour de nuit banale. La photo est trop loin / mal éclairée pour être lue, la morsure n'existe que scriptée au beat ch8, la chanson n'y joue pas encore. Le lieu existe toujours ; c'est le *moment* qui le charge. Les états de l'ofrenda par chapitre sont documentés dans la fiche patio.
 
@@ -113,9 +113,10 @@ Ordre (une fiche par session, commit séparé) :
 2. **Couloir** — ch3/ch9 + variante grandie ch5 (miroir, adulte, photo au mur)
 3. **Couloir intérieur** — n'existe qu'en variante grandie
 4. **Chambre** — ch6
-5. **Débarras** — ch7
+5. **Débarras** — ch7 (+ naissance du chemin de pétales vers la porte verte ; le vélo trop petit : transmis entre enfants, jamais jeté)
 6. **Patio/ofrenda** — ch8, la plus riche en beats (+ états ofrenda par chapitre, anti-spoiler)
-7. **Salon — addendum variantes** — ch4 (grand-oncle déplacé), ch9 (fin de soirée) : set dressing et arc NPC seulement, géométrie intouchée
+7. **Jardin** — ch9 : le retour court (ouverture patio → porte bleue cuisine), ajouté 2026-07-14
+8. **Salon — addendum variantes** — ch4 (grand-oncle déplacé), ch9 (fin de soirée) : set dressing et arc NPC seulement, géométrie intouchée
 
 Process par fiche : draft complet par Claude (volets 1-5 + prompts) → relecture Sylvain → génération concept art (Gemini, prompts fournis) → ajustement si l'image révèle un problème → gel → les props entrent au carnet de commandes du pipeline 3D.
 
