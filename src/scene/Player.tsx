@@ -11,9 +11,9 @@ import { useDoorStore } from '../game/store/doorStore'
 import { useSubtitleStore } from '../game/store/subtitleStore'
 import { nearestDoorId, closedDoorObstacles } from '../game/systems/doorSystem'
 import { resolvePlayerNpcCollision } from '../game/systems/npcSystem'
-import { canMove, cameraBackDistance, clampCameraToRoom, LIVING_ROOM_BOUNDS } from './salon/livingRoomCollision'
-import { DOORS, DOOR_INTERACT_DIST } from './salon/doorConfig'
-import { npcPositions } from './salon/npcRegistry'
+import { canMove, cameraBackDistance, clampCameraToRoom, LIVING_ROOM_BOUNDS } from './living-room/livingRoomCollision'
+import { DOORS, DOOR_INTERACT_DIST } from './living-room/doorConfig'
+import { npcPositions } from './living-room/npcRegistry'
 
 const SPEED = 3
 const CAM_BACK = 1.2      // metres behind the boy

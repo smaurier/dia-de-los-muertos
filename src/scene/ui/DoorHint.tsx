@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { usePlayerStore } from '../../game/store/playerStore'
 import { useDoorStore } from '../../game/store/doorStore'
 import { nearestDoorId } from '../../game/systems/doorSystem'
-import { DOORS, DOOR_INTERACT_DIST } from '../salon/doorConfig'
+import { DOORS, DOOR_INTERACT_DIST } from '../living-room/doorConfig'
 import { INTERACT_LABEL } from '../../game/controlsConfig'
 
 export function DoorHint() {

@@ -7,7 +7,7 @@ import { EffectComposer, Bloom, Vignette, Noise } from '@react-three/postprocess
 import { BlendFunction } from 'postprocessing'
 import { Suspense, useState, useEffect, useRef } from 'react'
 import { Player } from './scene/Player'
-import { LivingRoom } from './scene/salon/LivingRoom'
+import { LivingRoom } from './scene/living-room/LivingRoom'
 import { Subtitles } from './scene/ui/Subtitles'
 import { DoorHint } from './scene/ui/DoorHint'
 import { INTERACT_KEY } from './game/controlsConfig'
