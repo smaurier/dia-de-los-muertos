@@ -1,8 +1,6 @@
 // src/scene/rooms/Kitchen.tsx
 // Cuisine familiale (x∈[-7,-0.6], z∈[5.8,12.0]) — accès depuis l'arche nord du salon.
 // Refs : cuisine-entree-01/02.png, cuisine-coin-pierres-01/02.png
-import { useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
@@ -30,6 +28,7 @@ import {
   CW,
   CD,
 } from './kitchen/kitchenConstants'
+import { BulbFlicker } from './kitchen/BulbFlicker'
 
 // Mur en pierre PERCÉ pour la porte du couloir : un seul mesh (ShapeGeometry
 // avec trou) → texture continue sur tout le mur, pas de segments qui cassent
@@ -55,45 +54,6 @@ const stoneWallGeometry = (() => {
   for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) / 6.2, uv.getY(i) / 2.9)
   return g
 })()
-
-// Ampoule nue qui CLIGNOTE (fiche cuisine : prop narratif — micro-tension
-// permanente, « parce qu'elle est vieille »). Baisse brève et aléatoire
-// toutes les 6-14 s, sinon pleine intensité.
-function AmpouleFlicker() {
-  const matRef = useRef<THREE.MeshToonMaterial>(null)
-  const lightRef = useRef<THREE.PointLight>(null)
-  const t = useRef(0)
-  const nextDip = useRef(6 + Math.random() * 8)
-  const dipEnd = useRef(0)
-  useFrame((_, delta) => {
-    t.current += delta
-    if (t.current > nextDip.current) {
-      dipEnd.current = t.current + 0.12 + Math.random() * 0.2
-      nextDip.current = t.current + 6 + Math.random() * 8
-    }
-    const dipping = t.current < dipEnd.current
-    const k = dipping ? 0.25 + Math.random() * 0.2 : 1
-    if (lightRef.current) lightRef.current.intensity = 3.2 * k
-    if (matRef.current) matRef.current.emissiveIntensity = 3.0 * k
-  })
-  return (
-    <group position={[-3.8, 0, 8.9]}>
-      <mesh position={[0, 2.74, 0]}>
-        <cylinderGeometry args={[0.006, 0.006, 0.44, 5]} />
-        <meshToonMaterial color="#1A1010" gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[0, 2.51, 0]}>
-        <cylinderGeometry args={[0.022, 0.018, 0.058, 8]} />
-        <meshToonMaterial color="#B0A080" gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[0, 2.46, 0]}>
-        <sphereGeometry args={[0.050, 10, 10]} />
-        <meshToonMaterial ref={matRef} color="#F8E8A0" gradientMap={toonGradient} emissive="#F5D040" emissiveIntensity={3.0} />
-      </mesh>
-      <pointLight ref={lightRef} position={[0, 2.40, 0]} intensity={3.2} color="#f5b060" distance={5.5} decay={2} />
-    </group>
-  )
-}
 
 export function Kitchen() {
   return (
@@ -442,7 +402,7 @@ export function Kitchen() {
 
       {/* ── Ampoule nue suspendue au-dessus de la table — elle CLIGNOTE
           (fiche cuisine : prop narratif) ── */}
-      <AmpouleFlicker />
+      <BulbFlicker />
 
       {/* ── Lumières d'appoint : mur en pierre (l'ampoule seule le laissait dans
           la bande toon la plus sombre → mur noir) + lueur du fogón ── */}
