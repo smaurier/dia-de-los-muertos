@@ -1,12 +1,12 @@
 // src/scene/shared/DomeCiel.tsx
-// Bulle de ciel étoilé au-dessus de toute la maison : hémisphère vu de
-// l'intérieur (BackSide), texture d'étoiles générée au chargement (canvas).
-// Visible depuis le patio, par-dessus les murs d'enceinte, et derrière
-// toute ouverture donnant dehors. Nuit du Día de Muertos.
+// Starry sky dome above the entire house: hemisphere seen from inside
+// (BackSide), star texture generated at load time (canvas).
+// Visible from the patio, above the enclosure walls, and behind any
+// opening facing outside. Día de Muertos night.
 import * as THREE from 'three'
 
 const cieloTexture = (() => {
-  // 4096×2048 : à 1024 le dôme de 26 m étirait les texels — étoiles floues.
+  // 4096×2048: at 1024 the 26 m dome stretched texels — blurry stars.
   const W = 4096
   const H = 2048
   const canvas = document.createElement('canvas')
@@ -14,7 +14,7 @@ const cieloTexture = (() => {
   canvas.height = H
   const ctx = canvas.getContext('2d')!
 
-  // Dégradé : noir bleuté au zénith → bleu nuit chaud à l'horizon
+  // Gradient: blue-black at zenith → warm night blue at horizon
   const grad = ctx.createLinearGradient(0, 0, 0, H)
   grad.addColorStop(0, '#060B18')
   grad.addColorStop(0.55, '#0A1424')
@@ -23,13 +23,13 @@ const cieloTexture = (() => {
   ctx.fillStyle = grad
   ctx.fillRect(0, 0, W, H)
 
-  // Étoiles : plus denses vers le zénith (haut de la texture), tailles et
-  // éclats variés, quelques-unes bleutées ou dorées. Petits rayons en px :
-  // à cette résolution elles restent des points nets.
+  // Stars: denser toward zenith (top of texture), varied sizes and
+  // brightness, some bluish or golden. Small radii in px:
+  // at this resolution they remain sharp points.
   const rand = (a: number, b: number) => a + Math.random() * (b - a)
   for (let i = 0; i < 1700; i++) {
     const x = rand(0, W)
-    const y = Math.pow(Math.random(), 1.6) * (H - 170) // biais vers le haut
+    const y = Math.pow(Math.random(), 1.6) * (H - 170) // biased toward top
     const r = rand(1.0, 3.2)
     const alpha = rand(0.35, 1)
     const tint = Math.random()
@@ -41,7 +41,7 @@ const cieloTexture = (() => {
     ctx.arc(x, y, r, 0, Math.PI * 2)
     ctx.fill()
   }
-  // Une poignée d'étoiles brillantes : cœur net + halo doux + croix fine
+  // A handful of bright stars: sharp core + soft halo + thin cross
   for (let i = 0; i < 16; i++) {
     const x = rand(0, W)
     const y = Math.pow(Math.random(), 1.8) * (H * 0.78)
@@ -64,14 +64,14 @@ const cieloTexture = (() => {
 
   const tex = new THREE.CanvasTexture(canvas)
   tex.colorSpace = THREE.SRGBColorSpace
-  tex.anisotropy = 8 // netteté aux angles rasants (horizon du dôme)
+  tex.anisotropy = 8 // sharpness at grazing angles (dome horizon)
   return tex
 })()
 
 export function DomeCiel() {
   return (
-    // Centré sur la maison (x∈[-7.2,13.6], z∈[-10.75,15.4]), rayon large.
-    // meshBasicMaterial : le ciel n'est pas éclairé par les lampes.
+    // Centered on the house (x∈[-7.2,13.6], z∈[-10.75,15.4]), wide radius.
+    // meshBasicMaterial: the sky is not lit by scene lights.
     <mesh position={[3.2, 0, 2.3]}>
       <sphereGeometry args={[26, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
       <meshBasicMaterial map={cieloTexture} side={THREE.BackSide} fog={false} />

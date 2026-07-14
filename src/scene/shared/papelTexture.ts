@@ -1,12 +1,12 @@
 import * as THREE from 'three'
 
-// Alpha maps procédurales pour le papel picado : blanc = papier, noir = découpe
-// (alphaTest sur le matériau fait disparaître les zones noires).
-// 3 motifs traditionnels stylisés : fleur, crâne, losanges.
+// Procedural alpha maps for papel picado: white = paper, black = cutout
+// (alphaTest on the material discards black regions).
+// 3 traditional stylized motifs: flower, skull, diamonds.
 
 const W = 256
 const H = 320
-const S = 2 // facteur d'échelle des motifs (canvas doublé pour des découpes fines)
+const S = 2 // motif scale factor (canvas doubled for fine cutouts)
 
 function makeTexture(draw: (ctx: CanvasRenderingContext2D) => void): THREE.CanvasTexture {
   const canvas = document.createElement('canvas')
@@ -36,10 +36,10 @@ function cutEllipse(
   ctx.fill()
 }
 
-// Bord inférieur en zigzag — la signature du papel picado.
+// Zigzag bottom edge — the signature of papel picado.
 function cutZigzagBottom(ctx: CanvasRenderingContext2D) {
   const depth = 14 * S
-  const step = 12 * S // dents plus serrées (découpe fine)
+  const step = 12 * S // tighter teeth (fine cutout)
   ctx.beginPath()
   ctx.moveTo(0, H)
   for (let x = 0; x <= W; x += step) {
@@ -51,12 +51,12 @@ function cutZigzagBottom(ctx: CanvasRenderingContext2D) {
   ctx.fill()
 }
 
-// Rangée de petits trous ronds sous l'attache (haut du drapeau).
+// Row of small round holes below the hanging tab (top of flag).
 function cutTopDots(ctx: CanvasRenderingContext2D) {
   for (let x = 10 * S; x < W; x += 12 * S) cutCircle(ctx, x, 14 * S, 2.4 * S)
 }
 
-// Dentelle latérale : colonnes de trous fins le long des bords.
+// Side lace: columns of thin holes along the edges.
 function cutSideLace(ctx: CanvasRenderingContext2D) {
   for (let y = 34 * S; y < H - 30 * S; y += 13 * S) {
     cutCircle(ctx, 9 * S, y, 2.2 * S)
@@ -66,7 +66,7 @@ function cutSideLace(ctx: CanvasRenderingContext2D) {
   }
 }
 
-// Trous d'angle décoratifs (trèfle de 3 petits trous).
+// Decorative corner holes (trefoil of 3 small holes).
 function cutCornerDots(ctx: CanvasRenderingContext2D) {
   for (const [px, py] of [[14, 34], [114, 34], [14, 126], [114, 126]] as [number, number][]) {
     const x = (px / 128) * W
@@ -77,8 +77,8 @@ function cutCornerDots(ctx: CanvasRenderingContext2D) {
   }
 }
 
-// Motif 1 — fleur : cœur + 6 pétales fins + double couronne de points.
-const fleur = makeTexture(ctx => {
+// Motif 1 — flower: center + 6 thin petals + double ring of dots.
+const flower = makeTexture(ctx => {
   const cx = W / 2, cy = H / 2 - 6 * S
   cutCircle(ctx, cx, cy, 8 * S)
   for (let i = 0; i < 8; i++) {
@@ -99,8 +99,8 @@ const fleur = makeTexture(ctx => {
   cutZigzagBottom(ctx)
 })
 
-// Motif 2 — crâne (calavera) : yeux, nez, sourire denté, halo double de points.
-const crane = makeTexture(ctx => {
+// Motif 2 — skull (calavera): eyes, nose, toothed smile, double dot halo.
+const skull = makeTexture(ctx => {
   const cx = W / 2, cy = H / 2 - 8 * S
   cutCircle(ctx, cx - 16 * S, cy - 8 * S, 9 * S)
   cutCircle(ctx, cx + 16 * S, cy - 8 * S, 9 * S)
@@ -127,8 +127,8 @@ const crane = makeTexture(ctx => {
   cutZigzagBottom(ctx)
 })
 
-// Motif 3 — treillis de losanges fins avec points intercalés.
-const losanges = makeTexture(ctx => {
+// Motif 3 — fine diamond lattice with interspersed dots.
+const diamonds = makeTexture(ctx => {
   const s = 11 * S
   for (let row = 0; row < 6; row++) {
     for (let col = 0; col < 6; col++) {
@@ -150,4 +150,4 @@ const losanges = makeTexture(ctx => {
   cutZigzagBottom(ctx)
 })
 
-export const papelTextures = [fleur, crane, losanges]
+export const papelTextures = [flower, skull, diamonds]

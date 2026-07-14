@@ -1,6 +1,6 @@
 // src/scene/shared/PorteBleue.tsx
-// Porte bleue mexicaine décorative (non ouvrable) — plaquée contre un mur.
-// Local : panneau dans le plan XY, détails vers +z. rotationY π/2 → détails vers +x.
+// Decorative Mexican blue door (non-openable) — flush against a wall.
+// Local: panel in the XY plane, details toward +z. rotationY π/2 → details toward +x.
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 

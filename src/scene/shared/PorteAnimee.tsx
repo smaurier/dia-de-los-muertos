@@ -1,6 +1,6 @@
 // src/scene/shared/PorteAnimee.tsx
-// Porte interactive : lit son état dans doorStore et anime la rotation autour
-// du gond (lerp). Fermée par défaut ; s'ouvre/referme via toggleDoor (touche F).
+// Interactive door: reads its state from doorStore and animates rotation around
+// the hinge (lerp). Closed by default; opens/closes via toggleDoor (F key).
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
