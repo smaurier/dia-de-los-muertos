@@ -179,12 +179,12 @@ export const LIVING_ROOM_BOUNDS = { minX: -6.7, maxX: 6.7, minZ: -5.6, maxZ: 5.6
 
 // Total navigation bounds — covers salon + kitchen (north) + zaguán (east).
 // South arch removed → minZ = -5.7 (solid wall).
-// canMove uses NAV_BOUNDS; camera stays within SALON_BOUNDS.
+// canMove uses NAV_BOUNDS; camera stays within LIVING_ROOM_BOUNDS.
 export const NAV_BOUNDS = { minX: -7.2, maxX: 15.2, minZ: -10.5, maxZ: 15.4 }
 
 // Physical salon walls (planes at x=±7, z=±5.8) and camera margin.
 // CAM_MARGIN > near plane (0.1): clamped camera never clips a wall.
-// Must stay >= SALON_BOUNDS so it doesn't clamp harder than the player.
+// Must stay >= LIVING_ROOM_BOUNDS so it doesn't clamp harder than the player.
 const WALL_X = 7
 const WALL_Z = 5.8
 const CAM_MARGIN = 0.15
