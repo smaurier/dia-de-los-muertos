@@ -1,4 +1,4 @@
-// src/scene/rooms/Bureau.tsx
+// src/scene/rooms/Office.tsx
 // Office — south of the entrance hallway, as per the floor plan (between the
 // storage room and the future garage). x∈[8.9,12.4], z∈[-4.2,-1.2]. Door on
 // the south hallway (west wall, z∈[-2.5,-1.56]). Adult room, tidy, slightly
@@ -18,7 +18,7 @@ const C_IRON      = '#1A1512'
 const C_NIGHT     = '#16223E'
 const C_PAPER     = '#EFE9D8'
 
-export function Bureau() {
+export function Office() {
   return (
     <group>
       {/* ── Tile floor ── */}

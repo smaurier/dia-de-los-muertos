@@ -1,4 +1,4 @@
-// src/scene/rooms/Couloir.tsx
+// src/scene/rooms/Corridor.tsx
 // T-shaped hallway (floor plan logic: runs along both bedrooms and joins the entrance).
 //   north branch  x∈[-0.6,13.4]  z∈[6.2,7.6] — from the stone-wall door
 //     to the end of bedroom 2 (dead end: future bathroom)
@@ -16,7 +16,7 @@ import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
 
 const C_CEIL = '#E4D6BC'
 
-export function Couloir() {
+export function Corridor() {
   return (
     <group>
       {/* ── Floor tiles (2 disjoint planes, junction at x=7.35) ── */}

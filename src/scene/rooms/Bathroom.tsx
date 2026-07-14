@@ -1,4 +1,4 @@
-// src/scene/rooms/SalleDeBain.tsx
+// src/scene/rooms/Bathroom.tsx
 // Bathroom + WC — south of the hallway extension, door FACING bedroom 2
 // (x∈[10.2,11.14]). Adjoins the east branch of the hallway (west wall x∈[8.75,8.9]).
 // Interior x∈[8.9,11.9], z∈[3.4,6.2].
@@ -18,7 +18,7 @@ const C_TILE    = '#D8D2C2'   // light tile floor
 const C_IRON    = '#1A1512'
 const C_NIGHT   = '#16223E'
 
-export function SalleDeBain() {
+export function Bathroom() {
   return (
     <group>
       {/* ── Light tile floor ── */}

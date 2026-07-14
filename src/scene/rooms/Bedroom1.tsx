@@ -1,4 +1,4 @@
-// src/scene/rooms/Chambre1.tsx
+// src/scene/rooms/Bedroom1.tsx
 // Children's bedroom — Emilio + Sofía (his sister, spec V10: "a sister").
 // x∈[-0.6,7], z∈[7.6,12] (4.4 m deep, aligned with the back of the kitchen).
 // Door on the hallway x∈[4.03,4.97], FACING salon arch 2.
@@ -80,7 +80,7 @@ function ChildBed({ x, colors }: { x: number; colors: [string, string, string] }
   )
 }
 
-export function Chambre1() {
+export function Bedroom1() {
   return (
     <group>
       {/* ── Tile floor ── */}

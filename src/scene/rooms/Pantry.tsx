@@ -1,4 +1,4 @@
-// src/scene/rooms/Cellier.tsx
+// src/scene/rooms/Pantry.tsx
 // Pantry / larder (x∈[-7,-0.6], z∈[12,15.2]) — full width of the kitchen,
 // behind its back wall (plan-maison-v1). Openable door in the shared wall
 // z=12 (x∈[-6.3,-5.3]) + blue door to the garden on the west wall.
@@ -33,7 +33,7 @@ const JARS_ROWS: [number, number, number, string][][] = [
 ]
 const SHELF_Y = [0.55, 1.15, 1.7]
 
-export function Cellier() {
+export function Pantry() {
   return (
     <group>
       {/* ── Tile floor ── */}

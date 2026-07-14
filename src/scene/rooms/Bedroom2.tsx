@@ -1,4 +1,4 @@
-// src/scene/rooms/Chambre2.tsx
+// src/scene/rooms/Bedroom2.tsx
 // Parents' bedroom — Papá Carlos + Mamá Elena. The LARGE bedroom.
 // x∈[7.35,13.4], z∈[7.6,12] (~6 × 4.4 m), adjoining bedroom 1
 // (double partition x∈[7,7.35]). Door on the hallway x∈[10.2,11.14].
@@ -17,7 +17,7 @@ const C_WOOD_MED  = '#5C3010'
 const C_IRON      = '#1A1512'
 const C_NIGHT     = '#16223E'
 
-export function Chambre2() {
+export function Bedroom2() {
   return (
     <group>
       {/* ── Tile floor ── */}

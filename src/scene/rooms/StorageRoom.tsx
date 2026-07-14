@@ -1,4 +1,4 @@
-// src/scene/rooms/Debarras.tsx
+// src/scene/rooms/StorageRoom.tsx
 // Storage room (ch7 — the most oppressive point in the house, spec house-rooms).
 // Between the bathroom and the entrance, as per the floor plan: door on the
 // east branch of the hallway (z∈[2.25,3.19]), the one that descends to the zaguán.
@@ -16,7 +16,7 @@ const C_WOODM = '#5C3010'
 const C_IRON  = '#1A1512'
 const C_FLOOR = '#8A7460'   // raw concrete, no tiles here
 
-export function Debarras() {
+export function StorageRoom() {
   return (
     <group>
       {/* ── Floor (raw concrete) ── */}

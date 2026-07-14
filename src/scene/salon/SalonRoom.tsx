@@ -17,14 +17,14 @@ import { Canape } from './Canape'
 import { SALON_OBSTACLES } from './salonCollision'
 import { NappeCloth } from './NappeCloth'
 import { PhotoFrame } from '../shared/PhotoFrame'
-import { Cuisine } from '../rooms/Cuisine'
-import { Cellier } from '../rooms/Cellier'
-import { Couloir } from '../rooms/Couloir'
-import { Chambre1 } from '../rooms/Chambre1'
-import { Chambre2 } from '../rooms/Chambre2'
-import { SalleDeBain } from '../rooms/SalleDeBain'
-import { Debarras } from '../rooms/Debarras'
-import { Bureau } from '../rooms/Bureau'
+import { Kitchen } from '../rooms/Kitchen'
+import { Pantry } from '../rooms/Pantry'
+import { Corridor } from '../rooms/Corridor'
+import { Bedroom1 } from '../rooms/Bedroom1'
+import { Bedroom2 } from '../rooms/Bedroom2'
+import { Bathroom } from '../rooms/Bathroom'
+import { StorageRoom } from '../rooms/StorageRoom'
+import { Office } from '../rooms/Office'
 import { PorteEntree } from './PorteEntree'
 import { Patio } from '../rooms/Patio'
 import { Garage } from '../rooms/Garage'
@@ -511,14 +511,14 @@ export function SalonRoom() {
           (leur reflet ne montre que le salon — re-rendre la maison entière
           coûtait ~35 ms/frame, mesuré par bissection). ReflectorThrottle. */}
       <group name="satellite-rooms">
-        <Cuisine />
-        <Cellier />
-        <Couloir />
-        <Chambre1 />
-        <Chambre2 />
-        <SalleDeBain />
-        <Debarras />
-        <Bureau />
+        <Kitchen />
+        <Pantry />
+        <Corridor />
+        <Bedroom1 />
+        <Bedroom2 />
+        <Bathroom />
+        <StorageRoom />
+        <Office />
         <Patio />
         <Garage />
       </group>

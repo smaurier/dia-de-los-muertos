@@ -1,4 +1,4 @@
-// src/scene/rooms/Cuisine.tsx
+// src/scene/rooms/Kitchen.tsx
 // Cuisine familiale (x∈[-7,-0.6], z∈[5.8,12.0]) — accès depuis l'arche nord du salon.
 // Refs : cuisine-entree-01/02.png, cuisine-coin-pierres-01/02.png
 import { useRef } from 'react'
@@ -96,7 +96,7 @@ function AmpouleFlicker() {
   )
 }
 
-export function Cuisine() {
+export function Kitchen() {
   return (
     <group>
       {/* ── Sol tomettes ── */}
