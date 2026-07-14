@@ -4,7 +4,6 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { Outlines, RoundedBox } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
-import { papelTextures } from '../shared/papelTexture'
 import {
   murAdobeNorth, murAdobeLintel, murAdobeSouth, murAdobeSide,
   solTomettes, solTomettesNormal, boisSombre,
@@ -16,6 +15,7 @@ import { Sofa } from './Sofa'
 import { SALON_OBSTACLES } from './livingRoomCollision'
 import { TVScreen } from './shell/TVScreen'
 import { LeafyPlant } from './shell/LeafyPlant'
+import { PapelGarland } from './shell/PapelGarland'
 import { Tablecloth } from './Tablecloth'
 import { PhotoFrame } from '../shared/PhotoFrame'
 import { Kitchen } from '../rooms/Kitchen'
@@ -40,7 +40,6 @@ import {
   intradosGeometry,
   C_WOOD_DARK, C_WOOD_MED, C_UPHOLSTERY, C_CEIL, C_IRON, C_GOLD,
   C_FRAME, C_PHOTO, C_CACTUS, C_POT, C_CANDLE, C_FLAME, C_LEAF, C_CERAMIC,
-  PAPEL_COLORS, PAPEL_X, FLAG_X,
   CHAIRS,
   TABLE_LEG_X, TABLE_LEG_Z,
   FRAMES_SOUTH, FRAMES_EAST,
@@ -48,104 +47,6 @@ import {
 } from './shell/livingRoomConstants'
 
 // ─── Composants ───────────────────────────────────────────────────────────────
-
-// Papel picado — guirlande en caténaire, drapeaux perforés (alphaMap) suspendus
-// à la ficelle, chacun pivotant à son attache avec une phase propre (vent doux).
-const FLAG_W = 0.30
-const FLAG_H = 0.38
-// La guirlande court le long de Z (local X du strand, groupe tourné de π/2),
-// ancrée sous les vigas (bas de poutre à y=3.04).
-const STRAND_X0 = -5.4
-const STRAND_X1 = 5.4
-const STRAND_Y = 3.02
-const STRAND_SAG = 0.34
-
-function strandY(x: number): number {
-  const t = (x - STRAND_X0) / (STRAND_X1 - STRAND_X0)
-  return STRAND_Y - STRAND_SAG * 4 * t * (1 - t)
-}
-
-// Drapeau individuel : ondulation par vertex (papier souple, pas de vent —
-// intérieur), amplitude nulle à l'attache, maximale en bas. L'ourlet plié
-// par-dessus la ficelle montre comment le drapeau est attaché.
-function PapelFlag({ x, y, color, tex, phase }: {
-  x: number; y: number; color: string; tex: THREE.Texture; phase: number
-}) {
-  const geo = useMemo(() => new THREE.PlaneGeometry(FLAG_W, FLAG_H, 6, 8), [])
-  const base = useMemo(() => Float32Array.from(geo.attributes.position.array), [geo])
-  const t = useRef(phase)
-
-  useFrame((_, delta) => {
-    t.current += delta
-    const pos = geo.attributes.position
-    for (let i = 0; i < pos.count; i++) {
-      const bx = base[i * 3]
-      const by = base[i * 3 + 1]
-      const hang = (FLAG_H / 2 - by) / FLAG_H  // 0 à l'attache, 1 en bas
-      pos.setZ(i, Math.sin(t.current * 1.1 + bx * 5 + by * 3) * 0.022 * hang)
-    }
-    pos.needsUpdate = true
-    // (pas de computeVertexNormals par frame : ×52 drapeaux c'était un des
-    // coûts fixes CPU mesurés — l'ondulation de 2 cm ne change pas l'ombrage)
-  })
-
-  return (
-    <group position={[x, y, 0]}>
-      {/* Ourlet : bande du même papier pliée par-dessus la ficelle */}
-      <mesh position={[0, 0.002, 0]}>
-        <boxGeometry args={[FLAG_W, 0.030, 0.026]} />
-        <meshToonMaterial color={color} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[0, -FLAG_H / 2 + 0.012, 0]} geometry={geo}>
-        <meshToonMaterial
-          color={color}
-          gradientMap={toonGradient}
-          alphaMap={tex}
-          alphaTest={0.5}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
-    </group>
-  )
-}
-
-// sx : position X (sous une viga). Le groupe est tourné de π/2 : le X local
-// de la guirlande devient le Z monde → elle traverse la pièce comme la ref.
-function PapelStrand({ sx, si }: { sx: number; si: number }) {
-  const stringGeo = useMemo(() => {
-    const pts: THREE.Vector3[] = []
-    for (let i = 0; i <= 24; i++) {
-      const x = STRAND_X0 + (i / 24) * (STRAND_X1 - STRAND_X0)
-      pts.push(new THREE.Vector3(x, strandY(x), 0))
-    }
-    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 32, 0.0035, 5, false)
-  }, [])
-
-  return (
-    <group position={[sx, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
-      <mesh geometry={stringGeo}>
-        <meshToonMaterial color="#7A5A3A" gradientMap={toonGradient} />
-      </mesh>
-      {/* Attaches sur la poutre aux deux extrémités */}
-      {[STRAND_X0, STRAND_X1].map(ax => (
-        <mesh key={ax} position={[ax, 3.05, 0]}>
-          <boxGeometry args={[0.03, 0.06, 0.03]} />
-          <meshToonMaterial color="#7A5A3A" gradientMap={toonGradient} />
-        </mesh>
-      ))}
-      {FLAG_X.map((fx, fi) => (
-        <PapelFlag
-          key={fi}
-          x={fx}
-          y={strandY(fx)}
-          color={PAPEL_COLORS[(si * FLAG_X.length + fi) % PAPEL_COLORS.length]}
-          tex={papelTextures[(si + fi) % papelTextures.length]}
-          phase={si * 2.1 + fi * 0.9}
-        />
-      ))}
-    </group>
-  )
-}
 
 // Rideau plissé : plane subdivisé, plis sinusoïdaux figés dans la géométrie
 // (amples en bas, froncés en haut) + ondulation lente par vertex — aérien,
@@ -623,7 +524,7 @@ export function LivingRoomShell() {
       </group>
 
       {/* ─── Papel picado ───────────────────────────────────────────────────── */}
-      {!NO_PAPEL && PAPEL_X.map((sx, si) => <PapelStrand key={si} sx={sx} si={si} />)}
+      <PapelGarland />
 
       {/* ─── Table centrale ─────────────────────────────────────────────────── */}
       {/* Plateau resserré (2.3 → 2.1) : proportions banquet plus réalistes sans
