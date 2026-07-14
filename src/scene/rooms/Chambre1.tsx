@@ -164,6 +164,11 @@ export function Chambre1() {
           <Outlines thickness={0.006} color="black" />
         </mesh>
       ))}
+      {/* Vitre (sinon le froid entre tout seul) */}
+      <mesh position={[3.0, 1.6, 12.03]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[1.56, 1.16]} />
+        <meshToonMaterial color="#C8DCE8" transparent opacity={0.28} emissive="#4A6080" emissiveIntensity={0.15} gradientMap={toonGradient} />
+      </mesh>
 
       {/* ── Mur est x=7 ── */}
       <mesh position={[7, 1.45, 9.8]} rotation={[0, -Math.PI / 2, 0]}>

@@ -116,6 +116,11 @@ export function Chambre2() {
           <Outlines thickness={0.006} color="black" />
         </mesh>
       ))}
+      {/* Vitre (deux battants de part et d'autre du meneau) */}
+      <mesh position={[13.43, 1.6, 9.9]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[1.96, 1.36]} />
+        <meshToonMaterial color="#C8DCE8" transparent opacity={0.28} emissive="#4A6080" emissiveIntensity={0.15} gradientMap={toonGradient} />
+      </mesh>
       {/* Clair de lune qui entre par la grande fenêtre */}
       <pointLight position={[12.9, 1.8, 9.9]} intensity={0.7} color="#8aa4d8" distance={4.5} decay={2} />
 
@@ -161,6 +166,11 @@ export function Chambre2() {
           <Outlines thickness={0.006} color="black" />
         </mesh>
       ))}
+      {/* Vitre */}
+      <mesh position={[9.1, 1.6, 12.03]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[1.56, 1.16]} />
+        <meshToonMaterial color="#C8DCE8" transparent opacity={0.28} emissive="#4A6080" emissiveIntensity={0.15} gradientMap={toonGradient} />
+      </mesh>
 
       {/* ── Lit double — tête au mur nord, à l'est de la fenêtre ── */}
       <group position={[11.6, 0, 10.9]}>

@@ -104,6 +104,11 @@ export function SalleDeBain() {
           <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
         </mesh>
       ))}
+      {/* Vitre (verre dépoli de salle de bain) */}
+      <mesh position={[11.97, 2.35, 5.0]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[0.76, 0.46]} />
+        <meshToonMaterial color="#D8E4E8" transparent opacity={0.55} emissive="#5A7080" emissiveIntensity={0.12} gradientMap={toonGradient} />
+      </mesh>
       {/* ── Mur sud z=3.4 — plein (donne sur l'intérieur : futur débarras) ── */}
       <mesh position={[10.4, 1.45, 3.4]}>
         <planeGeometry args={[3.0, 2.9]} />

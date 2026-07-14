@@ -110,6 +110,11 @@ export function Bureau() {
           <Outlines thickness={0.006} color="black" />
         </mesh>
       ))}
+      {/* Vitre */}
+      <mesh position={[12.49, 1.6, -2.7]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[1.16, 1.16]} />
+        <meshToonMaterial color="#C8DCE8" transparent opacity={0.28} emissive="#4A6080" emissiveIntensity={0.15} gradientMap={toonGradient} />
+      </mesh>
 
       {/* ── Écritoire contre le mur est, sous la fenêtre — chaise face à elle ── */}
       <group position={[11.85, 0, -2.7]} rotation={[0, -Math.PI / 2, 0]}>
