@@ -29,6 +29,7 @@ import { PorteEntree } from './PorteEntree'
 import { Patio } from '../rooms/Patio'
 import { Garage } from '../rooms/Garage'
 import { DomeCiel } from '../shared/DomeCiel'
+import { SceneAuditProbe } from '../debug/sceneAudit'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
 const SHOW_AABB = new URLSearchParams(window.location.search).has('aabb')
@@ -529,6 +530,9 @@ export function SalonRoom() {
 
       {/* ─── Bulle de ciel étoilé au-dessus de toute la maison ─── */}
       <DomeCiel />
+
+      {/* ─── Audit graphique (?audit) — inactif sinon ─── */}
+      <SceneAuditProbe />
 
       {/* ─── Mur Est x=7 — arche d'entrée (zaguán, z=0, ouverture z∈[-0.9,0.9]).
           Mur ÉPAIS (0,35 m, x∈[7,7.35]) comme le mur nord : embrasure profonde,

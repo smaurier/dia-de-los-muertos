@@ -29,7 +29,8 @@ export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
 
 // Sections de mur physiques — utilisées par canMove uniquement (pas caméra).
 // Les arches = gaps dans ces sections → passage libre.
-const ROOM_WALLS: readonly [number, number, number, number][] = [
+// (exporté pour l'audit d'intégrité houseAudit.test.ts)
+export const ROOM_WALLS: readonly [number, number, number, number][] = [
   // ── Mur nord z=5.8 : arche cuisine ouverte x∈[-3.4,-1.6] ──────────────────
   [-7.2, -3.45, 5.55, 6.2],   // section ouest du mur nord
   // section est : arche 2 ouverte x∈[3.6,5.4] → couloir
