@@ -181,8 +181,8 @@ export default function App() {
           background: 'rgba(0,0,0,0.55)', pointerEvents: 'none',
           color: '#f5c87a', fontFamily: 'sans-serif', textAlign: 'center',
         }}>
-          <div style={{ fontSize: '32px', marginBottom: '10px', fontWeight: 'bold' }}>Click to play</div>
-          <div style={{ fontSize: '18px', color: '#c9a87c' }}>WASD · mouse · E to hide</div>
+          <div style={{ fontSize: '32px', marginBottom: '10px', fontWeight: 'bold' }}>Cliquez pour naviguer</div>
+          <div style={{ fontSize: '18px', color: '#c9a87c' }}>WASD · souris · E pour se cacher</div>
         </div>
       )}
       <FadeIn />
