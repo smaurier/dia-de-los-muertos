@@ -184,25 +184,21 @@ export function PorteEntree() {
         <Outlines thickness={0.012} color="black" />
       </mesh>
 
-      {/* ── Imposte à barreaux forgés — la lumière de la rue passe entre ── */}
-      <mesh position={[10.02, 2.42, 0]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[1.76, 0.36]} />
-        <meshToonMaterial color="#2A2418" emissive={C_GLOW} emissiveIntensity={0.5} gradientMap={toonGradient} />
+      {/* ── Imposte PLEINE : panneau de bois mouluré (le verre en hauteur ne
+          se lisait pas — fermé, sans barreaux) ── */}
+      <mesh position={[9.94, 2.42, 0]}>
+        <boxGeometry args={[0.1, 0.4, 1.8]} />
+        <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
+        <Outlines thickness={0.012} color="black" />
       </mesh>
-      {[-0.66, -0.33, 0, 0.33, 0.66].map(pz => (
-        <mesh key={pz} position={[9.95, 2.42, pz]}>
-          <boxGeometry args={[0.03, 0.36, 0.03]} />
-          <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
-          <Outlines thickness={0.006} color="black" />
+      {/* Trois caissons moulurés en relief */}
+      {[-0.58, 0, 0.58].map(pz => (
+        <mesh key={pz} position={[9.885, 2.42, pz]}>
+          <boxGeometry args={[0.02, 0.26, 0.42]} />
+          <meshToonMaterial color={C_PANEL} gradientMap={toonGradient} />
+          <Outlines thickness={0.008} color="black" />
         </mesh>
       ))}
-      {/* Volute centrale de l'imposte */}
-      <mesh position={[9.95, 2.42, 0]} rotation={[0, Math.PI / 2, 0]}>
-        <torusGeometry args={[0.09, 0.012, 6, 12]} />
-        <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
-      </mesh>
-      {/* Lueur chaude qui tombe de l'imposte */}
-      <pointLight position={[9.7, 2.4, 0]} intensity={0.6} color={C_GLOW} distance={2.5} decay={2} />
 
       {/* ── Les deux vantaux ── */}
       <Vantail side={1} />
