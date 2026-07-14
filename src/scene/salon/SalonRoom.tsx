@@ -2,7 +2,7 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import { MeshReflectorMaterial, Outlines, RoundedBox } from '@react-three/drei'
+import { Outlines, RoundedBox } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { papelTextures } from '../shared/papelTexture'
 import {
@@ -31,7 +31,7 @@ import { Garage } from '../rooms/Garage'
 import { DomeCiel } from '../shared/DomeCiel'
 import { SceneAuditProbe } from '../debug/sceneAudit'
 import { NO_PAPEL } from '../debug/perfFlags'
-import { ZoneMaterial } from '../shared/ZoneReflector'
+import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
 import { PerfProbe } from '../debug/PerfProbe'
 import { Couffin } from './Couffin'
 
@@ -383,26 +383,24 @@ export function SalonRoom() {
           mirent dans les tomettes cirées. Seule entorse au toon, assumée. */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} userData={{ reflectorScope: 'salon', reflectorZone: 'salon' }}>
         <planeGeometry args={[14, 11.6]} />
-        <ZoneMaterial
+        <ZoneReflectorMaterial
           zone="salon"
-          active={<MeshReflectorMaterial
-            map={solTomettes}
-            normalMap={solTomettesNormal}
-            normalScale={new THREE.Vector2(0.7, 0.7)}
-            resolution={256}
-            mirror={0.45}
-            mixStrength={0.8}
-            mixBlur={1}
-            blur={[250, 90]}
-            roughness={0.5}
-            metalness={0}
-            distortion={0.12}
-            distortionMap={solTomettesNormal}
-            depthScale={0.6}
-            minDepthThreshold={0.5}
-            maxDepthThreshold={1.2}
-          />}
-          fallback={<meshPhongMaterial map={solTomettes} normalMap={solTomettesNormal} shininess={30} />}
+          salonScope
+          map={solTomettes}
+          normalMap={solTomettesNormal}
+          normalScale={new THREE.Vector2(0.7, 0.7)}
+          resolution={256}
+          mirror={0.45}
+          mixStrength={0.8}
+          mixBlur={1}
+          blur={[250, 90]}
+          roughness={0.5}
+          metalness={0}
+          distortion={0.12}
+          distortionMap={solTomettesNormal}
+          depthScale={0.6}
+          minDepthThreshold={0.5}
+          maxDepthThreshold={1.2}
         />
       </mesh>
 
@@ -672,24 +670,7 @@ export function SalonRoom() {
             planaire — de nuit l'intérieur éclairé se mire dans le verre */}
         <mesh position={[-7.085, 1.8, 0]} rotation={[0, Math.PI / 2, 0]} userData={{ reflectorScope: 'salon', reflectorZone: 'salon' }}>
           <planeGeometry args={[3.36, 2.04]} />
-          <ZoneMaterial
-            zone="salon"
-            active={<MeshReflectorMaterial
-              transparent
-              opacity={0.68}
-              color="#e8f0f4"
-              resolution={512}
-              mirror={1}
-              mixStrength={1.4}
-              mixBlur={0}
-              blur={[0, 0]}
-              roughness={0.06}
-              metalness={0}
-              depthScale={0}
-              side={THREE.DoubleSide}
-            />}
-            fallback={<meshToonMaterial color="#C8DCE8" transparent opacity={0.35} gradientMap={toonGradient} side={THREE.DoubleSide} />}
-          />
+          <ZoneReflectorMaterial zone="salon" salonScope transparent opacity={0.68} color="#e8f0f4" resolution={512} mirror={1} mixStrength={1.4} blur={[0, 0]} roughness={0.06} metalness={0} depthScale={0} side={THREE.DoubleSide} />
         </mesh>
         {/* Rejas — fer forgé scellé dans la maçonnerie, PROFOND dans l'embrasure
             (côté extérieur, comme en vrai : la menuiserie est intérieure, la

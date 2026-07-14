@@ -8,11 +8,11 @@
 // Mur nord percé x∈[4.03,4.97] (porte chambre 1, face à l'arche 2) et
 // x∈[10.2,11.14] (porte chambre 2, celle des parents).
 import * as THREE from 'three'
-import { MeshReflectorMaterial, Outlines } from '@react-three/drei'
+import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
 import { PorteAnimee } from '../shared/PorteAnimee'
-import { ZoneMaterial } from '../shared/ZoneReflector'
+import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
 
 const C_CEIL = '#E4D6BC'
 
@@ -159,22 +159,7 @@ export function Couloir() {
             joueur est dans le couloir ou une zone adjacente */}
         <mesh position={[0, 0, 0.008]} userData={{ reflectorZone: 'couloir' }}>
           <planeGeometry args={[0.8, 1.7]} />
-          <ZoneMaterial
-            zone="couloir"
-            active={<MeshReflectorMaterial
-              color="#dfe8ec"
-              resolution={512}
-              mirror={1}
-              mixStrength={1.0}
-              mixBlur={0}
-              blur={[0, 0]}
-              roughness={0.04}
-              metalness={0}
-              depthScale={0}
-              side={THREE.DoubleSide}
-            />}
-            fallback={<meshToonMaterial color="#9FB4C4" gradientMap={toonGradient} />}
-          />
+          <ZoneReflectorMaterial zone="couloir" color="#dfe8ec" resolution={512} mirror={1} mixStrength={1.0} blur={[0, 0]} roughness={0.04} metalness={0} depthScale={0} side={THREE.DoubleSide} />
         </mesh>
       </group>
       <mesh position={[7.36, 1.45, -3.1]} rotation={[0, Math.PI / 2, 0]}>

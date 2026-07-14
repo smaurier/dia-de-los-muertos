@@ -154,7 +154,9 @@ export function Player() {
     direction.current
       .addVectors(frontVector.current, sideVector.current)
       .normalize()
-      .multiplyScalar(SPEED * delta)
+      // delta borné : à bas fps, un pas de SPEED*delta dépasse l'épaisseur
+      // des murs (0,3 m) → canMove saute par-dessus, on sort de la maison
+      .multiplyScalar(SPEED * Math.min(delta, 0.05))
       .applyEuler(camera.rotation)
 
     direction.current.y = 0

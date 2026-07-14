@@ -5,8 +5,8 @@
 // la rue, nez vers l'arche du patio (mur mitoyen ouest, porte en bois
 // ouvrable id 'garage', définie dans Patio.tsx).
 import * as THREE from 'three'
-import { MeshReflectorMaterial, Outlines } from '@react-three/drei'
-import { ZoneMaterial } from '../shared/ZoneReflector'
+import { Outlines } from '@react-three/drei'
+import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide } from '../shared/paintedTextures'
 
@@ -97,24 +97,7 @@ export function Garage() {
           ))}
           <mesh position={[px, 1.85, -10.65]} userData={{ reflectorZone: 'garage' }}>
             <planeGeometry args={[0.96, 0.66]} />
-            <ZoneMaterial
-            zone="garage"
-            active={<MeshReflectorMaterial
-              transparent
-              opacity={0.68}
-              color="#e8f0f4"
-              resolution={256}
-              mirror={1}
-              mixStrength={1.4}
-              mixBlur={0}
-              blur={[0, 0]}
-              roughness={0.06}
-              metalness={0}
-              depthScale={0}
-              side={THREE.DoubleSide}
-            />}
-            fallback={<meshToonMaterial color="#C8DCE8" transparent opacity={0.35} emissive="#4A6080" emissiveIntensity={0.2} gradientMap={toonGradient} side={THREE.DoubleSide} />}
-          />
+            <ZoneReflectorMaterial zone="garage" transparent opacity={0.68} color="#e8f0f4" resolution={256} mirror={1} mixStrength={1.4} blur={[0, 0]} roughness={0.06} metalness={0} depthScale={0} side={THREE.DoubleSide} />
           </mesh>
         </group>
       ))}
