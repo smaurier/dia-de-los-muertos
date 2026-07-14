@@ -33,6 +33,7 @@ import { SceneAuditProbe } from '../debug/sceneAudit'
 import { NO_PAPEL } from '../debug/perfFlags'
 import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
 import { PerfProbe } from '../debug/PerfProbe'
+import { LivingRoomLighting } from './shell/LivingRoomLighting'
 import { Bassinet } from './Bassinet'
 import {
   SHOW_AABB,
@@ -51,24 +52,8 @@ import {
 export function LivingRoomShell() {
   return (
     <group>
-      {/* ─── Éclairage ──────────────────────────────────────────────────────── */}
-      {/* Intensités relevées (0.10/0.35 → 0.30/0.60) : murs et sol sont passés
-          de meshBasicMaterial (non éclairés) à meshToonMaterial — sans ce
-          rattrapage la pièce entière tombe dans la bande d'ombre. */}
-      {/* Refs : pièce SOMBRE, flaques de lumière chaude (lustre, bougies, lampe,
-          TV, cuisine). L'ambiance générale est basse, le contraste fait le mood. */}
-      <ambientLight intensity={0.13} color="#e8bd80" />
-      {/* Ombres teintées : remplissage bicolore — chaud ambré par le haut,
-          rebond terracotta par le sol. Les zones à l'ombre prennent ces teintes
-          au lieu de virer au gris (palier 2, visual-refs.md). */}
-      <hemisphereLight intensity={0.26} color="#e8bd80" groundColor="#7a4226" />
-      {/* Sous le lustre (pas dedans : à bout portant l'anneau sature en gris) */}
-      <pointLight position={[-0.05, 2.0, 0]} intensity={2.8} color="#f0d890" distance={10} decay={2} />
-      <directionalLight intensity={0.18} color="#f5c87a" position={[-6, 2, 0]} />
-      <pointLight position={[-5.7, 1.6, -4.5]} intensity={0.9} color="#8ab4f8" distance={4} decay={2} />
-      {/* pointLight buffet supprimée : chaque AnimatedCandle a sa propre pointLight locale */}
-      {/* Clair de lune par la grande fenêtre (bleu nuit, ref) */}
-      <pointLight position={[-6.2, 2, 0.5]} intensity={1.0} color="#8aa4d8" distance={7} decay={2} />
+      {/* ─── Lighting ───────────────────────────────────────────────────────── */}
+      <LivingRoomLighting />
 
       {/* ─── Sol tomettes (texture peinte, palier 3) ─────────────────────────── */}
       {/* Réflexion planaire floutée : la ref montre chaises/nappe/lustre qui se
