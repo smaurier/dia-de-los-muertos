@@ -45,9 +45,9 @@ Audit exhaustif de `src/scene/**` à la recherche de logique pure (non-JSX) extr
 
 ### Checklist d'extraction Phase 1
 
-- [ ] **[Task 2] `resolvePlayerNpcCollision`** — `src/scene/Player.tsx:187-198` — Boucle de push-out du joueur hors des NPCs (`NPC_RADIUS`, distance euclidienne, projection). Cible : `src/game/systems/npcSystem.ts`. Gate **(b)** : calcul de contact 2D falsifiable. Déjà planifié.
+- [x] **[Task 2] `resolvePlayerNpcCollision`** — `src/scene/Player.tsx:187-198` — Boucle de push-out du joueur hors des NPCs (`NPC_RADIUS`, distance euclidienne, projection). Cible : `src/game/systems/npcSystem.ts`. Gate **(b)** : calcul de contact 2D falsifiable. **Extrait + 4 tests (commit `d8a9ef2`).**
 
-- [ ] **[Task 3] `advanceFace`** — `src/scene/Player.tsx:236-256` — Machine à états clignement/saccade : horloge locale, `blinkAt`/`saccadeAt`/`gazeIdx`, sélection de variante (`pickGaze`). Inclut les helpers `blinkDelay`, `saccadeDelay`, `pickGaze` (lignes 40-44). Cible : `src/scene/shared/faceState.ts`. Gate **(b)** : chronologie états + distribution `pickGaze` testables. Déjà planifié.
+- [x] **[Task 3] `advanceFace`** — `src/scene/Player.tsx:236-256` — Machine à états clignement/saccade : horloge locale, `blinkAt`/`saccadeAt`/`gazeIdx`, sélection de variante (`pickGaze`). Cible : `src/scene/shared/faceState.ts`. Gate **(b)** : chronologie états testable, rng injecté. **Extrait + 5 tests (commit `6685f58`).**
 
 ### Candidats borderline — restent inline (YAGNI échoué)
 
@@ -72,3 +72,7 @@ Les items suivants ont été examinés et rejetés :
 **2 candidats extraits en Phase 1** (Tasks 2 et 3). La couverture est proportionnée : la logique de jeu pure dans les composants scène est mince — la maison a été construite pièce par pièce avec validation visuelle, et le code restant est soit du JSX de construction, soit des maths graphiques non testables sans GPU.
 
 Précédent de référence : `src/scene/salon/salonCollision.ts` + `salonCollision.test.ts`.
+
+### Clôture Phase 1 (2026-07-14)
+
+Les 2 candidats sont extraits + testés, tous les borderline justifiés inline. Filet final : `tsc --noEmit` clean, `npm test` = 119 tests verts (13 fichiers). Branche `standards-phase1`. Prochaine étape : Phase 2 (migration anglaise) — plan à écrire, dépend de cet audit. **Phase 1 close.**
