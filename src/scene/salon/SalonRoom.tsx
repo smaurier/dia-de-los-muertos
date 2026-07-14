@@ -26,6 +26,7 @@ import { SalleDeBain } from '../rooms/SalleDeBain'
 import { Debarras } from '../rooms/Debarras'
 import { Bureau } from '../rooms/Bureau'
 import { PorteEntree } from './PorteEntree'
+import { Patio } from '../rooms/Patio'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
 const SHOW_AABB = new URLSearchParams(window.location.search).has('aabb')
@@ -517,6 +518,9 @@ export function SalonRoom() {
 
       {/* ─── Bureau — au sud du couloir d'entrée, porte sur le couloir sud ─── */}
       <Bureau />
+
+      {/* ─── Patio (ch8) — cour nocturne derrière la porte verte ─── */}
+      <Patio />
 
       {/* ─── Mur Est x=7 — arche d'entrée (zaguán, z=0, ouverture z∈[-0.9,0.9]).
           Mur ÉPAIS (0,35 m, x∈[7,7.35]) comme le mur nord : embrasure profonde,

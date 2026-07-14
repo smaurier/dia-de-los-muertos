@@ -57,7 +57,20 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   // bout sud du couloir z=-5.3 : PORTE VERTE ouvrable x∈[7.58,8.52]
   [ 7.2, 7.6, -5.45, -5.15],  // sliver ouest
   [ 8.5, 8.9, -5.45, -5.15],  // sliver est
-  [ 7.2, 8.9, -5.75, -5.55],  // fond de nuit derrière la porte verte
+  // ── Patio (x∈[-2,13.4], z∈[-10.6,-5.6]) — derrière la porte verte ────────
+  [-7.2, 6.95, -6.2, -5.75],  // mur sud du salon (le patio est derrière)
+  [ 6.9, 7.6, -5.6, -5.15],   // pilier du coin ouest de la porte verte
+  [ 8.75, 13.6, -5.75, -5.45], // façade nord-est du patio (dos du bureau)
+  [-2.2, -1.8, -10.6, -5.6],  // enceinte ouest
+  [13.25, 13.6, -10.6, -5.6], // enceinte est
+  [-2.2, 13.6, -10.75, -10.45], // enceinte sud
+  // ── Mobilier patio (nav seulement) ────────────────────────────────────────
+  [ 3.9, 7.5, -9.35, -6.85],  // bassin ovale (bordure pierre)
+  [-0.7, 1.1, -6.9, -6.2],    // ofrenda (contre la façade, à l'ouest)
+  [ 9.8, 11.4, -6.2, -5.7],   // banc en bois
+  [12.5, 13.3, -9.8, -8.8],   // bougainvillier
+  [-1.75, -0.85, -10.25, -9.35], // grande agave
+  [12.2, 13.0, -6.8, -6.0],   // petite agave
   [ 6.95, 7.4, 2.0, 6.2],     // mur ouest branche est (mur est épais du salon)
   // mur sud du prolongement (z=6.2) : percé x∈[10.2,11.14] → porte salle de
   // bain (AABB dynamique doorConfig), EN FACE de la porte chambre 2
@@ -151,7 +164,7 @@ export const SALON_BOUNDS = { minX: -6.7, maxX: 6.7, minZ: -5.6, maxZ: 5.6 }
 // Bounds de navigation totaux — couvre salon + cuisine (nord) + zaguán (est).
 // L'arche sud est supprimée → minZ = -5.7 (mur plein).
 // canMove utilise NAV_BOUNDS ; la caméra reste dans SALON_BOUNDS.
-export const NAV_BOUNDS = { minX: -7.2, maxX: 13.6, minZ: -5.7, maxZ: 15.4 }
+export const NAV_BOUNDS = { minX: -7.2, maxX: 13.6, minZ: -10.5, maxZ: 15.4 }
 
 // Murs physiques du salon (plans à x=±7, z=±5.8) et marge caméra.
 // CAM_MARGIN > near plane (0.1) : la caméra clampée ne coupe jamais un mur.

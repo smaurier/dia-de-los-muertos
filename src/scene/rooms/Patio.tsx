@@ -1,0 +1,338 @@
+// src/scene/rooms/Patio.tsx
+// Le patio (ch8 — l'ofrenda). Cour nocturne à ciel ouvert derrière la porte
+// verte, au sud de la maison. x∈[-2,13.4], z∈[-10.6,-5.6].
+// La façade nord = les murs sud du salon, du couloir et du bureau, vus de
+// dehors. Enceinte adobe basse (2,6 m) avec chaperon. Bassin ovale au centre
+// (le plan le montre), eau qui reflète la nuit. L'ofrenda est contre la
+// façade, à l'ouest — loin de la porte : trop loin pour être lue avant le
+// ch8 (anti-spoiler, spec house-rooms). État ch1-2 : préparée, pas chargée.
+import * as THREE from 'three'
+import { MeshReflectorMaterial, Outlines } from '@react-three/drei'
+import { toonGradient } from '../shared/toonGradient'
+import { murAdobeSide } from '../shared/paintedTextures'
+
+const C_IRON    = '#1A1512'
+const C_WOOD    = '#3A2008'
+const C_WOOD_M  = '#5C3010'
+const C_SOL     = '#6E5A44'   // terre battue
+const C_DALLE   = '#8A7A66'   // dalles de pierre
+const C_POT     = '#B06830'
+const C_CEMPA   = '#E8940A'   // cempasúchil
+const C_CEMPA2  = '#D97E08'
+const C_LEAF    = '#3E7C3A'
+const C_AGAVE   = '#5A8A6E'
+const C_BOUGAIN = '#C0356E'   // bougainvillier
+const C_SKY     = '#0A1424'
+const C_CANDLE  = '#F5E8D0'
+
+// Touffe de cempasúchil dans un pot en terre cuite.
+function PotCempasuchil({ position }: { position: [number, number, number] }) {
+  return (
+    <group position={position}>
+      <mesh position={[0, 0.16, 0]}>
+        <cylinderGeometry args={[0.16, 0.12, 0.32, 9]} />
+        <meshToonMaterial color={C_POT} gradientMap={toonGradient} />
+        <Outlines thickness={0.012} color="black" />
+      </mesh>
+      {([[0, 0.42, 0], [-0.1, 0.38, 0.06], [0.1, 0.39, -0.05], [0.04, 0.36, 0.1], [-0.06, 0.35, -0.09]] as [number, number, number][]).map(([px, py, pz], i) => (
+        <mesh key={i} position={[px, py, pz]}>
+          <sphereGeometry args={[0.055, 8, 8]} />
+          <meshToonMaterial color={i % 2 ? C_CEMPA : C_CEMPA2} gradientMap={toonGradient} />
+          <Outlines thickness={0.008} color="black" />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+// Agave : rosette de feuilles charnues pointues.
+function Agave({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
+  return (
+    <group position={position} scale={scale}>
+      {Array.from({ length: 8 }, (_, i) => (i * Math.PI) / 4).map((a, i) => (
+        <mesh
+          key={i}
+          position={[Math.cos(a) * 0.14, 0.22, Math.sin(a) * 0.14]}
+          rotation={[Math.sin(a) * 0.7, 0, -Math.cos(a) * 0.7]}
+        >
+          <coneGeometry args={[0.055, 0.55, 5]} />
+          <meshToonMaterial color={C_AGAVE} gradientMap={toonGradient} />
+          <Outlines thickness={0.010} color="black" />
+        </mesh>
+      ))}
+      <mesh position={[0, 0.38, 0]}>
+        <coneGeometry args={[0.05, 0.6, 5]} />
+        <meshToonMaterial color={C_AGAVE} gradientMap={toonGradient} />
+        <Outlines thickness={0.010} color="black" />
+      </mesh>
+    </group>
+  )
+}
+
+// Guirlande d'ampoules chaudes en caténaire, tendue de la façade au mur sud
+// (les luces de patio — banales un soir de fête, spec : la cour reste
+// ordinaire, c'est l'ofrenda qui doit rester discrète).
+function GuirlandeLumineuse({ x }: { x: number }) {
+  const Z0 = -5.75
+  const Z1 = -10.45
+  const Y0 = 2.55
+  const SAG = 0.5
+  const yAt = (t: number) => Y0 - SAG * 4 * t * (1 - t)
+  const points = Array.from({ length: 25 }, (_, i) => {
+    const t = i / 24
+    return new THREE.Vector3(x, yAt(t), Z0 + t * (Z1 - Z0))
+  })
+  const tube = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 32, 0.006, 5, false)
+  return (
+    <group>
+      <mesh geometry={tube}>
+        <meshToonMaterial color="#2A2018" gradientMap={toonGradient} />
+      </mesh>
+      {Array.from({ length: 9 }, (_, i) => (i + 1) / 10).map((t, i) => (
+        <group key={i} position={[x, yAt(t) - 0.05, Z0 + t * (Z1 - Z0)]}>
+          <mesh position={[0, 0.035, 0]}>
+            <cylinderGeometry args={[0.01, 0.014, 0.03, 6]} />
+            <meshToonMaterial color="#2A2018" gradientMap={toonGradient} />
+          </mesh>
+          <mesh>
+            <sphereGeometry args={[0.035, 8, 8]} />
+            <meshToonMaterial color="#FFE0A0" emissive="#FFC860" emissiveIntensity={1.6} gradientMap={toonGradient} />
+          </mesh>
+        </group>
+      ))}
+      {/* Une seule vraie lumière par brin (perf) */}
+      <pointLight position={[x, 1.9, -8.1]} intensity={0.9} color="#ffd890" distance={6} decay={2} />
+    </group>
+  )
+}
+
+export function Patio() {
+  return (
+    <group>
+      {/* ── Sol : terre battue + dalles de pierre éparses ── */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[5.7, 0.001, -8.1]}>
+        <planeGeometry args={[15.4, 5.0]} />
+        <meshToonMaterial color={C_SOL} gradientMap={toonGradient} />
+      </mesh>
+      {([[7.9, -6.3, 0.1], [7.3, -7.1, -0.2], [8.3, -7.6, 0.3], [6.4, -6.6, 0.15], [4.9, -7.0, -0.1], [3.4, -6.8, 0.25], [1.9, -6.9, 0], [0.6, -6.7, -0.3], [9.4, -8.3, 0.1], [10.6, -7.2, -0.15]] as [number, number, number][]).map(([px, pz, rot], i) => (
+        <mesh key={i} rotation={[-Math.PI / 2, 0, rot]} position={[px, 0.006, pz]}>
+          <circleGeometry args={[0.32 + (i % 3) * 0.05, 7]} />
+          <meshToonMaterial color={C_DALLE} gradientMap={toonGradient} />
+        </mesh>
+      ))}
+
+      {/* ── Ciel nocturne (plane sombre au-dessus de la cour) ── */}
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[5.7, 7.5, -8.1]}>
+        <planeGeometry args={[18, 8]} />
+        <meshToonMaterial color={C_SKY} />
+      </mesh>
+
+      {/* ── Enceinte adobe (2,6 m) : sud, ouest, est + chaperons ── */}
+      <mesh position={[5.7, 1.3, -10.6]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[15.4, 2.6]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh position={[-2, 1.3, -8.1]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[5.0, 2.6]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh position={[13.4, 1.3, -8.1]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[5.0, 2.6]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
+      </mesh>
+      {/* Chaperons de tuiles sur les murs */}
+      <mesh position={[5.7, 2.64, -10.6]}>
+        <boxGeometry args={[15.6, 0.1, 0.3]} />
+        <meshToonMaterial color="#8A4A2A" gradientMap={toonGradient} />
+        <Outlines thickness={0.012} color="black" />
+      </mesh>
+      {[-2, 13.4].map(px => (
+        <mesh key={px} position={[px, 2.64, -8.1]}>
+          <boxGeometry args={[0.3, 0.1, 5.2]} />
+          <meshToonMaterial color="#8A4A2A" gradientMap={toonGradient} />
+          <Outlines thickness={0.012} color="black" />
+        </mesh>
+      ))}
+      {/* Façade nord-est (entre la porte verte et l'angle est) + pilier du coin
+          ouest de la porte */}
+      <mesh position={[11.075, 1.45, -5.6]}>
+        <planeGeometry args={[4.65, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh position={[7.16, 1.45, -5.38]}>
+        <boxGeometry args={[0.5, 2.9, 0.35]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+
+      {/* ── Bassin ovale au centre (le plan) : bordure pierre + eau-miroir ── */}
+      <group position={[5.7, 0, -8.1]}>
+        <mesh position={[0, 0.18, 0]} scale={[1.7, 1, 1.15]}>
+          <cylinderGeometry args={[1.06, 1.12, 0.36, 20, 1, true]} />
+          <meshToonMaterial color={C_DALLE} gradientMap={toonGradient} side={THREE.DoubleSide} />
+          <Outlines thickness={0.016} color="black" />
+        </mesh>
+        <mesh position={[0, 0.365, 0]} scale={[1.7, 1, 1.15]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[1.09, 0.055, 8, 24]} />
+          <meshToonMaterial color="#9A8A76" gradientMap={toonGradient} />
+          <Outlines thickness={0.014} color="black" />
+        </mesh>
+        {/* L'eau : la nuit s'y reflète */}
+        <mesh position={[0, 0.3, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[1.7, 1.15, 1]}>
+          <circleGeometry args={[1.02, 24]} />
+          <MeshReflectorMaterial
+            transparent
+            opacity={0.9}
+            color="#1a2a40"
+            resolution={512}
+            mirror={0.85}
+            mixStrength={1.2}
+            mixBlur={0.4}
+            blur={[120, 40]}
+            roughness={0.15}
+            metalness={0}
+            depthScale={0}
+          />
+        </mesh>
+      </group>
+
+      {/* ── L'ofrenda — contre la façade, à l'ouest, loin de la porte.
+          État ch1-2 : table dressée, arche de cempasúchil, quelques bougies
+          ÉTEINTES, une petite photo illisible d'ici. Discrète. ── */}
+      <group position={[0.2, 0, -6.55]}>
+        {/* Deux niveaux drapés */}
+        <mesh position={[0, 0.42, 0]}>
+          <boxGeometry args={[1.6, 0.84, 0.6]} />
+          <meshToonMaterial color="#E8E2D4" gradientMap={toonGradient} />
+          <Outlines thickness={0.016} color="black" />
+        </mesh>
+        <mesh position={[0, 1.0, -0.14]}>
+          <boxGeometry args={[1.0, 0.32, 0.32]} />
+          <meshToonMaterial color="#E8E2D4" gradientMap={toonGradient} />
+          <Outlines thickness={0.014} color="black" />
+        </mesh>
+        {/* Arche de cempasúchil (demi-anneau de fleurs) */}
+        {Array.from({ length: 9 }, (_, i) => (i / 8) * Math.PI).map((a, i) => (
+          <mesh key={i} position={[Math.cos(a) * 0.85, 0.9 + Math.sin(a) * 0.85, -0.24]}>
+            <sphereGeometry args={[0.07, 8, 8]} />
+            <meshToonMaterial color={i % 2 ? C_CEMPA : C_CEMPA2} gradientMap={toonGradient} />
+            <Outlines thickness={0.008} color="black" />
+          </mesh>
+        ))}
+        {/* Petite photo encadrée (illisible de loin — c'est voulu) */}
+        <group position={[0, 1.28, -0.14]}>
+          <mesh>
+            <boxGeometry args={[0.16, 0.22, 0.02]} />
+            <meshToonMaterial color="#2A1A08" gradientMap={toonGradient} />
+            <Outlines thickness={0.008} color="black" />
+          </mesh>
+          <mesh position={[0, 0, 0.012]}>
+            <planeGeometry args={[0.12, 0.17]} />
+            <meshToonMaterial color="#4A4858" gradientMap={toonGradient} />
+          </mesh>
+        </group>
+        {/* Bougies éteintes + verre d'eau + pan de muerto */}
+        {([[-0.55, 0.87, 0.12], [0.5, 0.87, 0.05], [-0.2, 1.19, -0.14]] as [number, number, number][]).map(([px, py, pz], i) => (
+          <mesh key={i} position={[px, py, pz]}>
+            <cylinderGeometry args={[0.03, 0.034, 0.1 + (i % 2) * 0.05, 8]} />
+            <meshToonMaterial color={C_CANDLE} gradientMap={toonGradient} />
+            <Outlines thickness={0.008} color="black" />
+          </mesh>
+        ))}
+        <mesh position={[0.25, 0.895, 0.14]}>
+          <cylinderGeometry args={[0.035, 0.03, 0.09, 8]} />
+          <meshToonMaterial color="#C8E0F0" gradientMap={toonGradient} />
+        </mesh>
+        <mesh position={[-0.1, 0.89, 0.16]}>
+          <sphereGeometry args={[0.055, 8, 8]} />
+          <meshToonMaterial color="#C8893A" gradientMap={toonGradient} />
+          <Outlines thickness={0.008} color="black" />
+        </mesh>
+        {/* Pétales au pied */}
+        {([[-0.4, 0.25], [0.1, 0.4], [0.55, 0.28], [-0.15, 0.55]] as [number, number][]).map(([px, pz], i) => (
+          <mesh key={i} rotation={[-Math.PI / 2, 0, i]} position={[px, 0.004, pz]}>
+            <circleGeometry args={[0.045, 6]} />
+            <meshToonMaterial color={C_CEMPA} gradientMap={toonGradient} />
+          </mesh>
+        ))}
+      </group>
+
+      {/* ── Végétation ── */}
+      {/* Bougainvillier contre le mur est : tronc tordu + masses magenta */}
+      <group position={[12.9, 0, -9.3]}>
+        <mesh position={[0, 0.6, 0]} rotation={[0.1, 0, -0.25]}>
+          <cylinderGeometry args={[0.05, 0.08, 1.2, 7]} />
+          <meshToonMaterial color={C_WOOD_M} gradientMap={toonGradient} />
+          <Outlines thickness={0.012} color="black" />
+        </mesh>
+        {([[0.25, 1.55, 0, 0.5], [-0.15, 1.9, 0.2, 0.42], [0.35, 2.15, -0.25, 0.38], [-0.05, 2.35, -0.1, 0.3]] as [number, number, number, number][]).map(([px, py, pz, r], i) => (
+          <mesh key={i} position={[px, py, pz]} scale={[1, 0.8, 1]}>
+            <sphereGeometry args={[r, 8, 8]} />
+            <meshToonMaterial color={i % 2 ? C_BOUGAIN : '#A82858'} gradientMap={toonGradient} />
+            <Outlines thickness={0.012} color="black" />
+          </mesh>
+        ))}
+      </group>
+      {/* Agaves + pots de cempasúchil + touffes vertes */}
+      <Agave position={[-1.3, 0, -9.8]} scale={1.3} />
+      <Agave position={[12.6, 0, -6.4]} scale={0.9} />
+      <PotCempasuchil position={[1.4, 0, -6.4]} />
+      <PotCempasuchil position={[-1.0, 0, -6.6]} />
+      <PotCempasuchil position={[9.2, 0, -6.1]} />
+      <PotCempasuchil position={[3.2, 0, -10.1]} />
+      {([[2.2, -9.9, 0.2], [8.8, -10.0, 0.26], [11.4, -9.6, 0.18]] as [number, number, number][]).map(([px, pz, r], i) => (
+        <mesh key={i} position={[px, r * 0.9, pz]} scale={[1, 1.2, 1]}>
+          <sphereGeometry args={[r, 8, 8]} />
+          <meshToonMaterial color={C_LEAF} gradientMap={toonGradient} />
+          <Outlines thickness={0.012} color="black" />
+        </mesh>
+      ))}
+
+      {/* ── Banc en bois contre la façade du bureau ── */}
+      <group position={[10.6, 0, -5.95]}>
+        <mesh position={[0, 0.4, 0]}>
+          <boxGeometry args={[1.5, 0.06, 0.42]} />
+          <meshToonMaterial color={C_WOOD_M} gradientMap={toonGradient} />
+          <Outlines thickness={0.014} color="black" />
+        </mesh>
+        {[-0.62, 0.62].map(dx => (
+          <mesh key={dx} position={[dx, 0.19, 0]}>
+            <boxGeometry args={[0.08, 0.38, 0.38]} />
+            <meshToonMaterial color={C_WOOD} gradientMap={toonGradient} />
+          </mesh>
+        ))}
+        <mesh position={[0, 0.72, -0.18]} rotation={[-0.15, 0, 0]}>
+          <boxGeometry args={[1.5, 0.5, 0.05]} />
+          <meshToonMaterial color={C_WOOD_M} gradientMap={toonGradient} />
+          <Outlines thickness={0.012} color="black" />
+        </mesh>
+      </group>
+
+      {/* ── Lanterne murale près de la porte verte (côté patio) ── */}
+      <group position={[8.9, 2.1, -5.5]}>
+        <mesh position={[0, 0.1, 0]}>
+          <boxGeometry args={[0.05, 0.16, 0.05]} />
+          <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+        </mesh>
+        <mesh position={[0, 0, 0]}>
+          <cylinderGeometry args={[0.07, 0.085, 0.18, 6]} />
+          <meshToonMaterial color="#F5D890" emissive="#F0C060" emissiveIntensity={1.0} gradientMap={toonGradient} transparent opacity={0.92} />
+          <Outlines thickness={0.008} color="black" />
+        </mesh>
+        <mesh position={[0, 0.13, 0]}>
+          <coneGeometry args={[0.1, 0.09, 6]} />
+          <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+          <Outlines thickness={0.008} color="black" />
+        </mesh>
+      </group>
+
+      {/* ── Guirlandes d'ampoules (luces de patio) ── */}
+      <GuirlandeLumineuse x={3.5} />
+      <GuirlandeLumineuse x={8.2} />
+
+      {/* ── Lumières : clair de lune bleu + lanterne chaude ── */}
+      <directionalLight position={[3, 8, -9]} intensity={0.35} color="#8aa4d8" />
+      <pointLight position={[8.9, 2.0, -5.9]} intensity={1.1} color="#f8dfa0" distance={5} decay={2} />
+      <pointLight position={[5.7, 2.5, -8.1]} intensity={0.5} color="#6a84b8" distance={8} decay={2} />
+    </group>
+  )
+}

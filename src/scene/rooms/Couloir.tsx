@@ -137,7 +137,7 @@ export function Couloir() {
         <planeGeometry args={[4.4, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* Bout sud z=-5.3 : PORTE VERTE (ouvrable — elle mène dehors, un jour) */}
+      {/* Bout sud z=-5.3 : PORTE VERTE (ouvrable — elle mène au patio) */}
       <mesh position={[7.465, 1.45, -5.3]}>
         <planeGeometry args={[0.23, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
@@ -159,10 +159,10 @@ export function Couloir() {
         color="#2E6B4F"
         panelColor="#245640"
       />
-      {/* Nuit derrière la porte verte (le dehors viendra plus tard) */}
-      <mesh position={[8.05, 1.45, -5.62]}>
-        <planeGeometry args={[2.2, 2.9]} />
-        <meshToonMaterial color="#101A30" gradientMap={toonGradient} />
+      {/* Sol de seuil dans l'épaisseur du mur (z∈[-5.6,-5.3], sous la porte) */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[8.05, 0.001, -5.45]}>
+        <planeGeometry args={[0.94, 0.3]} />
+        <meshPhongMaterial map={solTomettes} shininess={20} />
       </mesh>
 
       {/* ── Lumières tamisées ── */}
