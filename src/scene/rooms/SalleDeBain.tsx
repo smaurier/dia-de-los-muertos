@@ -4,7 +4,8 @@
 // couloir (mur ouest x∈[8.75,8.9]). Intérieur x∈[8.9,11.9], z∈[3.4,6.2].
 // Années 90 : soubassement d'azulejos talavera, baignoire, lavabo colonne,
 // petit miroir banal (LE miroir narratif reste celui du couloir, ch3).
-import { Outlines } from '@react-three/drei'
+import * as THREE from 'three'
+import { MeshReflectorMaterial, Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, azulejosTalavera } from '../shared/paintedTextures'
 import { PorteAnimee } from '../shared/PorteAnimee'
@@ -104,10 +105,23 @@ export function SalleDeBain() {
           <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
         </mesh>
       ))}
-      {/* Vitre (verre dépoli de salle de bain) */}
+      {/* Vitre — mêmes propriétés que la grande fenêtre du salon */}
       <mesh position={[11.97, 2.35, 5.0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[0.76, 0.46]} />
-        <meshToonMaterial color="#D8E4E8" transparent opacity={0.55} emissive="#5A7080" emissiveIntensity={0.12} gradientMap={toonGradient} />
+        <MeshReflectorMaterial
+          transparent
+          opacity={0.68}
+          color="#e8f0f4"
+          resolution={512}
+          mirror={1}
+          mixStrength={1.4}
+          mixBlur={0}
+          blur={[0, 0]}
+          roughness={0.06}
+          metalness={0}
+          depthScale={0}
+          side={THREE.DoubleSide}
+        />
       </mesh>
       {/* ── Mur sud z=3.4 — plein (donne sur l'intérieur : futur débarras) ── */}
       <mesh position={[10.4, 1.45, 3.4]}>
