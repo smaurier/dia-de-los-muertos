@@ -1,14 +1,12 @@
 // src/scene/living-room/LivingRoomShell.tsx
 import * as THREE from 'three'
-import { Outlines, RoundedBox } from '@react-three/drei'
+import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import {
   murAdobeSide,
   solTomettes, boisSombre,
 } from '../shared/paintedTextures'
 import { Prop } from '../shared/Prop'
-import { Sofa } from './Sofa'
-import { TVScreen } from './shell/TVScreen'
 import { LeafyPlant } from './shell/LeafyPlant'
 import { PapelGarland } from './shell/PapelGarland'
 import { PhotoFrame } from '../shared/PhotoFrame'
@@ -30,9 +28,9 @@ import { LivingRoomLighting } from './shell/LivingRoomLighting'
 import { LivingRoomStructure } from './shell/LivingRoomStructure'
 import { LivingRoomWindow } from './shell/LivingRoomWindow'
 import { DiningArea } from './shell/DiningArea'
-import { Bassinet } from './Bassinet'
+import { SofaCorner } from './shell/SofaCorner'
 import {
-  C_WOOD_DARK, C_WOOD_MED, C_UPHOLSTERY, C_CEIL, C_IRON, C_GOLD,
+  C_WOOD_DARK, C_WOOD_MED, C_CEIL, C_IRON, C_GOLD,
   C_FRAME, C_PHOTO, C_CACTUS, C_POT, C_CANDLE, C_FLAME, C_LEAF, C_CERAMIC,
   FRAMES_SOUTH, FRAMES_EAST,
 } from './shell/livingRoomConstants'
@@ -84,89 +82,9 @@ export function LivingRoomShell() {
       {/* ─── Table centrale + Table dressée + 20 chaises + Bougies table ─────── */}
       <DiningArea />
 
-      {/* ─── Coin salon SUD-OUEST (refs, crops analysés) : canapé face à l'OUEST
-          (dossier vers la table), TV contre le mur ouest près de la fenêtre,
-          repose-pied entre les deux. Le groupe hérite de l'ancienne géométrie
-          locale, tournée de π/2 puis translatée (centre canapé → (-3.6,-3.3)). ── */}
-      <group position={[-0.7, 0, 0.8]} rotation={[0, Math.PI / 2, 0]}>
-      {/* (canapé placeholder retiré — remplacé par le model texturé
-          canape.glb, posé hors de ce groupe en coordonnées monde) */}
-
-      {/* ─── Repose-pied (décalé nord : dégage le retour d'angle du canapé) ─── */}
-      <mesh position={[4.75, 0.14, -3.85]}>
-        <boxGeometry args={[1.55, 0.28, 0.52]} />
-        <meshToonMaterial color="#1E1008" gradientMap={toonGradient} />
-        <Outlines thickness={0.018} color="black" />
-      </mesh>
-      <RoundedBox args={[1.42, 0.12, 0.40]} radius={0.025} smoothness={3} position={[4.75, 0.30, -3.85]}>
-        <meshToonMaterial color={C_UPHOLSTERY} gradientMap={toonGradient} />
-        <Outlines thickness={0.016} color="black" />
-      </RoundedBox>
-      {([4.07, 5.43] as number[]).flatMap(px =>
-        ([-3.63, -4.07] as number[]).map((pz, j) => (
-          <mesh key={`${px}-${j}`} position={[px, 0.07, pz]}>
-            <cylinderGeometry args={[0.028, 0.030, 0.14, 6]} />
-            <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-          </mesh>
-        ))
-      )}
-
-      {/* (fauteuil sorti du groupe : replacé en coordonnées monde près de la
-          fenêtre — dans le groupe transformé il finirait devant l'écran TV) */}
-
-      {/* (coussins colorés retirés : le model canape.glb a les siens) */}
-      </group>
-
-      {/* ─── Canapé d'angle — canape-full.glb (body + coussins séparés).
-          Coussins : MeshToonMaterial + motif PNG (RepeatWrapping), override
-          par Object3D.name dans Canape.tsx. ────────────────────────────────── */}
-      <Sofa
-        position={[-3.15, 0, -3.9]}
-        rotationY={-Math.PI / 2}
-        targetLength={3.6}
-      />
-
-      {/* ─── Tapis tissé sous le coin salon (rayures, ancre visuellement le L) ── */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-4.3, 0.012, -3.9]}>
-        <planeGeometry args={[2.6, 3.0]} />
-        <meshToonMaterial color="#7A4226" gradientMap={toonGradient} />
-      </mesh>
-      {[-1.25, -0.85, 0.85, 1.25].map((dz2, i) => (
-        <mesh key={`rug${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[-4.3, 0.014, -3.9 + dz2]}>
-          <planeGeometry args={[2.6, 0.12]} />
-          <meshToonMaterial color={i % 2 ? '#B05038' : '#C8893A'} gradientMap={toonGradient} />
-        </mesh>
-      ))}
-
-      {/* ─── Fauteuil dossier contre le bas de la fenêtre, face à la pièce
-          (ref vue-entree) ───────────────────────────────────────────────────── */}
-      <Prop
-        url="/models/props/fauteuil.glb?v=3"
-        color={C_UPHOLSTERY}
-        position={[-6.42, 0, -0.6]}
-        rotationY={Math.PI / 2}
-        targetHeight={0.95}
-      />
-      {/* Le bébé (22e présent) dort dans son couffin au pied du fauteuil —
-          la grande-tante Rosa veille dessus en sommeillant */}
-      <Bassinet position={[-6.25, 0, 0.35]} />
-
-      {/* ─── Télé CRT 90s + meuble TV — en diagonale DANS L'ANGLE sud-ouest,
-          écran vers le nord-est : les deux segments du canapé en L la voient.
-          (Meuble TV : model dédié à venir — backlog props texturés.) ────────── */}
-      <Prop
-        url="/models/props/tv.glb?v=3"
-        color="#3a3a3e"
-        position={[-6.15, 0, -4.95]}
-        rotationY={Math.PI / 4}
-        targetHeight={1.25}
-      />
-      {/* Écran : plaqué sur la face du tube, scintillement TV (contenu animé
-          simple en attendant mieux — voir backlog) */}
-      <TVScreen />
-      {/* Cadres au mur ouest autour de la TV (ref vue-entree) */}
-      <PhotoFrame position={[-6.96, 2.3, -2.15]} rotY={Math.PI / 2} />
-      <PhotoFrame position={[-6.96, 1.9, -3.5]} rotY={Math.PI / 2} />
+      {/* ─── South-west lounge corner: footstool, sofa, rug, armchair,
+          bassinet, CRT TV + cabinet, and the TV photo frames ───────────────── */}
+      <SofaCorner />
 
       {/* ─── Buffet/commode (mur nord, à gauche en entrant — ref vue-entrée) ─── */}
       <Prop
