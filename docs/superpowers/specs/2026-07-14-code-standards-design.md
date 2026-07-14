@@ -32,36 +32,64 @@ SOLID, YAGNI, DRY, TDD on the logic layer, atomic commits per phase.**
 - Existing net: `tsc --noEmit` strict + `npm test` (11 suites) + jsdom/vitest/
   testing-library already configured.
 
+## Safety net — what actually catches what
+
+Be honest about the net; do not claim false security:
+- **`npm test` (11 suites) = logic-layer net only.** Green tests prove nothing
+  about the scene render. A scene refactor can break visuals with all tests green.
+- **`tsc --noEmit` strict = typed-ref net.** Catches broken imports, exports,
+  typed identifiers, `ZoneId` union mismatches.
+- **Manual visual review = the ONLY net for the scene.** Mandatory after any
+  change touching JSX/render.
+- **No net at all for stringly-typed refs** (see Phase 2 red zone). These need
+  exhaustive grep + care, and ideally typing to promote them into the tsc net.
+
 ## Phases (one at a time, validated before moving on)
+
+### Phase 0 — Resolve reflector working-tree state (prerequisite)
+
+10 files are modified-uncommitted (reflector rework). Every later phase touches
+those same room files, so we cannot start clean until it is resolved: either
+validate the reflector in the browser and commit it, or stash it. Not optional,
+not out of scope.
 
 ### Phase 1 — Test safety net (extract + lean on tsc)
 
-Audit each scene component; extract **pure logic** buried in JSX into tested
-modules:
-- mappings/configs (room dimensions, positions, zone gating)
-- repeated geometric calculations
-- any non-JSX function
+Audit each scene component; extract pure logic buried in JSX into tested modules.
+**Extraction criterion (YAGNI gate) — extract only if the logic is:**
+- (a) **repeated** across ≥2 components, or
+- (b) a **falsifiable decision/calculation** (has a right/wrong answer worth a
+  test — gating, mapping, geometry math), or
+- (c) a **known bug source**.
 
-Baseline (free, always on): `tsc --noEmit` strict + `npm test` green before and
-after every change. Strict TDD on every extracted module (red → green).
-Remaining pure JSX stays untested → manual validation.
+Everything else stays inline in the JSX. Do not create a module for 2 trivial
+lines. Strict TDD on every extracted module (red → green).
 
-### Phase 2 — English migration
+### Phase 2 — English migration (god-components excluded)
 
-Mechanical, behavior-preserving rename, file by file:
-- identifiers, component/file names, `ZoneId` values, comments
-- net: `tsc` breaks on any inconsistent zone id / import; `npm test` stays green
-- zone ids are the riskiest (string keys) → migrated in one atomic block with
-  `roomZones`
+Mechanical, behavior-preserving rename. Identifiers are **refs**, not cosmetics —
+renaming can break consumers. Classify every token:
+- **Comments** → zero risk, translate freely.
+- **Typed identifiers / imports / exports / file names** → tsc-caught, safe.
+- **RED ZONE — stringly-typed refs with NO net**: `getObjectByName('...')` names
+  (e.g. `'satellite-rooms'`), `userData` keys (`reflectorZone`, `reflectorScope`),
+  Howler layer ids, texture/asset paths, `ZoneId` string literals in untyped
+  positions (`userData={{ reflectorZone: 'salon' }}`). Approach: exhaustive grep
+  of every literal before renaming, migrate in one atomic block, and where cheap,
+  **type these accesses** so tsc guards them afterward. Manual visual review after.
+- **God-components (`SalonRoom`, `Cuisine`) are excluded** from this phase — they
+  are split *and* translated together in Phase 3 to avoid paying twice.
 
 ### Phase 3 — Craft / SOLID / DRY
 
 - Factor the repeated `ZoneReflectorMaterial` block (9 rooms) into a shared
-  component/preset.
-- Extract shared wall/floor/ceiling patterns.
-- Break god-components: `SalonRoom` and `Cuisine` into single-responsibility
-  sub-components.
-- Each extraction validated by tsc + tests + visual review.
+  component/preset. (Confirmed duplication.)
+- **Verify before promising**: check whether wall/floor/ceiling patterns are
+  genuinely duplicated before extracting them — do not abstract a surface-level
+  similarity (YAGNI). Drop this item if the duplication is not real.
+- Break god-components `SalonRoom` (1465 L) and `Cuisine` (665 L) into
+  single-responsibility sub-components, translating to English in the same pass.
+- Each extraction validated by tsc + tests + **visual review**.
 
 ## Constraints / principles
 
@@ -72,6 +100,4 @@ Mechanical, behavior-preserving rename, file by file:
 
 ## Out of scope
 
-- Reflector perf work (separate uncommitted branch state; validate in browser
-  independently).
 - Narrative/scenario content (context-first phase still ongoing).
