@@ -5,7 +5,7 @@
 // Room empty during the party: dim light, bedside lamps, moonlight.
 import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
-import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
+import { GlassReflector } from '../shared/GlassReflector'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
 import { AnimatedDoor } from '../shared/AnimatedDoor'
@@ -121,7 +121,7 @@ export function Bedroom2() {
       {/* Glass (two panes on either side of the mullion) — same as salon window */}
       <mesh position={[13.43, 1.6, 9.9]} rotation={[0, -Math.PI / 2, 0]} userData={{ reflectorZone: 'chambre2' }}>
         <planeGeometry args={[1.96, 1.36]} />
-        <ZoneReflectorMaterial zone="chambre2" transparent opacity={0.68} color="#e8f0f4" resolution={256} mirror={1} mixStrength={1.4} blur={[0, 0]} roughness={0.06} metalness={0} depthScale={0} side={THREE.DoubleSide} />
+        <GlassReflector zone="chambre2" />
       </mesh>
       {/* Moonlight entering through the large window */}
       <pointLight position={[12.9, 1.8, 9.9]} intensity={0.7} color="#8aa4d8" distance={4.5} decay={2} />
@@ -171,7 +171,7 @@ export function Bedroom2() {
       {/* Glass — same properties as the salon's large window */}
       <mesh position={[9.1, 1.6, 12.03]} rotation={[0, Math.PI, 0]} userData={{ reflectorZone: 'chambre2' }}>
         <planeGeometry args={[1.56, 1.16]} />
-        <ZoneReflectorMaterial zone="chambre2" transparent opacity={0.68} color="#e8f0f4" resolution={256} mirror={1} mixStrength={1.4} blur={[0, 0]} roughness={0.06} metalness={0} depthScale={0} side={THREE.DoubleSide} />
+        <GlassReflector zone="chambre2" />
       </mesh>
 
       {/* ── Double bed — head against the north wall, east of the window ── */}

@@ -5,7 +5,7 @@
 // solemn: writing desk, banker's lamp, bookshelf, filing cabinet, typewriter.
 import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
-import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
+import { GlassReflector } from '../shared/GlassReflector'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
 import { AnimatedDoor } from '../shared/AnimatedDoor'
@@ -115,7 +115,7 @@ export function Office() {
       {/* Glass — same properties as the salon's large window */}
       <mesh position={[12.49, 1.6, -2.7]} rotation={[0, -Math.PI / 2, 0]} userData={{ reflectorZone: 'bureau' }}>
         <planeGeometry args={[1.16, 1.16]} />
-        <ZoneReflectorMaterial zone="bureau" transparent opacity={0.68} color="#e8f0f4" resolution={256} mirror={1} mixStrength={1.4} blur={[0, 0]} roughness={0.06} metalness={0} depthScale={0} side={THREE.DoubleSide} />
+        <GlassReflector zone="bureau" />
       </mesh>
 
       {/* ── Writing desk against the east wall, under the window — chair facing it ── */}
