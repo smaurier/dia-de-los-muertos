@@ -17,6 +17,7 @@ export const SALON_OBSTACLES: readonly [number, number, number, number][] = [
   [-4.55, -3.00, -5.75, -4.40],  // canapé model : retour d'angle (recul +0.2)
   [-4.85, -4.25, -4.75, -3.15],  // repose-pied (ottoman)
   [-6.90, -5.95, -1.10, -0.10],  // fauteuil (dossier contre le bas de la fenêtre, face est)
+  [-6.65, -5.85, 0.0, 0.72],     // couffin du bébé (au pied du fauteuil de Rosa)
   [ 1.0, 3.3,   5.03, 5.73],  // buffet mur nord (décalé ouest, dégagé arche 2)
   [-6.90, -5.75, -2.75, -1.55],  // TV CRT + meuble (mur ouest, écran vers l'est)
   [ 6.1, 6.7,   2.50, 3.10],  // plante en pot mur est (déplacée de z=1.2 à z=2.8)

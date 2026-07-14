@@ -30,6 +30,7 @@ import { Patio } from '../rooms/Patio'
 import { Garage } from '../rooms/Garage'
 import { DomeCiel } from '../shared/DomeCiel'
 import { SceneAuditProbe } from '../debug/sceneAudit'
+import { Couffin } from './Couffin'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
 const SHOW_AABB = new URLSearchParams(window.location.search).has('aabb')
@@ -958,6 +959,9 @@ export function SalonRoom() {
         rotationY={Math.PI / 2}
         targetHeight={0.95}
       />
+      {/* Le bébé (22e présent) dort dans son couffin au pied du fauteuil —
+          la grande-tante Rosa veille dessus en sommeillant */}
+      <Couffin position={[-6.25, 0, 0.35]} />
 
       {/* ─── Télé CRT 90s + meuble TV — en diagonale DANS L'ANGLE sud-ouest,
           écran vers le nord-est : les deux segments du canapé en L la voient.

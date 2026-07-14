@@ -181,6 +181,13 @@ export function Patio() {
         <boxGeometry args={[0.5, 2.9, 0.35]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
+      {/* Pilier du coin EST de la porte verte : bouche l'angle entre la porte,
+          la façade et le mur mitoyen du garage (le trou laissait voir la zone
+          morte derrière — murs une face vus de dos) */}
+      <mesh position={[8.875, 1.45, -5.45]}>
+        <boxGeometry args={[0.3, 2.9, 0.4]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
 
       {/* ── Mur mitoyen du garage x=9.0 — percé d'une ARCHE z∈[-8.6,-7.6]
           avec une porte en bois ouvrable ── */}
