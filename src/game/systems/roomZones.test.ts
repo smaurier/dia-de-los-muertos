@@ -3,16 +3,16 @@ import { describe, it, expect } from 'vitest'
 import { zoneAt, ZONE_ADJACENCY, isZoneVisible, type ZoneId } from './roomZones'
 
 describe('zoneAt', () => {
-  it('identifie chaque pièce par un point central', () => {
+  it('identifies each room by a center point', () => {
     const spots: [ZoneId, number, number][] = [
       ['salon', 0, 3],
       ['salon', 0, 0],
       ['cuisine', -3.8, 10],
       ['cellier', -3.5, 13.5],
-      ['couloir', 3.2, 6.9],       // branche nord
-      ['couloir', 12.0, 6.9],      // prolongement
-      ['couloir', 8.05, 4.0],      // branche est
-      ['couloir', 8.05, -3.0],     // couloir sud
+      ['couloir', 3.2, 6.9],       // north branch
+      ['couloir', 12.0, 6.9],      // extension
+      ['couloir', 8.05, 4.0],      // east branch
+      ['couloir', 8.05, -3.0],     // south corridor
       ['chambre1', 3.0, 9.5],
       ['chambre2', 10.0, 9.8],
       ['sdb', 10.4, 4.8],
@@ -27,7 +27,7 @@ describe('zoneAt', () => {
     }
   })
 
-  it('retombe sur le salon pour une position hors zone', () => {
+  it('falls back to salon for a position outside any zone', () => {
     expect(zoneAt(-100, -100)).toBe('salon')
   })
 })
@@ -35,21 +35,21 @@ describe('zoneAt', () => {
 describe('ZONE_ADJACENCY', () => {
   const zones = Object.keys(ZONE_ADJACENCY) as ZoneId[]
 
-  it('est symétrique (si A voit B, B voit A)', () => {
+  it('is symmetric (if A sees B, B sees A)', () => {
     for (const a of zones) {
       for (const b of ZONE_ADJACENCY[a]) {
-        expect(ZONE_ADJACENCY[b], `${b} devrait lister ${a}`).toContain(a)
+        expect(ZONE_ADJACENCY[b], `${b} should list ${a}`).toContain(a)
       }
     }
   })
 
-  it("aucune zone ne se liste elle-même", () => {
+  it('no zone lists itself', () => {
     for (const a of zones) {
       expect(ZONE_ADJACENCY[a]).not.toContain(a)
     }
   })
 
-  it('toutes les zones sont atteignables depuis le salon (graphe connexe)', () => {
+  it('all zones are reachable from salon (connected graph)', () => {
     const seen = new Set<ZoneId>(['salon'])
     const queue: ZoneId[] = ['salon']
     while (queue.length) {
@@ -66,24 +66,24 @@ describe('ZONE_ADJACENCY', () => {
 })
 
 describe('isZoneVisible', () => {
-  it('la zone courante est toujours visible', () => {
+  it('the current zone is always visible', () => {
     expect(isZoneVisible('patio', 3.5, -8.1)).toBe(true)
   })
 
-  it('depuis le salon : cuisine visible, garage masqué', () => {
+  it('from salon: cuisine visible, garage hidden', () => {
     expect(isZoneVisible('cuisine', 0, 3)).toBe(true)
     expect(isZoneVisible('garage', 0, 3)).toBe(false)
     expect(isZoneVisible('sdb', 0, 3)).toBe(false)
     expect(isZoneVisible('patio', 0, 3)).toBe(false)
   })
 
-  it('depuis le patio : garage et couloir visibles, salon masqué', () => {
+  it('from patio: garage and couloir visible, salon hidden', () => {
     expect(isZoneVisible('garage', 3.5, -8.1)).toBe(true)
     expect(isZoneVisible('couloir', 3.5, -8.1)).toBe(true)
     expect(isZoneVisible('salon', 3.5, -8.1)).toBe(false)
   })
 
-  it("depuis le salon : chambre 1 visible (sa porte fait face à l'arche 2)", () => {
+  it('from salon: chambre 1 visible (its door faces arch 2)', () => {
     expect(isZoneVisible('chambre1', 4.5, 5.0)).toBe(true)
   })
 })

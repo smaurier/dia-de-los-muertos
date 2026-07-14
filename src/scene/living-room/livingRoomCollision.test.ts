@@ -1,129 +1,129 @@
 import { describe, it, expect } from 'vitest'
 import { cameraBackDistance, canMove, clampCameraToRoom, LIVING_ROOM_BOUNDS } from './livingRoomCollision'
 
-// La caméra suit le garçon 1,2 m derrière lui : dos au mur, elle sortait de la
-// pièce (murs = planes une face → écran entièrement sombre). Elle doit rester
-// strictement à l'intérieur des murs, avec une marge supérieure au near plane (0.1).
+// The camera follows the boy 1.2 m behind him: with its back to a wall it
+// was leaving the room (walls = single-face planes → fully black screen). It must
+// stay strictly inside the walls, with a margin larger than the near plane (0.1).
 
 describe('clampCameraToRoom', () => {
-  it('ne touche pas une position déjà dans la pièce', () => {
+  it('does not touch a position already inside the room', () => {
     expect(clampCameraToRoom(0, 0)).toEqual([0, 0])
     expect(clampCameraToRoom(3.2, -2.1)).toEqual([3.2, -2.1])
   })
 
-  it('ramène la caméra à l’intérieur quand elle sort par un mur est/ouest', () => {
+  it('brings the camera back inside when it exits through an east/west wall', () => {
     const [x] = clampCameraToRoom(7.9, 0)
     expect(x).toBeLessThan(7)
     const [x2] = clampCameraToRoom(-8.4, 0)
     expect(x2).toBeGreaterThan(-7)
   })
 
-  it('ramène la caméra à l’intérieur quand elle sort par un mur nord/sud', () => {
+  it('brings the camera back inside when it exits through a north/south wall', () => {
     const [, z] = clampCameraToRoom(0, 6.9)
     expect(z).toBeLessThan(5.8)
     const [, z2] = clampCameraToRoom(0, -6.7)
     expect(z2).toBeGreaterThan(-5.8)
   })
 
-  it('garde une marge > near plane (0.1) par rapport aux murs', () => {
+  it('keeps a margin > near plane (0.1) relative to walls', () => {
     const [x] = clampCameraToRoom(7.9, 0)
     expect(7 - x).toBeGreaterThan(0.1)
     const [, z] = clampCameraToRoom(0, -9)
     expect(z - -5.8).toBeGreaterThan(0.1)
   })
 
-  it('gère les coins (deux axes hors limites à la fois)', () => {
+  it('handles corners (both axes out of bounds at the same time)', () => {
     const [x, z] = clampCameraToRoom(8, -6.9)
     expect(x).toBeLessThan(7)
     expect(z).toBeGreaterThan(-5.8)
   })
 
-  it('la marge caméra reste plus large que les bornes du garçon', () => {
-    // Le garçon va jusqu'à ±6.7/±4.8 : la caméra doit pouvoir rester derrière
-    // lui sans être clampée plus fort que lui (sinon à-coups visibles).
+  it('camera margin remains wider than the boy bounds', () => {
+    // The boy goes up to ±6.7/±4.8: the camera must be able to stay behind
+    // him without being clamped harder than him (otherwise visible jitter).
     const [x] = clampCameraToRoom(LIVING_ROOM_BOUNDS.maxX, 0)
     expect(x).toBeGreaterThanOrEqual(LIVING_ROOM_BOUNDS.maxX)
   })
 })
 
-// La caméra à 1,2 m derrière le garçon traversait meubles et murs : chaque mesh
-// porte une coque <Outlines> (BackSide, noire) visible de l'intérieur → écran
-// noir dès que la caméra entre dans un obstacle. cameraBackDistance raccourcit
-// le recul caméra à la première obstruction (murs + AABB SALON_OBSTACLES).
-// (backX, backZ) = direction normalisée du garçon VERS la caméra.
+// The camera 1.2 m behind the boy was clipping through furniture and walls:
+// each mesh has an <Outlines> shell (BackSide, black) visible from inside →
+// black screen whenever the camera enters an obstacle. cameraBackDistance
+// shortens the camera pullback to the first obstruction (walls + AABB SALON_OBSTACLES).
+// (backX, backZ) = normalised direction from the boy TOWARD the camera.
 
 describe('cameraBackDistance', () => {
   const MAX_BACK = 1.2
 
-  it('rend le recul complet en espace libre', () => {
-    // Spawn (0, 3) caméra vers le sud : rien entre z=3 et z=4.2.
+  it('returns full pullback in open space', () => {
+    // Spawn (0, 3) camera toward south: nothing between z=3 and z=4.2.
     expect(cameraBackDistance(0, 3, 0, 1, MAX_BACK)).toBe(MAX_BACK)
   })
 
-  it('raccourcit le recul contre un mur', () => {
-    // Garçon dos au mur nord (z=5.5), caméra repoussée vers z=6.7 :
-    // limite mur = 5.65 → recul max 0.15.
+  it('shortens pullback against a wall', () => {
+    // Boy against north wall (z=5.5), camera pushed toward z=6.7:
+    // wall limit = 5.65 → max pullback 0.15.
     expect(cameraBackDistance(0, 5.5, 0, 1, MAX_BACK)).toBeCloseTo(0.15, 5)
-    // Mur est : garçon x=6.6, caméra vers +x, limite 6.85 → 0.25.
+    // East wall: boy x=6.6, camera toward +x, limit 6.85 → 0.25.
     expect(cameraBackDistance(6.6, 0, 1, 0, MAX_BACK)).toBeCloseTo(0.25, 5)
   })
 
-  it('raccourcit le recul devant un meuble (AABB élargie de la marge caméra)', () => {
-    // Garçon à z=3.1, caméra vers sud, bord table z=2.55+marge 0.15=2.70 → recul 0.4.
+  it('shortens pullback in front of furniture (AABB expanded by camera margin)', () => {
+    // Boy at z=3.1, camera toward south, table edge z=2.55+margin 0.15=2.70 → pullback 0.4.
     expect(cameraBackDistance(0, 3.1, 0, -1, MAX_BACK)).toBeCloseTo(0.4, 5)
   })
 
-  it('rend 0 quand le point de départ touche déjà la zone élargie', () => {
-    // Garçon collé au bord de la table (z=1.5 < 1.6 élargi) reculant dedans.
+  it('returns 0 when the start point already touches the expanded zone', () => {
+    // Boy flush against the table edge (z=1.5 < 1.6 expanded) pulling back into it.
     expect(cameraBackDistance(0, 1.5, 0, -1, MAX_BACK)).toBe(0)
   })
 
-  it('ignore les obstacles hors du rayon', () => {
-    // Ras du mur ouest vers le nord : aucun obstacle sur x=-4, z∈[3, 4.2].
+  it('ignores obstacles outside the ray', () => {
+    // Near west wall heading north: no obstacle on x=-4, z∈[3, 4.2].
     expect(cameraBackDistance(-4, 3, 0, 1, MAX_BACK)).toBe(MAX_BACK)
   })
 
-  it('détecte une entrée latérale dans une AABB (test slab, pas seulement frontal)', () => {
-    // Recul longeant le mur est (x=6.3, z croissant) : le rayon entre dans la
-    // plante en pot [6.1, 6.7, 2.50, 3.10] élargie (z > 2.35) → depuis z=1.5 recul 0.85.
+  it('detects a lateral entry into an AABB (slab test, not frontal only)', () => {
+    // Pullback along east wall (x=6.3, z increasing): the ray enters the
+    // potted plant [6.1, 6.7, 2.50, 3.10] expanded (z > 2.35) → from z=1.5 pullback 0.85.
     expect(cameraBackDistance(6.3, 1.5, 0, 1, MAX_BACK)).toBeCloseTo(0.85, 5)
   })
 
-  it('ne rend jamais un recul négatif', () => {
-    // Garçon (impossible mais défensif) au-delà de la limite mur.
+  it('never returns a negative pullback', () => {
+    // Boy (impossible but defensive) beyond the wall limit.
     expect(cameraBackDistance(0, 5.75, 0, 1, MAX_BACK)).toBe(0)
   })
 })
 
-// Un personnage déjà DANS un obstacle (NPC assis, spawn limite) doit pouvoir
-// en sortir : canMove ne bloque qu'en ENTRANT dans une AABB depuis l'extérieur.
+// A character already INSIDE an obstacle (seated NPC, boundary spawn) must be able to
+// leave: canMove only blocks ENTERING an AABB from the outside.
 describe('canMove', () => {
-  it('autorise un déplacement en espace libre', () => {
+  it('allows movement in open space', () => {
     expect(canMove(0, 3, 0.1, 3)).toBe(true)
   })
 
-  it("bloque l'entrée dans un obstacle depuis l'extérieur", () => {
-    // Table AABB z max 2.55 : entrer depuis z=2.6 (dehors) vers z=2.4 (dedans) → refusé.
+  it('blocks entry into an obstacle from outside', () => {
+    // Table AABB z max 2.55: entering from z=2.6 (outside) toward z=2.4 (inside) → denied.
     expect(canMove(0, 2.6, 0, 2.4)).toBe(false)
   })
 
-  it("autorise la sortie d'un obstacle depuis l'intérieur", () => {
-    // Départ dans la zone table (z=1.0), sortie vers z=1.5 → accepté.
+  it('allows exit from an obstacle from inside', () => {
+    // Starting inside the table zone (z=1.0), exiting toward z=1.5 → accepted.
     expect(canMove(0, 1.0, 0, 1.5)).toBe(true)
   })
 
-  it("autorise le déplacement à l'intérieur d'un même obstacle (traversée de sortie)", () => {
+  it('allows movement within the same obstacle (exit traversal)', () => {
     expect(canMove(0, 1.0, 0.2, 1.1)).toBe(true)
   })
 
-  it('bloque toujours la sortie de la pièce (hors arches)', () => {
-    // Mur nord plein entre les arches (arche cuisine x≈-2.5, arche 2 x∈[3.6,5.4])
+  it('always blocks leaving the room (except through arches)', () => {
+    // Solid north wall between the arches (kitchen arch x≈-2.5, arch 2 x∈[3.6,5.4])
     expect(canMove(1, 5.5, 1, 5.7)).toBe(false)
-    // Arche 2 (x=4.5) ouverte vers le couloir → passage autorisé
+    // Arch 2 (x=4.5) open toward the corridor → passage allowed
     expect(canMove(4.5, 5.5, 4.5, 5.7)).toBe(true)
-    // Arche zaguán (z=0) est ouverte → passage autorisé
+    // Zaguán arch (z=0) is open → passage allowed
     expect(canMove(6.6, 0, 6.8, 0)).toBe(true)
-    // Mur est plein au nord de l'arche (z=3 hors ouverture z∈[-0.9,0.9])
+    // Solid east wall north of the arch (z=3 outside opening z∈[-0.9,0.9])
     expect(canMove(6.6, 3, 6.8, 3)).toBe(false)
   })
 })

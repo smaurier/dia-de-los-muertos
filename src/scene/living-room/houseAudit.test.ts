@@ -1,6 +1,6 @@
 // src/scene/living-room/houseAudit.test.ts
-// Audit d'intégrité des données de la maison : collisions, portes, bounds.
-// Garde-fou permanent contre les oublis techniques quand une pièce bouge.
+// House data integrity audit: collisions, doors, bounds.
+// Permanent guard against technical oversights when a room moves.
 import { describe, it, expect } from 'vitest'
 import { SALON_OBSTACLES, ROOM_WALLS, NAV_BOUNDS, canMove } from './livingRoomCollision'
 import { DOORS, DOOR_INTERACT_DIST } from './doorConfig'
@@ -11,15 +11,15 @@ function inObstacle(x: number, z: number, boxes: readonly (readonly [number, num
   return boxes.some(([mx, Mx, mz, Mz]) => x > mx && x < Mx && z > mz && z < Mz)
 }
 
-describe('intégrité des AABB', () => {
-  it('toutes les boîtes sont bien formées (min < max)', () => {
+describe('AABB integrity', () => {
+  it('all boxes are well-formed (min < max)', () => {
     for (const [mx, Mx, mz, Mz] of ALL) {
-      expect(mx, `minX<maxX pour [${mx},${Mx},${mz},${Mz}]`).toBeLessThan(Mx)
-      expect(mz, `minZ<maxZ pour [${mx},${Mx},${mz},${Mz}]`).toBeLessThan(Mz)
+      expect(mx, `minX<maxX for [${mx},${Mx},${mz},${Mz}]`).toBeLessThan(Mx)
+      expect(mz, `minZ<maxZ for [${mx},${Mx},${mz},${Mz}]`).toBeLessThan(Mz)
     }
   })
 
-  it('toutes les boîtes restent dans les NAV_BOUNDS (marge 0.5 m)', () => {
+  it('all boxes stay within NAV_BOUNDS (0.5 m margin)', () => {
     for (const [mx, Mx, mz, Mz] of ALL) {
       expect(mx).toBeGreaterThanOrEqual(NAV_BOUNDS.minX - 0.5)
       expect(Mx).toBeLessThanOrEqual(NAV_BOUNDS.maxX + 0.5)
@@ -28,23 +28,23 @@ describe('intégrité des AABB', () => {
     }
   })
 
-  it("pas de doublon exact d'AABB", () => {
+  it('no exact AABB duplicate', () => {
     const seen = new Set<string>()
     for (const box of ALL) {
       const key = box.join(',')
-      expect(seen.has(key), `AABB dupliquée : [${key}]`).toBe(false)
+      expect(seen.has(key), `duplicate AABB: [${key}]`).toBe(false)
       seen.add(key)
     }
   })
 })
 
-describe('intégrité des portes', () => {
-  it('pas de doublon d\'id', () => {
+describe('door integrity', () => {
+  it('no duplicate id', () => {
     const ids = DOORS.map(d => d.id)
     expect(new Set(ids).size).toBe(ids.length)
   })
 
-  it('chaque porte à AABB laisse un passage dans les murs statiques (le battant fermé est le seul bloqueur du gap)', () => {
+  it('every door with an AABB leaves a gap in the static walls (the closed panel is the only blocker)', () => {
     for (const door of DOORS) {
       if (!door.aabb) continue
       const [mx, Mx, mz, Mz] = door.aabb
@@ -52,16 +52,16 @@ describe('intégrité des portes', () => {
       const cz = (mz + Mz) / 2
       expect(
         inObstacle(cx, cz, ALL),
-        `porte ${door.id} : le centre de son AABB est déjà couvert par un mur statique`,
+        `door ${door.id}: the center of its AABB is already covered by a static wall`,
       ).toBe(false)
     }
   })
 
-  it('chaque porte est atteignable (point d\'interaction hors obstacle, à portée)', () => {
+  it('every door is reachable (interaction point outside obstacle, within range)', () => {
     for (const door of DOORS) {
-      // Le point (x,z) de la DoorDef sert au calcul de distance : il doit
-      // être à moins de DOOR_INTERACT_DIST d'une position tenable par le
-      // joueur. On sonde une petite grille autour du point.
+      // The (x,z) point of the DoorDef is used for distance calculations: it must
+      // be within DOOR_INTERACT_DIST of a position the player can stand on.
+      // We probe a small grid around the point.
       let reachable = false
       for (let dx = -1.2; dx <= 1.2 && !reachable; dx += 0.2) {
         for (let dz = -1.2; dz <= 1.2 && !reachable; dz += 0.2) {
@@ -74,30 +74,30 @@ describe('intégrité des portes', () => {
           if (!inObstacle(px, pz, ALL)) reachable = true
         }
       }
-      expect(reachable, `porte ${door.id} : aucun point d'interaction accessible`).toBe(true)
+      expect(reachable, `door ${door.id}: no accessible interaction point`).toBe(true)
     }
   })
 
-  it('chaque porte non verrouillée à AABB est traversable une fois ouverte', () => {
+  it('every unlocked door with an AABB is passable once opened', () => {
     for (const door of DOORS) {
       if (!door.aabb || door.locked) continue
       const [mx, Mx, mz, Mz] = door.aabb
       const cx = (mx + Mx) / 2
       const cz = (mz + Mz) / 2
-      // Traversée perpendiculaire au gap : le côté le plus fin de l'AABB
+      // Perpendicular crossing through the gap: shortest side of the AABB
       const alongX = Mx - mx < Mz - mz
       const from: [number, number] = alongX ? [mx - 0.25, cz] : [cx, mz - 0.25]
       const to: [number, number] = alongX ? [Mx + 0.25, cz] : [cx, Mz + 0.25]
-      // Porte ouverte = pas d'extraObstacles : canMove sur les statiques seuls.
+      // Door open = no extraObstacles: canMove on statics only.
       const step1 = canMove(from[0], from[1], cx, cz)
       const step2 = canMove(cx, cz, to[0], to[1])
-      expect(step1 && step2, `porte ${door.id} : passage bloqué même ouverte`).toBe(true)
+      expect(step1 && step2, `door ${door.id}: passage blocked even when open`).toBe(true)
     }
   })
 })
 
-describe('cohérence de navigation', () => {
-  it('les positions clefs de chaque pièce sont hors obstacle', () => {
+describe('navigation consistency', () => {
+  it('key positions in each room are outside obstacles', () => {
     const spots: [string, number, number][] = [
       ['salon (spawn)', 0, 3],
       ['cuisine', -3.8, 10],
@@ -115,7 +115,7 @@ describe('cohérence de navigation', () => {
       ['garage', 12.2, -6.9],
     ]
     for (const [name, x, z] of spots) {
-      expect(inObstacle(x, z, ALL), `${name} (${x},${z}) est dans un obstacle`).toBe(false)
+      expect(inObstacle(x, z, ALL), `${name} (${x},${z}) is inside an obstacle`).toBe(false)
       expect(x).toBeGreaterThan(NAV_BOUNDS.minX)
       expect(x).toBeLessThan(NAV_BOUNDS.maxX)
       expect(z).toBeGreaterThan(NAV_BOUNDS.minZ)
