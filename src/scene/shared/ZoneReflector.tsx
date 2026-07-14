@@ -18,7 +18,7 @@ import {
   DepthTexture, DepthFormat, UnsignedShortType, LinearFilter, HalfFloatType,
 } from 'three'
 import type * as THREE from 'three'
-import { extend, useThree, useFrame, type ThreeElement } from '@react-three/fiber'
+import { extend, useThree, useFrame, type ThreeElement, type ThreeElements } from '@react-three/fiber'
 import { BlurPass } from '@react-three/drei/materials/BlurPass.js'
 import { MeshReflectorMaterial as MeshReflectorMaterialImpl } from '@react-three/drei/materials/MeshReflectorMaterial.js'
 import { isZoneVisible, type ZoneId } from '../../game/systems/roomZones'
@@ -52,7 +52,7 @@ type Props = {
   mixContrast?: number
   distortionMap?: THREE.Texture
   reflectorOffset?: number
-} & Omit<JSX.IntrinsicElements['meshStandardMaterial'], 'ref'>
+} & Omit<ThreeElements['meshStandardMaterial'], 'ref'>
 
 export function ZoneReflectorMaterial({
   zone,

@@ -135,7 +135,7 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
     if (head && shouldTurnTowardPlayer(npcPos, playerPos, 3)) {
       dirRef.current.set(playerPos[0] - pos.x, 0, playerPos[2] - pos.z).normalize()
       const worldYaw = Math.atan2(dirRef.current.x, dirRef.current.z)
-      const localYaw = THREE.MathUtils.clamp(worldYaw - MODEL_TUNING.rotationY, -0.6, 0.6)
+      const localYaw = THREE.MathUtils.clamp(worldYaw - POSITION_TUNING[grandUnclePosition].rotationY, -0.6, 0.6)
       head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, localYaw, delta * 4)
     }
 

@@ -26,7 +26,7 @@ export function Door({
   height = 2.06,
   color = '#5C3010',
   panelColor = '#4A2808',
-}: PorteProps) {
+}: DoorProps) {
   return (
     <group position={position} rotation={[0, rotationY + angle, 0]}>
       {/* Panel */}
