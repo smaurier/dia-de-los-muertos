@@ -29,6 +29,11 @@ Source plan: `docs/superpowers/plans/2026-06-20-vertical-slice-chapter3.md`
 - 🐛 **Assise pas au fond de la chaise** — les persos assis ne sont pas calés au fond du siège. Fix : ajuster l'offset de position (startPosition ou reflectorOffset équivalent) par chaise.
 - ✅ T-pose intermittente — RÉSOLU (fd00318, binding mixer sur clonedScene).
 
+## Bugs / UX (différés 2026-07-15)
+
+- 🐛 **Emilio peu visible dans le miroir du couloir** — le couloir est trop serré, le héros se voit à peine dans le miroir (`Corridor.tsx`, reflector zone couloir). Trouver une parade : élargir le champ, décaler le miroir, ou rapprocher le point de vue.
+- 🐛 **Barre de chargement en boucle** — la barre de % fait 0→100 puis repart à 0→100 en boucle, et la phrase (`LOADING_LINES`) ne change pas. Dans `App.tsx` `FadeIn`/`useProgress` : `useProgress` régresse quand de nouveaux assets s'annoncent en cours de route (commentaire existant) → la barre reboucle ; vérifier aussi le `setInterval` de rotation des lignes. Fix : verrouiller la progression monotone (ne jamais reculer) + garantir la rotation des phrases.
+
 ## Backlog — Prochaines étapes
 
 - ✅ LIVRE **Cel-Shading (remaining)** — EffectComposer + Outline on Corridor + Adult, corridorRef forwarded, no TS cast needed, 42/42 tests pass, committed
