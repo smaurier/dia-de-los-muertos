@@ -47,9 +47,17 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [-0.6, 4.0, 7.45, 7.75],    // mur nord couloir, segment ouest
   [ 5.0, 10.15, 7.45, 7.75],  // mur nord couloir, entre les deux portes
   [11.2, 13.6, 7.45, 7.75],   // mur nord couloir, segment est
-  // mur est branche est (x=8.75) : percé z∈[2.25,3.19] → porte débarras
-  [ 8.6, 8.9, 2.0, 2.25],     // sliver sud
+  // mur est branche est (x=8.75) : percé z∈[2.25,3.19] (porte débarras),
+  // ouvert z∈[-0.9,0.9] (carrefour de l'entrée), percé z∈[-2.5,-1.56]
+  // (porte bureau)
+  [ 8.6, 8.9, 0.9, 2.25],     // entre le carrefour et la porte débarras
   [ 8.6, 8.9, 3.19, 6.2],     // segment nord (jusqu'au T)
+  [ 8.6, 8.9, -1.56, -0.9],   // entre le carrefour et la porte bureau
+  [ 8.6, 8.9, -5.3, -2.5],    // au sud de la porte bureau
+  // bout sud du couloir z=-5.3 : PORTE VERTE ouvrable x∈[7.58,8.52]
+  [ 7.2, 7.6, -5.45, -5.15],  // sliver ouest
+  [ 8.5, 8.9, -5.45, -5.15],  // sliver est
+  [ 7.2, 8.9, -5.75, -5.55],  // fond de nuit derrière la porte verte
   [ 6.95, 7.4, 2.0, 6.2],     // mur ouest branche est (mur est épais du salon)
   // mur sud du prolongement (z=6.2) : percé x∈[10.2,11.14] → porte salle de
   // bain (AABB dynamique doorConfig), EN FACE de la porte chambre 2
@@ -84,16 +92,29 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [ 8.9, 9.6, 5.0, 5.7],      // WC
   [11.3, 11.9, 4.7, 5.3],     // lavabo colonne
   [11.3, 11.85, 3.55, 4.05],  // panier à linge
-  // ── Débarras en L (bande basse x∈[8.9,13.4] z∈[2.2,3.25] + remontée
-  //    x∈[11.9,13.4] z∈[3.25,6.2]) ────────────────────────────────────────────
-  [10.2, 13.6, 1.85, 2.35],   // mur sud débarras (z=2.2, à l'est du zaguán)
-  [13.25, 13.6, 2.2, 6.2],    // mur est débarras (x=13.4, porte patio verrouillée)
+  // ── Débarras en L agrandi (bande basse x∈[8.9,13.4] z∈[1.2,3.25] +
+  //    remontée x∈[11.9,13.4] z∈[3.25,6.2]) ──────────────────────────────────
+  [ 8.85, 13.6, 1.0, 1.35],   // mur sud débarras (z=1.2, dos du couloir d'entrée)
+  [13.25, 13.6, 1.2, 6.2],    // mur est débarras (x=13.4, porte patio verrouillée)
   // ── Mobilier débarras (nav seulement) ─────────────────────────────────────
-  [ 9.1, 11.7, 2.2, 2.75],    // étagères mur sud (boîtes, bocaux, journaux)
-  [12.35, 13.35, 2.3, 3.25],  // fauteuil drapé (coude du L)
+  [ 9.1, 11.7, 1.25, 1.75],   // étagères mur sud (boîtes, bocaux, journaux)
+  [12.35, 13.35, 2.0, 2.95],  // fauteuil drapé (coude du L)
   [12.75, 13.4, 4.25, 5.5],   // cartons empilés (mur est)
   [12.1, 13.0, 5.5, 6.05],    // malle + couvertures (mur nord remontée)
   [ 9.15, 9.55, 2.85, 3.25],  // balai + seau (près de la porte)
+  [10.2, 11.0, 1.25, 2.0],    // pile de cartons (centre-sud)
+  [11.65, 12.05, 1.3, 1.7],   // tapis roulé
+  [ 9.45, 9.75, 1.4, 1.7],    // pot de peinture
+  // ── Bureau (x∈[8.9,12.4], z∈[-4.2,-1.2]) ──────────────────────────────────
+  [ 8.9, 12.55, -1.35, -1.05], // mur nord bureau (dos du couloir d'entrée)
+  [ 8.9, 12.55, -4.35, -4.05], // mur sud bureau
+  [12.25, 12.55, -4.2, -1.2],  // mur est bureau (fenêtre)
+  // ── Mobilier bureau (nav seulement) ───────────────────────────────────────
+  [11.5, 12.2, -3.45, -1.95],  // écritoire (sous la fenêtre)
+  [10.9, 11.4, -2.95, -2.45],  // chaise
+  [ 9.75, 11.25, -4.2, -3.7],  // bibliothèque (mur sud)
+  [11.85, 12.35, -1.75, -1.25], // classeur métallique (coin nord-est)
+  [ 9.0, 9.5, -4.1, -3.6],     // plante en pot
   // fond z=12 : porte OUVRABLE vers le cellier x∈[-6.3,-5.3]
   [-7.2, -6.3, 11.8, 12.2],   // fond cuisine, segment ouest
   [-5.3, -0.45, 11.8, 12.2],  // fond cuisine, segment est
@@ -116,12 +137,11 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   // x=6.75 (< 7) : obstacle commence avant le mur pour que x=6.8 soit dedans (strict >).
   [ 6.75,  7.4,  0.95, 5.85],  // section nord du mur est
   [ 6.75,  7.4, -5.85, -0.95], // section sud du mur est
-  // ── Zaguán (x∈[7,10], z∈[-2,2]) ──────────────────────────────────────────
-  // mur nord zaguán : ouvert x∈[7.55,8.55] → couloir (branche est)
-  [ 7.35, 7.55,  1.85,  2.2 ], // mur nord zaguán, sliver ouest
-  [ 8.55, 10.2,  1.85,  2.2 ], // mur nord zaguán, segment est
-  [ 7.0, 10.2, -2.2,  -1.85], // mur sud zaguán
-  [ 9.85, 10.2, -1.85, 1.85], // mur est zaguán (porte ext. bloquée pour l'instant)
+  // ── Zaguán : couloir d'entrée (x∈[7.35,10], z∈[-0.9,0.9] — largeur de
+  //    l'arche). Carrefour ouvert à l'ouest (x∈[7.35,8.75]). ─────────────────
+  [ 8.75, 10.2,  0.75, 1.05],  // mur nord du couloir d'entrée (z=0.9)
+  [ 8.75, 10.2, -1.05, -0.75], // mur sud du couloir d'entrée (z=-0.9)
+  [ 9.85, 10.2, -0.9, 0.9],   // mur est + porte ext. (bloquée pour l'instant)
 ]
 
 // Bounds du salon uniquement — utilisés par la caméra et les tests.

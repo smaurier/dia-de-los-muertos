@@ -9,6 +9,7 @@
 // x∈[10.2,11.14] (porte chambre 2, celle des parents).
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes } from '../shared/paintedTextures'
+import { PorteAnimee } from '../shared/PorteAnimee'
 
 const C_CEIL = '#E4D6BC'
 
@@ -20,8 +21,8 @@ export function Couloir() {
         <planeGeometry args={[14.0, 1.4]} />
         <meshPhongMaterial map={solTomettes} shininess={20} />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[8.05, 0.001, 4.8]}>
-        <planeGeometry args={[1.4, 5.6]} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[8.05, 0.001, 1.15]}>
+        <planeGeometry args={[1.4, 12.9]} />
         <meshPhongMaterial map={solTomettes} shininess={20} />
       </mesh>
       {/* ── Plafonds ── */}
@@ -29,8 +30,8 @@ export function Couloir() {
         <planeGeometry args={[14.0, 1.4]} />
         <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
       </mesh>
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[8.05, 2.9, 4.8]}>
-        <planeGeometry args={[1.4, 5.6]} />
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[8.05, 2.9, 1.15]}>
+        <planeGeometry args={[1.4, 12.9]} />
         <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
       </mesh>
 
@@ -98,11 +99,12 @@ export function Couloir() {
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Branche est (vers le zaguán) ── */}
-      {/* Mur est x=8.75 — s'arrête à z=6.2 (jonction en T au-dessus), percé
-          z∈[2.25,3.19] : porte du débarras (plan : entre la SDB et l'entrée) */}
-      <mesh position={[8.75, 1.45, 2.125]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.25, 2.9]} />
+      {/* ── Branche est — traverse le carrefour de l'entrée (z∈[-0.9,0.9]) et
+          continue au sud entre le bureau et le salon jusqu'à la porte verte ── */}
+      {/* Mur est x=8.75 — percé z∈[2.25,3.19] (porte débarras), ouvert
+          z∈[-0.9,0.9] (carrefour), percé z∈[-2.5,-1.56] (porte bureau) */}
+      <mesh position={[8.75, 1.45, 1.575]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[1.35, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
       <mesh position={[8.75, 1.45, 4.695]} rotation={[0, -Math.PI / 2, 0]}>
@@ -113,11 +115,54 @@ export function Couloir() {
         <planeGeometry args={[0.94, 0.8]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* Mur ouest x=7.36 (1 cm devant la face est du mur épais du salon —
-          évite le z-fighting avec la box ; couvre aussi le coin z∈[5.8,6.2]) */}
-      <mesh position={[7.36, 1.45, 4.1]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[4.2, 2.9]} />
+      <mesh position={[8.75, 1.45, -1.23]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[0.66, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[8.75, 2.5, -2.03]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[0.94, 0.8]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[8.75, 1.45, -3.9]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[2.8, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      {/* Mur ouest x=7.36 (1 cm devant la face est du mur épais du salon —
+          évite le z-fighting ; interrompu à l'arche est z∈[-0.9,0.9]) */}
+      <mesh position={[7.36, 1.45, 3.55]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[5.3, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[7.36, 1.45, -3.1]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[4.4, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      {/* Bout sud z=-5.3 : PORTE VERTE (ouvrable — elle mène dehors, un jour) */}
+      <mesh position={[7.465, 1.45, -5.3]}>
+        <planeGeometry args={[0.23, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[8.635, 1.45, -5.3]}>
+        <planeGeometry args={[0.23, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[8.05, 2.5, -5.3]}>
+        <planeGeometry args={[0.94, 0.8]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <PorteAnimee
+        id="porte-verte"
+        position={[7.58, 0, -5.3]}
+        rotationY={Math.PI / 2}
+        openAngle={-1.9}
+        width={0.94}
+        color="#2E6B4F"
+        panelColor="#245640"
+      />
+      {/* Nuit derrière la porte verte (le dehors viendra plus tard) */}
+      <mesh position={[8.05, 1.45, -5.62]}>
+        <planeGeometry args={[2.2, 2.9]} />
+        <meshToonMaterial color="#101A30" gradientMap={toonGradient} />
       </mesh>
 
       {/* ── Lumières tamisées ── */}

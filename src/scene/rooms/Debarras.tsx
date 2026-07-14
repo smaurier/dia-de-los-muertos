@@ -2,8 +2,9 @@
 // Débarras (ch7 — le point le plus étouffé de la maison, spec house-rooms).
 // Entre la salle de bain et l'entrée, comme sur le plan : porte sur la
 // branche est du couloir (z∈[2.25,3.19]), celle qui descend au zaguán.
-// En L autour de la salle de bain :
-//   bande basse  x∈[8.9,13.4]   z∈[2.2,3.25]
+// En L autour de la salle de bain (agrandi : le zaguán est devenu un couloir
+// étroit z∈[-0.9,0.9], le débarras descend jusqu'à z=1.2) :
+//   bande basse  x∈[8.9,13.4]   z∈[1.2,3.25]
 //   remontée est x∈[11.9,13.4]  z∈[3.25,6.2]
 // Mur est : porte VERROUILLÉE vers le patio (elle s'ouvrira au ch8 —
 // « on émerge du point le plus étouffé vers la nuit ouverte »).
@@ -24,8 +25,8 @@ export function Debarras() {
   return (
     <group>
       {/* ── Sols (ciment brut, 2 rectangles du L) ── */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[11.15, 0.001, 2.725]}>
-        <planeGeometry args={[4.5, 1.05]} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[11.15, 0.001, 2.225]}>
+        <planeGeometry args={[4.5, 2.05]} />
         <meshToonMaterial color={C_FLOOR} gradientMap={toonGradient} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[12.65, 0.001, 4.725]}>
@@ -33,8 +34,8 @@ export function Debarras() {
         <meshToonMaterial color={C_FLOOR} gradientMap={toonGradient} />
       </mesh>
       {/* ── Plafonds ── */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[11.15, 2.9, 2.725]}>
-        <planeGeometry args={[4.5, 1.05]} />
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[11.15, 2.9, 2.225]}>
+        <planeGeometry args={[4.5, 2.05]} />
         <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[12.65, 2.9, 4.725]}>
@@ -42,8 +43,12 @@ export function Debarras() {
         <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Mur ouest x=8.9 (face intérieure du mur de la branche est) :
-          l'ouverture de la porte occupe presque toute la bande ── */}
+      {/* ── Mur ouest x=8.9 (face intérieure du mur de la branche est),
+          percé porte z∈[2.25,3.19] ── */}
+      <mesh position={[8.9, 1.45, 1.725]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[1.05, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
       <mesh position={[8.9, 2.5, 2.72]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[0.94, 0.8]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
@@ -63,8 +68,8 @@ export function Debarras() {
         <meshToonMaterial color={C_WOOD} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Mur sud z=2.2 (x∈[8.9,13.4]) ── */}
-      <mesh position={[11.15, 1.45, 2.2]}>
+      {/* ── Mur sud z=1.2 (x∈[8.9,13.4] — au sud : le couloir d'entrée) ── */}
+      <mesh position={[11.15, 1.45, 1.2]}>
         <planeGeometry args={[4.5, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
@@ -83,9 +88,9 @@ export function Debarras() {
         <planeGeometry args={[1.5, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Mur est x=13.4 (z∈[2.2,6.2]) — la porte du patio s'y adosse ── */}
-      <mesh position={[13.4, 1.45, 4.2]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[4.0, 2.9]} />
+      {/* ── Mur est x=13.4 (z∈[1.2,6.2]) — la porte du patio s'y adosse ── */}
+      <mesh position={[13.4, 1.45, 3.7]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[5.0, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
 
@@ -104,7 +109,7 @@ export function Debarras() {
       </mesh>
 
       {/* ── Étagères brutes le long du mur sud (bocaux, boîtes, journaux) ── */}
-      <group position={[10.4, 0, 2.5]}>
+      <group position={[10.4, 0, 1.5]}>
         {[0.5, 1.05, 1.6].map(py => (
           <mesh key={py} position={[0, py, 0]}>
             <boxGeometry args={[2.4, 0.045, 0.42]} />
@@ -145,8 +150,34 @@ export function Debarras() {
         </mesh>
       </group>
 
+      {/* ── Pile de cartons + tapis roulé dans l'espace gagné (centre-sud) ── */}
+      {([[10.6, 1.55, 0.5, 0.2], [10.55, 1.6, 0.42, 0.72]] as [number, number, number, number][]).map(([px, pz, s, py], i) => (
+        <mesh key={`c${i}`} position={[px, py + 0.05, pz]} rotation={[0, i * 0.3 - 0.1, 0]}>
+          <boxGeometry args={[s, i === 0 ? 0.5 : 0.42, s * 0.85]} />
+          <meshToonMaterial color={i === 0 ? '#98784A' : '#8A6A42'} gradientMap={toonGradient} />
+          <Outlines thickness={0.012} color="black" />
+        </mesh>
+      ))}
+      <mesh position={[11.85, 0.65, 1.5]} rotation={[0.12, 0, 0]}>
+        <cylinderGeometry args={[0.11, 0.11, 1.3, 9]} />
+        <meshToonMaterial color="#7A4226" gradientMap={toonGradient} />
+        <Outlines thickness={0.012} color="black" />
+      </mesh>
+      {/* Pot de peinture + pinceau posé dessus */}
+      <group position={[9.6, 0, 1.55]}>
+        <mesh position={[0, 0.12, 0]}>
+          <cylinderGeometry args={[0.11, 0.10, 0.24, 10]} />
+          <meshToonMaterial color="#8A9298" gradientMap={toonGradient} />
+          <Outlines thickness={0.010} color="black" />
+        </mesh>
+        <mesh position={[0.02, 0.255, 0]} rotation={[0, 0.5, 0.12]}>
+          <boxGeometry args={[0.2, 0.02, 0.04]} />
+          <meshToonMaterial color={C_WOODM} gradientMap={toonGradient} />
+        </mesh>
+      </group>
+
       {/* ── Fauteuil couvert d'un drap (le coude du L — une forme qui attend) ── */}
-      <group position={[12.85, 0, 2.8]} rotation={[0, -0.4, 0]}>
+      <group position={[12.85, 0, 2.5]} rotation={[0, -0.4, 0]}>
         <mesh position={[0, 0.42, 0]}>
           <boxGeometry args={[0.8, 0.84, 0.75]} />
           <meshToonMaterial color="#D8D2C4" gradientMap={toonGradient} />

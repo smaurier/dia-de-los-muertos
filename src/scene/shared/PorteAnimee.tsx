@@ -14,9 +14,11 @@ type PorteAnimeeProps = {
   openAngle: number
   width?: number
   height?: number
+  color?: string
+  panelColor?: string
 }
 
-export function PorteAnimee({ id, position, rotationY = 0, openAngle, width, height }: PorteAnimeeProps) {
+export function PorteAnimee({ id, position, rotationY = 0, openAngle, width, height, color, panelColor }: PorteAnimeeProps) {
   const hingeRef = useRef<THREE.Group>(null)
   const isOpen = useDoorStore(s => !!s.open[id])
 
@@ -31,7 +33,7 @@ export function PorteAnimee({ id, position, rotationY = 0, openAngle, width, hei
   return (
     <group position={position} rotation={[0, rotationY, 0]}>
       <group ref={hingeRef}>
-        <Porte position={[0, 0, 0]} width={width} height={height} />
+        <Porte position={[0, 0, 0]} width={width} height={height} color={color} panelColor={panelColor} />
       </group>
     </group>
   )

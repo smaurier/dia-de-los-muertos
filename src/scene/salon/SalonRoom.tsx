@@ -24,6 +24,7 @@ import { Chambre1 } from '../rooms/Chambre1'
 import { Chambre2 } from '../rooms/Chambre2'
 import { SalleDeBain } from '../rooms/SalleDeBain'
 import { Debarras } from '../rooms/Debarras'
+import { Bureau } from '../rooms/Bureau'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
 const SHOW_AABB = new URLSearchParams(window.location.search).has('aabb')
@@ -513,6 +514,9 @@ export function SalonRoom() {
       {/* ─── Débarras (ch7) — en L autour de la SDB, porte sur la branche est ─── */}
       <Debarras />
 
+      {/* ─── Bureau — au sud du couloir d'entrée, porte sur le couloir sud ─── */}
+      <Bureau />
+
       {/* ─── Mur Est x=7 — arche d'entrée (zaguán, z=0, ouverture z∈[-0.9,0.9]).
           Mur ÉPAIS (0,35 m, x∈[7,7.35]) comme le mur nord : embrasure profonde,
           faces visibles des deux côtés (salon ET zaguán/couloir). ───────────── */}
@@ -995,41 +999,35 @@ export function SalonRoom() {
 
       {/* ─── Bougies buffet ─────────────────────────────────────────────────── */}
 
-      {/* ─── Zaguán / vestibule d'entrée derrière l'arche est ───────────────
-          x∈[7,10], z∈[-2,2] — lumière naturelle chaude, porte extérieure */}
+      {/* ─── Zaguán : couloir d'entrée derrière l'arche est ──────────────────
+          x∈[7.35,10], z∈[-0.9,0.9] — LA LARGEUR DE L'ARCHE. Derrière l'arche,
+          un carrefour : tout droit la porte principale, à gauche (nord) la
+          branche est vers les chambres, à droite (sud) le couloir du bureau. */}
       <group>
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[8.5, 0.001, 0]}>
-          <planeGeometry args={[3.0, 4.0]} />
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[8.675, 0.001, 0]}>
+          <planeGeometry args={[2.65, 1.8]} />
           <meshPhongMaterial map={solTomettes} shininess={40} specular="#4a3420" />
         </mesh>
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={[8.5, 2.9, 0]}>
-          <planeGeometry args={[3.0, 4.0]} />
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={[8.675, 2.9, 0]}>
+          <planeGeometry args={[2.65, 1.8]} />
           <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
         </mesh>
+        {/* Mur est x=10 (derrière la porte principale) */}
         <mesh position={[10, 1.45, 0]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[4.0, 2.9]} />
+          <planeGeometry args={[1.8, 2.9]} />
           <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
         </mesh>
-        <mesh position={[8.5, 1.45, -2]} rotation={[0, Math.PI, 0]}>
-          <planeGeometry args={[3.0, 2.9]} />
-          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-        </mesh>
-        {/* Mur nord du zaguán — ouvert x∈[7.55,8.55] vers le couloir (plan :
-            le couloir débouche dans l'entrée). Le mur est du salon (épais)
-            occupe x∈[7,7.35]. DoubleSide : visible du zaguán ET du couloir. */}
-        <mesh position={[7.45, 1.45, 2]}>
-          <planeGeometry args={[0.2, 2.9]} />
+        {/* Murs nord z=0.9 et sud z=-0.9 (x∈[8.75,9.94] — à l'ouest, le
+            carrefour est ouvert). DoubleSide : visibles des deux côtés. */}
+        <mesh position={[9.345, 1.45, 0.9]} rotation={[0, Math.PI, 0]}>
+          <planeGeometry args={[1.19, 2.9]} />
           <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
         </mesh>
-        <mesh position={[9.275, 1.45, 2]}>
-          <planeGeometry args={[1.45, 2.9]} />
+        <mesh position={[9.345, 1.45, -0.9]}>
+          <planeGeometry args={[1.19, 2.9]} />
           <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
         </mesh>
-        <mesh position={[8.05, 2.5, 2]}>
-          <planeGeometry args={[1.0, 0.8]} />
-          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
-        </mesh>
-        {/* Porte extérieure (double, planches) sur le mur est du zaguán */}
+        {/* Porte extérieure (double, planches) sur le mur est */}
         {[-0.42, 0.42].map(dz => (
           <mesh key={dz} position={[9.94, 1.15, dz]}>
             <boxGeometry args={[0.12, 2.3, 0.82]} />
@@ -1037,8 +1035,8 @@ export function SalonRoom() {
             <Outlines thickness={0.020} color="black" />
           </mesh>
         ))}
-        {/* Lumière naturelle du zaguán (entrée + ciel extérieur) */}
-        <pointLight position={[9.0, 2.2, 0]} intensity={1.6} color="#f8e8c0" distance={5} decay={2} />
+        {/* Lumière naturelle de l'entrée */}
+        <pointLight position={[9.2, 2.2, 0]} intensity={1.3} color="#f8e8c0" distance={4.5} decay={2} />
       </group>
 
       {/* ─── Vaisselier (coin nord-est, ref vue-fenetre) ────────────────────── */}
