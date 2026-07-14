@@ -1,6 +1,4 @@
 // src/scene/living-room/LivingRoomShell.tsx
-import { useMemo, useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { Outlines, RoundedBox } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
@@ -8,7 +6,7 @@ import {
   murAdobeNorth, murAdobeLintel, murAdobeSouth, murAdobeSide,
   solTomettes, solTomettesNormal, boisSombre,
 } from '../shared/paintedTextures'
-import { rideauTexture, plafondBoisTexture } from '../shared/fabricTexture'
+import { plafondBoisTexture } from '../shared/fabricTexture'
 import { WindowVista } from './WindowVista'
 import { Prop } from '../shared/Prop'
 import { Sofa } from './Sofa'
@@ -16,6 +14,7 @@ import { SALON_OBSTACLES } from './livingRoomCollision'
 import { TVScreen } from './shell/TVScreen'
 import { LeafyPlant } from './shell/LeafyPlant'
 import { PapelGarland } from './shell/PapelGarland'
+import { CurtainPanel, SashFrame } from './shell/Curtains'
 import { Tablecloth } from './Tablecloth'
 import { PhotoFrame } from '../shared/PhotoFrame'
 import { Kitchen } from '../rooms/Kitchen'
@@ -47,84 +46,6 @@ import {
 } from './shell/livingRoomConstants'
 
 // ─── Composants ───────────────────────────────────────────────────────────────
-
-// Rideau plissé : plane subdivisé, plis sinusoïdaux figés dans la géométrie
-// (amples en bas, froncés en haut) + ondulation lente par vertex — aérien,
-// comme un voile près d'une fenêtre. Suspendu par anneaux à la tringle.
-const RIDEAU_W = 0.95
-const RIDEAU_H = 2.82
-const RIDEAU_PLEATS = 5
-
-function RideauPanel({ z }: { z: number }) {
-  const geo = useMemo(() => {
-    const g = new THREE.PlaneGeometry(RIDEAU_W, RIDEAU_H, 28, 20)
-    const pos = g.getAttribute('position')
-    for (let i = 0; i < pos.count; i++) {
-      const u = pos.getX(i) / RIDEAU_W + 0.5      // 0..1 sur la largeur
-      const v = pos.getY(i) / RIDEAU_H + 0.5      // 0 en bas, 1 en haut
-      const depth = 0.028 + 0.05 * (1 - v)        // plis plus amples vers le bas
-      pos.setZ(i, Math.sin(u * Math.PI * 2 * RIDEAU_PLEATS) * depth)
-    }
-    g.computeVertexNormals()
-    return g
-  }, [])
-  const base = useMemo(() => Float32Array.from(geo.getAttribute('position').array), [geo])
-  const t = useRef(z * 3.7) // phase propre à chaque panneau
-
-  useFrame((_, delta) => {
-    t.current += delta
-    const pos = geo.getAttribute('position')
-    for (let i = 0; i < pos.count; i++) {
-      const bx = base[i * 3]
-      const by = base[i * 3 + 1]
-      const bz = base[i * 3 + 2]
-      const hang = (RIDEAU_H / 2 - by) / RIDEAU_H // 0 à la tringle, 1 au sol
-      pos.setZ(i, bz + Math.sin(t.current * 0.8 + bx * 4 + by * 1.5) * 0.028 * hang)
-    }
-    pos.needsUpdate = true
-    // (normales des plis bakées à l'init — pas de recalcul par frame)
-  })
-
-  return (
-    <group position={[-6.80, 0, z]}>
-      {/* Panneau (haut à 2.94, juste sous les anneaux) */}
-      <mesh geometry={geo} position={[0, 2.94 - RIDEAU_H / 2, 0]} rotation={[0, Math.PI / 2, 0]}>
-        <meshToonMaterial map={rideauTexture} gradientMap={toonGradient} side={THREE.DoubleSide} />
-      </mesh>
-      {/* Anneaux de suspension sur la tringle (un par crête de pli) */}
-      {Array.from({ length: RIDEAU_PLEATS + 1 }, (_, i) => (
-        <mesh key={i} position={[0, 2.98, -RIDEAU_W / 2 + (i / RIDEAU_PLEATS) * RIDEAU_W]}>
-          <torusGeometry args={[0.036, 0.007, 6, 12]} />
-          <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
-        </mesh>
-      ))}
-    </group>
-  )
-}
-
-// Cadre d'un panneau coulissant : 2 montants + 2 traverses (section fine bois),
-// posé dans sa gorge de rail. La vitre est partagée (plane réflecteur unique).
-function SashFrame({ x, zMin, zMax }: { x: number; zMin: number; zMax: number }) {
-  const zc = (zMin + zMax) / 2
-  const w = zMax - zMin
-  return (
-    <group>
-      {[zMin + 0.028, zMax - 0.028].map(mz => (
-        <mesh key={mz} position={[x, 1.8, mz]}>
-          <boxGeometry args={[0.05, 2.04, 0.056]} />
-          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-          <Outlines thickness={0.008} color="black" />
-        </mesh>
-      ))}
-      {[0.815, 2.785].map(my => (
-        <mesh key={my} position={[x, my, zc]}>
-          <boxGeometry args={[0.05, 0.055, w]} />
-          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-        </mesh>
-      ))}
-    </group>
-  )
-}
 
 // ─── Scene ────────────────────────────────────────────────────────────────────
 export function LivingRoomShell() {
@@ -480,8 +401,8 @@ export function LivingRoomShell() {
           </mesh>
         ))}
         {/* Rideaux : panneaux plissés animés, suspendus par anneaux (voir Rideau) */}
-        {!NO_PAPEL && <RideauPanel z={2.05} />}
-        {!NO_PAPEL && <RideauPanel z={-2.05} />}
+        {!NO_PAPEL && <CurtainPanel z={2.05} />}
+        {!NO_PAPEL && <CurtainPanel z={-2.05} />}
         {/* Tringle bois tournée */}
         <mesh position={[-6.80, 2.98, 0]} rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.032, 0.032, 4.75, 10]} />
