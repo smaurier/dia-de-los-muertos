@@ -92,15 +92,16 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [ 8.9, 9.6, 5.0, 5.7],      // WC
   [11.3, 11.9, 4.7, 5.3],     // lavabo colonne
   [11.3, 11.85, 3.55, 4.05],  // panier à linge
-  // ── Débarras en L agrandi (bande basse x∈[8.9,13.4] z∈[1.2,3.25] +
-  //    remontée x∈[11.9,13.4] z∈[3.25,6.2]) ──────────────────────────────────
+  // ── Débarras rectangle (x∈[8.9,13.4], z∈[1.2,3.25]) — à l'est de la SDB :
+  //    l'extérieur (sa fenêtre donne dessus) ──────────────────────────────────
   [ 8.85, 13.6, 1.0, 1.35],   // mur sud débarras (z=1.2, dos du couloir d'entrée)
-  [13.25, 13.6, 1.2, 6.2],    // mur est débarras (x=13.4, porte patio verrouillée)
+  [13.25, 13.6, 1.2, 3.25],   // mur est débarras (x=13.4)
+  [12.05, 13.6, 3.05, 3.55],  // mur nord débarras, partie est (donne dehors)
   // ── Mobilier débarras (nav seulement) ─────────────────────────────────────
   [ 9.1, 11.7, 1.25, 1.75],   // étagères mur sud (boîtes, bocaux, journaux)
-  [12.35, 13.35, 2.0, 2.95],  // fauteuil drapé (coude du L)
-  [12.75, 13.4, 4.25, 5.5],   // cartons empilés (mur est)
-  [12.1, 13.0, 5.5, 6.05],    // malle + couvertures (mur nord remontée)
+  [12.25, 13.25, 1.5, 2.4],   // fauteuil drapé (coin sud-est)
+  [12.7, 13.4, 2.5, 3.25],    // cartons empilés (coin nord-est)
+  [ 9.9, 10.8, 2.6, 3.25],    // malle + couvertures (mur nord)
   [ 9.15, 9.55, 2.85, 3.25],  // balai + seau (près de la porte)
   [10.2, 11.0, 1.25, 2.0],    // pile de cartons (centre-sud)
   [11.65, 12.05, 1.3, 1.7],   // tapis roulé
