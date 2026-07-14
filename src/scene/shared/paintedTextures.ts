@@ -1,9 +1,9 @@
 import * as THREE from 'three'
 
-// Textures peintes (palier 3) — gouache style Ghibli générées d'après
-// docs/references/textures/prompts-textures-salon.md, servies depuis /textures.
-// MirroredRepeatWrapping : le raccord miroir masque les coutures résiduelles
-// des images « seamless » générées.
+// Painted textures (tier 3) — Ghibli-style gouache generated from
+// docs/references/textures/prompts-textures-salon.md, served from /textures.
+// MirroredRepeatWrapping: mirror tiling hides residual seams of
+// AI-generated "seamless" images.
 
 const loader = new THREE.TextureLoader()
 
@@ -15,8 +15,8 @@ function painted(file: string, repeatX: number, repeatY: number): THREE.Texture 
   return tex
 }
 
-// Variante désaturée : les refs montrent un plâtre sable/crème, l'image adobe
-// brute tire trop à l'orange. Filtre appliqué une fois au chargement (canvas).
+// Desaturated variant: refs show a sand/cream plaster; the raw Adobe image
+// pulls too orange. Filter applied once at load time (canvas).
 function paintedDesat(
   file: string, repeatX: number, repeatY: number,
   saturate: number, brightness: number,
@@ -41,19 +41,19 @@ function paintedDesat(
   return tex
 }
 
-// Murs : une répétition ≈ 3,2 m (hauteur de mur) pour garder le grain constant
-// entre segments de largeurs différentes.
-export const murAdobeNorth = paintedDesat('mur-adobe-01.png', 2.0, 1, 0.78, 1.05)   // segments 6,45 m
-export const murAdobeLintel = paintedDesat('mur-adobe-01.png', 0.34, 0.31, 0.78, 1.05) // linteau 1,1×1,0 m
-export const murAdobeSouth = paintedDesat('mur-adobe-01.png', 4.4, 1, 0.78, 1.05)   // mur 14 m
-export const murAdobeSide  = paintedDesat('mur-adobe-01.png', 3.1, 1, 0.78, 1.05)   // murs 10 m
+// Walls: one repeat ≈ 3.2 m (wall height) to keep grain consistent
+// across segments of different widths.
+export const murAdobeNorth = paintedDesat('mur-adobe-01.png', 2.0, 1, 0.78, 1.05)   // 6.45 m segments
+export const murAdobeLintel = paintedDesat('mur-adobe-01.png', 0.34, 0.31, 0.78, 1.05) // lintel 1.1×1.0 m
+export const murAdobeSouth = paintedDesat('mur-adobe-01.png', 4.4, 1, 0.78, 1.05)   // 14 m wall
+export const murAdobeSide  = paintedDesat('mur-adobe-01.png', 3.1, 1, 0.78, 1.05)   // 10 m walls
 
-// Sol : l'image contient 4×4 tomettes → 7×5 répétitions sur 14×10 m ≈ 0,5 m/carreau.
+// Floor: image contains 4×4 tiles → 7×5 repeats over 14×10 m ≈ 0.5 m/tile.
 export const solTomettes = painted('sol-tomettes-01.png', 7, 5)
 
-// Normal map dérivée de la luminance de l'image (Sobel simplifié) : les joints
-// clairs entre tomettes deviennent des creux qui brisent les réflexions et
-// accrochent la lumière chaude des bougies. Générée au chargement, en linéaire.
+// Normal map derived from image luminance (simplified Sobel): the light grout
+// lines between tiles become recesses that break reflections and catch warm
+// candle light. Generated at load time, in linear space.
 function paintedNormal(
   file: string, repeatX: number, repeatY: number, strength: number,
 ): THREE.CanvasTexture {
@@ -98,16 +98,16 @@ function paintedNormal(
 
 export const solTomettesNormal = paintedNormal('sol-tomettes-01.png', 7, 5, 2.5)
 
-// Nappe : bordure brodée non répétable en pavage — 2 copies miroir sur la
-// longueur = deux nappes jointes au centre (usage réel sur table de 8,5 m),
-// la broderie reste continue grâce au miroir.
+// Tablecloth: embroidered border, not tileable by translation — 2 mirrored
+// copies along the length = two cloths joined at center (real use on 8.5 m
+// table), embroidery stays continuous thanks to the mirror.
 export const nappeBrodee = painted('nappe-brodee-01.png', 2, 1)
 
-// Plateau de table : planches horizontales dans l'image → répéter surtout en X.
+// Table top: horizontal planks in the image → repeat mostly on X.
 export const boisSombre = painted('bois-sombre-01.png', 4, 1)
 
-// ── Cuisine ──────────────────────────────────────────────────────────────────
-// Azulejos Talavera : carreaux ~20 cm → 3×2 répétitions sur crédence ~60×40 cm.
+// ── Kitchen ──────────────────────────────────────────────────────────────────
+// Talavera azulejos: ~20 cm tiles → 3×2 repeats on backsplash ~60×40 cm.
 export const azulejosTalavera = painted('azulejos-talavera.png', 3, 2)
-// Mur en pierre (moellons) : mur est de la cuisine.
+// Stone wall (rubble): east wall of the kitchen.
 export const murPierre = paintedDesat('mur-pierre.png', 1.2, 1, 0.85, 1.0)

@@ -1,19 +1,19 @@
 // src/game/systems/doorSystem.ts
-// Logique pure d'interaction avec les portes.
+// Pure logic for door interactions.
 
 export type DoorDef = {
   id: string
-  // Point d'interaction (centre de l'embrasure au sol)
+  // Interaction point (center of the doorway at floor level)
   x: number
   z: number
-  // AABB [minX, maxX, minZ, maxZ] bloquée quand la porte est FERMÉE.
-  // null : la porte est purement visuelle (ex. passage condamné derrière).
+  // AABB [minX, maxX, minZ, maxZ] blocked when the door is CLOSED.
+  // null: door is purely visual (e.g. a sealed passage behind it).
   aabb: readonly [number, number, number, number] | null
-  // Verrouillée : F ne l'ouvre pas — Emilio commente ("Está cerrado.")
+  // Locked: F does not open it — Emilio comments ("Está cerrado.")
   locked?: boolean
 }
 
-// Porte la plus proche du joueur à portée d'interaction, sinon null.
+// Nearest door to the player within interaction range, or null.
 export function nearestDoorId(
   px: number, pz: number,
   doors: readonly DoorDef[],
@@ -33,7 +33,7 @@ export function nearestDoorId(
   return best
 }
 
-// AABBs des portes fermées (à passer à canMove comme obstacles dynamiques).
+// AABBs of closed doors (pass to canMove as dynamic obstacles).
 export function closedDoorObstacles(
   doors: readonly DoorDef[],
   isOpen: (id: string) => boolean,

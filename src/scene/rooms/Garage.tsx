@@ -1,9 +1,9 @@
 // src/scene/rooms/Garage.tsx
-// Le garage — devant le patio, allongé vers l'EST, côté rue (même côté que
-// la porte d'entrée de la maison) : x∈[9.0,15.0], z∈[-10.6,-5.6].
-// Le portail basculant est à l'est : le vocho est entré tout droit depuis
-// la rue, nez vers l'arche du patio (mur mitoyen ouest, porte en bois
-// ouvrable id 'garage', définie dans Patio.tsx).
+// The garage — in front of the patio, stretching EAST toward the street (same
+// side as the house's front door): x∈[9.0,15.0], z∈[-10.6,-5.6].
+// The rolling gate is to the east: the vocho drove straight in from the
+// street, nose toward the patio arch (shared west wall, openable wooden
+// door id 'garage', defined in Patio.tsx).
 import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
@@ -14,13 +14,13 @@ const C_CEIL   = '#C8BCA4'
 const C_IRON   = '#1A1512'
 const C_WOOD_M = '#5C3010'
 const C_BETON  = '#7A7568'
-const C_VOCHO  = '#4A7A5E'   // vert vocho classique
+const C_VOCHO  = '#4A7A5E'   // classic vocho green
 const C_TIRE   = '#1E1E20'
 
 export function Garage() {
   return (
     <group>
-      {/* ── Sol béton + tache d'huile ── */}
+      {/* ── Concrete floor + oil stain ── */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[12.0, 0.001, -8.1]}>
         <planeGeometry args={[6.0, 5.0]} />
         <meshToonMaterial color={C_BETON} gradientMap={toonGradient} />
@@ -29,26 +29,26 @@ export function Garage() {
         <circleGeometry args={[0.35, 9]} />
         <meshToonMaterial color="#4A463E" gradientMap={toonGradient} />
       </mesh>
-      {/* ── Toit (le garage est couvert, lui) ── */}
+      {/* ── Roof (the garage is covered) ── */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[12.0, 2.7, -8.1]}>
         <planeGeometry args={[6.0, 5.0]} />
         <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
       </mesh>
-      {/* Couverture de tuiles vue de dehors (depuis le patio, par-dessus le
-          mur mitoyen — sinon on voit le ciel à travers le plafond une face) */}
+      {/* Tile cover seen from outside (from the patio, over the shared wall —
+          otherwise the sky shows through the single-sided ceiling) */}
       <mesh position={[12.0, 2.76, -8.1]}>
         <boxGeometry args={[6.2, 0.1, 5.2]} />
         <meshToonMaterial color="#8A4A2A" gradientMap={toonGradient} />
         <Outlines thickness={0.016} color="black" />
       </mesh>
 
-      {/* ── Mur nord (dos de la façade et de la rue) ── */}
+      {/* ── North wall (back of the facade / street side) ── */}
       <mesh position={[12.0, 1.35, -5.62]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[6.0, 2.7]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Mur sud z=-10.6 — percé de deux fenêtres hautes d'atelier
-          x∈[10.3,11.3] et x∈[12.7,13.7], y∈[1.5,2.2] ── */}
+      {/* ── South wall z=-10.6 — pierced by two workshop-style high windows
+          x∈[10.3,11.3] and x∈[12.7,13.7], y∈[1.5,2.2] ── */}
       <mesh position={[9.65, 1.35, -10.58]}>
         <planeGeometry args={[1.3, 2.7]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
@@ -71,7 +71,7 @@ export function Garage() {
             <planeGeometry args={[1.0, 1.5]} />
             <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
           </mesh>
-          {/* Nuit + encadrement + 2 barreaux + vitre (verre du salon) */}
+          {/* Night + casing + 2 bars + glass (salon glass) */}
           <mesh position={[px, 1.85, -10.72]}>
             <planeGeometry args={[1.04, 0.74]} />
             <meshToonMaterial color="#16223E" emissive="#24365E" emissiveIntensity={0.35} gradientMap={toonGradient} />
@@ -101,10 +101,10 @@ export function Garage() {
           </mesh>
         </group>
       ))}
-      {/* (mur ouest = mur mitoyen du patio avec l'arche — voir Patio.tsx) */}
+      {/* (west wall = patio shared wall with the arch — see Patio.tsx) */}
 
-      {/* ── PORTAIL BASCULANT à l'est x=15.0 (côté rue) — la voiture entre
-          par là, dans l'axe ── */}
+      {/* ── ROLLING GATE to the east x=15.0 (street side) — car entered
+          straight in along the axis ── */}
       <mesh position={[14.98, 1.2, -8.1]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[3.4, 2.4]} />
         <meshToonMaterial color={C_WOOD_M} gradientMap={toonGradient} />
@@ -120,7 +120,7 @@ export function Garage() {
         <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
         <Outlines thickness={0.008} color="black" />
       </mesh>
-      {/* Bandeau + piliers latéraux autour du portail */}
+      {/* Header + side pillars around the gate */}
       <mesh position={[14.98, 2.55, -8.1]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[3.4, 0.3]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
@@ -134,27 +134,27 @@ export function Garage() {
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Le vocho (placeholder — modèle 3D pipeline à venir) — dans l'axe
-          est-ouest, nez vers l'arche du patio (entré depuis la rue) ── */}
+      {/* ── The vocho (placeholder — 3D model pipeline upcoming) — aligned
+          east-west, nose toward the patio arch (drove in from the street) ── */}
       <group position={[12.2, 0, -8.3]} rotation={[0, Math.PI, 0]}>
-        {/* Caisse basse */}
+        {/* Low body */}
         <mesh position={[0, 0.5, 0]}>
           <boxGeometry args={[3.1, 0.55, 1.45]} />
           <meshToonMaterial color={C_VOCHO} gradientMap={toonGradient} />
           <Outlines thickness={0.020} color="black" />
         </mesh>
-        {/* Dôme cabine (silhouette coccinelle) */}
+        {/* Cabin dome (beetle silhouette) */}
         <mesh position={[0.1, 0.78, 0]} scale={[1.9, 0.72, 1.28]}>
           <sphereGeometry args={[0.72, 14, 10]} />
           <meshToonMaterial color={C_VOCHO} gradientMap={toonGradient} />
           <Outlines thickness={0.020} color="black" />
         </mesh>
-        {/* Vitres (bande sombre autour de la cabine) */}
+        {/* Windows (dark band around the cabin) */}
         <mesh position={[0.1, 0.92, 0]} scale={[1.55, 0.42, 1.12]}>
           <sphereGeometry args={[0.72, 12, 8]} />
           <meshToonMaterial color="#1E2A34" gradientMap={toonGradient} />
         </mesh>
-        {/* Roues + enjoliveurs */}
+        {/* Wheels + hubcaps */}
         {([[-1.05, 0.62], [1.05, 0.62], [-1.05, -0.62], [1.05, -0.62]] as [number, number][]).map(([dx, dzz], i) => (
           <group key={i} position={[dx, 0.3, dzz]}>
             <mesh rotation={[Math.PI / 2, 0, 0]}>
@@ -168,7 +168,7 @@ export function Garage() {
             </mesh>
           </group>
         ))}
-        {/* Ailes avant/arrière (bosses) */}
+        {/* Front/rear fenders (bumps) */}
         {([[-1.05, 0.68], [1.05, 0.68], [-1.05, -0.68], [1.05, -0.68]] as [number, number][]).map(([dx, dzz], i) => (
           <mesh key={i} position={[dx, 0.52, dzz]} scale={[1.5, 0.8, 0.7]}>
             <sphereGeometry args={[0.28, 10, 8]} />
@@ -176,7 +176,7 @@ export function Garage() {
             <Outlines thickness={0.014} color="black" />
           </mesh>
         ))}
-        {/* Phares + pare-chocs */}
+        {/* Headlights + bumpers */}
         {[-0.45, 0.45].map(dzz => (
           <mesh key={dzz} position={[1.62, 0.68, dzz]} rotation={[0, 0, -Math.PI / 2]}>
             <cylinderGeometry args={[0.09, 0.07, 0.08, 10]} />
@@ -191,14 +191,14 @@ export function Garage() {
             <Outlines thickness={0.010} color="black" />
           </mesh>
         ))}
-        {/* Plaque (à l'arrière, côté rue) */}
+        {/* License plate (rear, street side) */}
         <mesh position={[-1.73, 0.5, 0]} rotation={[0, -Math.PI / 2, 0]}>
           <planeGeometry args={[0.3, 0.12]} />
           <meshToonMaterial color="#E8E4D0" gradientMap={toonGradient} />
         </mesh>
       </group>
 
-      {/* ── Établi contre le mur nord + outils au mur ── */}
+      {/* ── Workbench against the north wall + tools on the wall ── */}
       <group position={[10.6, 0, -6.05]} rotation={[0, Math.PI, 0]}>
         <mesh position={[0, 0.78, 0]}>
           <boxGeometry args={[1.7, 0.07, 0.55]} />
@@ -213,7 +213,7 @@ export function Garage() {
             </mesh>
           ))
         )}
-        {/* Étau + caisse à outils + chiffon */}
+        {/* Vise + toolbox + rag */}
         <mesh position={[-0.55, 0.88, 0]}>
           <boxGeometry args={[0.18, 0.14, 0.12]} />
           <meshToonMaterial color="#5A5E66" gradientMap={toonGradient} />
@@ -228,7 +228,7 @@ export function Garage() {
           <boxGeometry args={[0.22, 0.03, 0.16]} />
           <meshToonMaterial color="#A89078" gradientMap={toonGradient} />
         </mesh>
-        {/* Panneau d'outils au mur (silhouettes) */}
+        {/* Tool board on the wall (silhouettes) */}
         <mesh position={[0, 1.6, -0.32]}>
           <boxGeometry args={[1.3, 0.7, 0.03]} />
           <meshToonMaterial color="#6E5A44" gradientMap={toonGradient} />
@@ -242,7 +242,7 @@ export function Garage() {
         ))}
       </group>
 
-      {/* ── Pneus empilés (coin sud-ouest) + bidons (coin nord-est) ── */}
+      {/* ── Stacked tires (south-west corner) + cans (north-east corner) ── */}
       {[0.13, 0.39, 0.65].map((py, i) => (
         <mesh key={py} position={[9.5 - i * 0.03, py, -10.15 + (i % 2) * 0.05]} rotation={[0, i, 0]}>
           <cylinderGeometry args={[0.3, 0.3, 0.24, 12]} />
@@ -264,7 +264,7 @@ export function Garage() {
         </group>
       ))}
 
-      {/* ── Deux ampoules nues (le garage est long) ── */}
+      {/* ── Two bare bulbs (the garage is long) ── */}
       {[10.8, 13.8].map(px => (
         <group key={px}>
           <pointLight position={[px, 2.2, -8.1]} intensity={0.8} color="#e8d0a0" distance={4.5} decay={2} />

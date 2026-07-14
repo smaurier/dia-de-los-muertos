@@ -30,14 +30,14 @@ interface GameState {
   houseScale: number
   adultHasLeft: boolean
   grandUnclePosition: GrandUnclePosition
-  salonArcPhase: SalonArcPhase
+  livingRoomArcPhase: SalonArcPhase
   setChapter: (chapter: Chapter) => void
   setPhase: (phase: GamePhase) => void
   setSalonAudibility: (level: number) => void
   setHouseScale: (scale: number) => void
   setAdultHasLeft: (value: boolean) => void
   setGrandUnclePosition: (pos: GrandUnclePosition) => void
-  setSalonArcPhase: (phase: SalonArcPhase) => void
+  setLivingRoomArcPhase: (phase: SalonArcPhase) => void
 }
 
 export const useGameStore = create<GameState>((set) => ({
@@ -47,7 +47,7 @@ export const useGameStore = create<GameState>((set) => ({
   houseScale: 1.0,
   adultHasLeft: false,
   grandUnclePosition: 'couch',
-  salonArcPhase: 0,
+  livingRoomArcPhase: 0,
   setChapter: (chapter) => set({ chapter }),
   setPhase: (phase) => set({ phase }),
   setSalonAudibility: (level) =>
@@ -56,5 +56,5 @@ export const useGameStore = create<GameState>((set) => ({
     set({ houseScale: Math.max(1, Math.min(2, scale)) }),
   setAdultHasLeft: (adultHasLeft) => set({ adultHasLeft }),
   setGrandUnclePosition: (grandUnclePosition) => set({ grandUnclePosition }),
-  setSalonArcPhase: (salonArcPhase) => set({ salonArcPhase }),
+  setLivingRoomArcPhase: (livingRoomArcPhase) => set({ livingRoomArcPhase }),
 }))

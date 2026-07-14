@@ -6,18 +6,18 @@ describe('doorStore', () => {
     useDoorStore.setState({ open: {} })
   })
 
-  it('toutes les portes sont fermées par défaut', () => {
+  it('all doors are closed by default', () => {
     expect(useDoorStore.getState().isOpen('cellier')).toBe(false)
   })
 
-  it('toggle ouvre puis referme', () => {
+  it('toggle opens then closes again', () => {
     useDoorStore.getState().toggleDoor('cellier')
     expect(useDoorStore.getState().isOpen('cellier')).toBe(true)
     useDoorStore.getState().toggleDoor('cellier')
     expect(useDoorStore.getState().isOpen('cellier')).toBe(false)
   })
 
-  it('les portes sont indépendantes', () => {
+  it('doors are independent', () => {
     useDoorStore.getState().toggleDoor('cellier')
     expect(useDoorStore.getState().isOpen('couloir')).toBe(false)
   })

@@ -4,6 +4,23 @@ Journal chronologique du projet. Chaque session : ce qui a été demandé, les d
 
 ---
 
+## Phase 2 — Convention anglaise du code (2026-07-14, branche standards-phase2-english)
+
+Migration du code vers une convention anglaise (commentaires + identifiants + noms de fichiers/composants/répertoires). **Le contenu du jeu reste tel quel** : dialogues espagnols, noms de persos, valeurs `ZoneId` (`'salon'`, `'couloir'`...), chemins d'assets, os Mixamo, overlays UI joueur (FR).
+
+Vagues (13 commits, tsc + 119 tests verts à chaque étape) :
+- 0 : logic + audio (commentaires)
+- 1-4 : shared / rooms / salon / top+ui+debug (commentaires + identifiants locaux)
+- 5a : renames fichiers+composants+exports (`Couloir`→`Corridor`, `SalonRoom`→`LivingRoomShell`, `SALON_BOUNDS`→`LIVING_ROOM_BOUNDS`, `salonArcPhase`→`livingRoomArcPhase`...)
+- 5b : répertoire `src/scene/salon/` → `src/scene/living-room/`
+- 6 : descriptions + commentaires des fichiers de test
+
+Différé Phase 3 : corps FR des god-components `LivingRoomShell.tsx` (ex-SalonRoom, 1465 L) et `Kitchen.tsx` (ex-Cuisine, 665 L) — seront traduits en même temps que le découpage. Leurs fichiers ont été renommés en Wave 5.
+
+Overstep corrigé : Wave 4 avait traduit les overlays UI joueur (`'Cliquez pour naviguer'`) → reverté (contenu, pas convention).
+
+---
+
 ## S01 — 2026-06-20 — Bootstrap + Vertical Slice Chapitre 3
 
 ### Livré

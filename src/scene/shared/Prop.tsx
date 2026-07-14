@@ -1,9 +1,9 @@
 // src/scene/shared/Prop.tsx
-// Prop 3D issu du pipeline image-to-3D.
-// - shape-only : couleur toon unie (color)
-// - texturé : la baseColor du GLB est conservée (map + gradientMap)
-// Auto-échelle sur targetHeight (hauteur) OU targetLength (plus grand axe
-// horizontal — la cote critique des meubles longs), pied posé à y=position[1].
+// 3D prop from the image-to-3D pipeline.
+// - shape-only: flat toon color (color)
+// - textured: GLB baseColor is kept (map + gradientMap)
+// Auto-scales to targetHeight (height) OR targetLength (longest horizontal
+// axis — the critical measurement for long furniture), foot placed at y=position[1].
 import { useMemo, useEffect } from 'react'
 import * as THREE from 'three'
 import { useGLTF } from '@react-three/drei'
@@ -36,9 +36,9 @@ export function Prop({ url, color = '#888888', position, rotationY = 0, targetHe
     object.traverse(o => {
       if ((o as THREE.Mesh).isMesh) {
         const mesh = o as THREE.Mesh
-        // Les GLB du pipeline image-to-3D arrivent parfois sans attribut
-        // normal : l'éclairage toon produit alors des NaN que le Bloom du
-        // composer étale sur toute la frame (écran noir).
+        // GLBs from the image-to-3D pipeline sometimes arrive without a
+        // normal attribute: toon lighting then produces NaN values that the
+        // composer's Bloom smears across the entire frame (black screen).
         if (!mesh.geometry.hasAttribute('normal')) {
           mesh.geometry.computeVertexNormals()
         }

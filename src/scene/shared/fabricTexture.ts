@@ -1,5 +1,5 @@
-// Texture tissu procédurale (canvas) : trame tissée subtile + rayures
-// verticales douces — pour les rideaux (pas d'asset peint dédié).
+// Procedural fabric texture (canvas): subtle woven weave + soft vertical
+// stripes — for curtains (no dedicated painted asset).
 import * as THREE from 'three'
 
 function makeFabric(base: string, stripe: string): THREE.CanvasTexture {
@@ -12,7 +12,7 @@ function makeFabric(base: string, stripe: string): THREE.CanvasTexture {
   ctx.fillStyle = base
   ctx.fillRect(0, 0, size, size)
 
-  // Rayures verticales douces (deux largeurs — étoffe rustique tissée main)
+  // Soft vertical stripes (two widths — hand-woven rustic cloth)
   ctx.fillStyle = stripe
   ctx.globalAlpha = 0.30
   for (let x = 0; x < size; x += 64) {
@@ -20,7 +20,7 @@ function makeFabric(base: string, stripe: string): THREE.CanvasTexture {
     ctx.fillRect(x + 34, 0, 6, size)
   }
 
-  // Trame tissée fine : croisillons chaîne/trame
+  // Fine woven weave: warp/weft crosshatch
   ctx.globalAlpha = 0.08
   ctx.strokeStyle = '#4a3820'
   ctx.lineWidth = 1
@@ -36,7 +36,7 @@ function makeFabric(base: string, stripe: string): THREE.CanvasTexture {
     ctx.lineTo(x + 0.5, size)
     ctx.stroke()
   }
-  // Irrégularités du fil (petits épaississements aléatoires déterministes)
+  // Thread irregularities (small deterministic thickenings)
   ctx.globalAlpha = 0.06
   ctx.fillStyle = '#3a2c18'
   for (let i = 0; i < 260; i++) {
@@ -46,8 +46,8 @@ function makeFabric(base: string, stripe: string): THREE.CanvasTexture {
   }
   ctx.globalAlpha = 1
 
-  // Bordure brodée en bas : galon à chevrons terracotta (les refs montrent
-  // des textiles ourlés, jamais de coupe brute)
+  // Embroidered hem at bottom: terracotta chevron trim (refs show hemmed
+  // textiles, never raw-cut edges)
   ctx.fillStyle = '#B05038'
   ctx.globalAlpha = 0.85
   ctx.fillRect(0, size - 26, size, 5)
@@ -64,7 +64,7 @@ function makeFabric(base: string, stripe: string): THREE.CanvasTexture {
 
   const tex = new THREE.CanvasTexture(cv)
   tex.wrapS = THREE.RepeatWrapping
-  tex.wrapT = THREE.ClampToEdgeWrapping // la bordure brodée reste en bas
+  tex.wrapT = THREE.ClampToEdgeWrapping // embroidered border stays at bottom
   tex.repeat.set(2, 1)
   tex.colorSpace = THREE.SRGBColorSpace
   return tex
@@ -72,8 +72,8 @@ function makeFabric(base: string, stripe: string): THREE.CanvasTexture {
 
 export const rideauTexture = makeFabric('#EFE6D2', '#E2D3B4')
 
-// Paysage nocturne derrière la fenêtre : ciel dégradé, lune, collines,
-// quelques fenêtres allumées d'un village lointain.
+// Night landscape behind the window: gradient sky, moon, hills,
+// a few lit windows of a distant village.
 function makeNightScape(): THREE.CanvasTexture {
   const w = 512
   const h = 384
@@ -89,7 +89,7 @@ function makeNightScape(): THREE.CanvasTexture {
   ctx.fillStyle = sky
   ctx.fillRect(0, 0, w, h)
 
-  // Étoiles
+  // Stars
   ctx.fillStyle = '#cfd8ee'
   for (let i = 0; i < 60; i++) {
     const x = (i * 97.3) % w
@@ -99,7 +99,7 @@ function makeNightScape(): THREE.CanvasTexture {
   }
   ctx.globalAlpha = 1
 
-  // Lune + halo
+  // Moon + halo
   ctx.fillStyle = 'rgba(220, 228, 248, 0.18)'
   ctx.beginPath()
   ctx.arc(w * 0.72, h * 0.24, 46, 0, Math.PI * 2)
@@ -109,7 +109,7 @@ function makeNightScape(): THREE.CanvasTexture {
   ctx.arc(w * 0.72, h * 0.24, 26, 0, Math.PI * 2)
   ctx.fill()
 
-  // Collines en silhouette
+  // Hill silhouettes
   ctx.fillStyle = '#0c1526'
   ctx.beginPath()
   ctx.moveTo(0, h * 0.78)
@@ -119,7 +119,7 @@ function makeNightScape(): THREE.CanvasTexture {
   ctx.lineTo(0, h)
   ctx.fill()
 
-  // Fenêtres chaudes d'un village lointain
+  // Warm windows of a distant village
   ctx.fillStyle = '#f0b860'
   const windows: [number, number][] = [[0.16, 0.84], [0.19, 0.87], [0.55, 0.86], [0.58, 0.83], [0.61, 0.88], [0.83, 0.8]]
   for (const [fx, fy] of windows) {
@@ -133,9 +133,9 @@ function makeNightScape(): THREE.CanvasTexture {
 
 export const paysageNuitTexture = makeNightScape()
 
-// Plafond : planches de bois sombre entre les vigas (refs salon — tout le
-// plafond est en bois, pas de plâtre). 4 planches par tuile, seams + grain.
-function makePlafondBois(): THREE.CanvasTexture {
+// Ceiling: dark wood planks between vigas (salon refs — the entire ceiling is
+// wood, no plaster). 4 planks per tile, seams + grain.
+function makeCeilingWood(): THREE.CanvasTexture {
   const w = 256
   const h = 256
   const cv = document.createElement('canvas')
@@ -146,11 +146,11 @@ function makePlafondBois(): THREE.CanvasTexture {
   const boards = 4
   const bh = h / boards
   for (let b = 0; b < boards; b++) {
-    // Teinte légèrement différente par planche
+    // Slightly different tone per board
     const tone = 0.9 + ((b * 37) % 10) / 45
     ctx.fillStyle = `rgb(${Math.round(74 * tone)}, ${Math.round(46 * tone)}, ${Math.round(22 * tone)})`
     ctx.fillRect(0, b * bh, w, bh)
-    // Grain : longues stries sombres
+    // Grain: long dark streaks
     ctx.strokeStyle = 'rgba(30, 16, 6, 0.35)'
     ctx.lineWidth = 1
     for (let g = 0; g < 5; g++) {
@@ -160,7 +160,7 @@ function makePlafondBois(): THREE.CanvasTexture {
       ctx.bezierCurveTo(w * 0.3, gy + 2, w * 0.6, gy - 2, w, gy + 1)
       ctx.stroke()
     }
-    // Seam entre planches
+    // Seam between boards
     ctx.fillStyle = 'rgba(15, 8, 3, 0.8)'
     ctx.fillRect(0, b * bh, w, 2)
   }
@@ -168,8 +168,8 @@ function makePlafondBois(): THREE.CanvasTexture {
   const tex = new THREE.CanvasTexture(cv)
   tex.colorSpace = THREE.SRGBColorSpace
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping
-  tex.repeat.set(3, 8) // planches le long de X (14 m), seams tous les ~0,36 m en Z
+  tex.repeat.set(3, 8) // planks along X (14 m), seams every ~0.36 m on Z
   return tex
 }
 
-export const plafondBoisTexture = makePlafondBois()
+export const plafondBoisTexture = makeCeilingWood()

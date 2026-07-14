@@ -11,46 +11,46 @@ import { useDoorStore } from '../game/store/doorStore'
 import { useSubtitleStore } from '../game/store/subtitleStore'
 import { nearestDoorId, closedDoorObstacles } from '../game/systems/doorSystem'
 import { resolvePlayerNpcCollision } from '../game/systems/npcSystem'
-import { canMove, cameraBackDistance, clampCameraToRoom, SALON_BOUNDS } from './salon/salonCollision'
-import { DOORS, DOOR_INTERACT_DIST } from './salon/doorConfig'
-import { npcPositions } from './salon/npcRegistry'
+import { canMove, cameraBackDistance, clampCameraToRoom, LIVING_ROOM_BOUNDS } from './living-room/livingRoomCollision'
+import { DOORS, DOOR_INTERACT_DIST } from './living-room/doorConfig'
+import { npcPositions } from './living-room/npcRegistry'
 
 const SPEED = 3
-const CAM_BACK = 1.2      // metres derriere le garçon
-const CAM_UP = 1.3        // hauteur camera
-const BOY_HIDE_DIST = 0.35 // caméra plus proche → garçon masqué
+const CAM_BACK = 1.2      // metres behind the boy
+const CAM_UP = 1.3        // camera height
+const BOY_HIDE_DIST = 0.35 // camera too close → hide boy mesh
 
-// Héros texturé (pipeline Hunyuan → Mixamo, 5 clips).
+// Textured hero (Hunyuan → Mixamo pipeline, 5 clips).
 const HERO_URL = '/models/characters/heros.glb?v=3'
-const HERO_HEIGHT = 1.15  // enfant ~1,15 m (le modèle sort à ~2 m)
-// Clips par état ; le crossfade lisse les transitions.
+const HERO_HEIGHT = 1.15  // child ~1.15 m (model comes out at ~2 m)
+// Clips per state; crossfade smooths transitions.
 const CLIP_IDLE = 'standing-idle'
 const CLIP_WALK = 'walking'
 const CLIP_HIDE = 'crouching-idle'
 const FADE = 0.22
 
-// Clignement : variante de texture aux paupières peintes, générée en mémoire
-// depuis la texture du GLB (pas de blendshapes sur un mesh Hunyuan — technique
-// toon du swap de map). Coordonnées atlas des yeux, propres à chaque perso.
+// Blink: painted-eyelid texture variant generated in memory from the GLB
+// texture (no blendshapes on a Hunyuan mesh — toon technique via map swap).
+// Eye atlas coordinates, specific to each character.
 const HERO_EYES = [
   { x: 385, y: 410, r: 42 },
   { x: 1500, y: 1628, r: 42 },
 ]
-// ?blinktest : clignement lent et fréquent pour la validation visuelle
+// ?blinktest: slow frequent blink for visual validation
 const BLINK_TEST = new URLSearchParams(window.location.search).has('blinktest')
 const BLINK_DURATION = BLINK_TEST ? 1.0 : 0.15
 const blinkDelay = () => (BLINK_TEST ? 0.9 : 2.2 + Math.random() * 3.4)
-// Micro-saccades : le regard tient 0,7-2,4 s puis SAUTE sur une autre
-// variante (biais fort vers le regard centré, index 0)
+// Micro-saccades: gaze holds 0.7-2.4 s then JUMPS to another variant
+// (strong bias toward center gaze, index 0)
 const saccadeDelay = () => 0.7 + Math.random() * 1.7
 const pickGaze = (count: number) => (Math.random() < 0.45 ? 0 : 1 + Math.floor(Math.random() * (count - 1)))
 
 export function Player() {
   const boyRef = useRef<THREE.Group>(null)
-  // PointerLockControls monté APRÈS le premier clic : monté d'emblée, il
-  // tente le verrouillage alors que le document n'a pas encore le focus
-  // (reload avec DevTools actifs) → DOMException « document is not focused »
-  // en rejection non gérée à chaque lancement.
+  // PointerLockControls mounted AFTER the first click: mounted immediately it
+  // tries to lock while the document doesn't have focus yet (reload with
+  // DevTools open) → unhandled DOMException "document is not focused" on
+  // every launch.
   const [pointerReady, setPointerReady] = useState(false)
   useEffect(() => {
     const arm = () => setPointerReady(true)
@@ -67,10 +67,10 @@ export function Player() {
   const { actions, mixer } = useAnimations(animations, boyRef)
   const currentClip = useRef<string | null>(null)
 
-  // Échelle enfant + pieds au sol : bakés dans le GLB par merge_mixamo.py.
-  // Ici : matériaux toon (map + gradientMap), frustum culling off (la bbox
-  // d'un skinned mesh animé est fausse → disparitions), et génération de la
-  // texture « yeux fermés » depuis la texture source du GLB.
+  // Child scale + feet on ground: baked into the GLB by merge_mixamo.py.
+  // Here: toon materials (map + gradientMap), frustum culling off (the bbox
+  // of an animated skinned mesh is wrong → pop-in), and generation of the
+  // "eyes closed" texture from the GLB source texture.
   const face = useMemo(() => {
     const mats: THREE.MeshToonMaterial[] = []
     let baseMap: THREE.Texture | null = null
@@ -82,9 +82,9 @@ export function Player() {
           gradientMap: toonGradient,
         })
         child.material = mat
-        // frustumCulled=false assumé : les sphères des skinned meshes
-        // Hunyuan cullent à tort (2 tentatives) et la mesure a montré que la
-        // géométrie n'est pas le coût dominant (59k tris → 15 fps au salon).
+        // frustumCulled=false is intentional: Hunyuan skinned mesh bounding
+        // spheres cull incorrectly (2 attempts to fix) and profiling showed
+        // geometry is not the dominant cost (59k tris → 15 fps in the salon).
         child.frustumCulled = false
         if (old.map) {
           mats.push(mat)
@@ -96,17 +96,17 @@ export function Player() {
     return { baseMap: baseMap as THREE.Texture | null, faceSet }
   }, [heroScene])
 
-  // Clignement : yeux fermés BLINK_DURATION toutes les 2-6 s.
-  // Saccades : variante de regard tirée toutes les 0,7-2,4 s.
+  // Blink: eyes closed for BLINK_DURATION every 2-6 s.
+  // Saccades: gaze variant sampled every 0.7-2.4 s.
   const faceRef = useRef<FaceState>({
     clock: 0, blinkAt: blinkDelay(), saccadeAt: saccadeDelay(), gazeIdx: 0,
   })
 
-  // Anti T-pose : idle lancé AVANT le premier paint (useLayoutEffect, pas
-  // useEffect qui laisse passer quelques frames de bind pose) et pose
-  // appliquée immédiatement au squelette (mixer.update(0)). Le cleanup
-  // réarme currentClip : en double montage StrictMode, drei stoppe toutes
-  // les actions au démontage — sans ça le garde-fou bloquait la relance.
+  // Anti T-pose: idle started BEFORE the first paint (useLayoutEffect, not
+  // useEffect which lets a few bind-pose frames through) and pose applied
+  // immediately to the skeleton (mixer.update(0)). Cleanup resets
+  // currentClip: in StrictMode double-mount, drei stops all actions on
+  // unmount — without this the guard blocked re-launch.
   useLayoutEffect(() => {
     const idle = actions[CLIP_IDLE]
     if (idle && !currentClip.current) {
@@ -130,8 +130,8 @@ export function Player() {
   useFrame((_, delta) => {
     const { forward, backward, left, right, hide, interact } = getKeys()
 
-    // Touche interact (front montant) : ouvre/ferme la porte la plus proche.
-    // Porte verrouillée → Emilio commente au lieu d'ouvrir.
+    // Interact key (rising edge): opens/closes the nearest door.
+    // Locked door → Emilio comments instead of opening.
     if (interact && !prevInteract.current) {
       const doorId = nearestDoorId(boyPos.current.x, boyPos.current.z, DOORS, DOOR_INTERACT_DIST)
       if (doorId) {
@@ -145,18 +145,18 @@ export function Player() {
     }
     prevInteract.current = interact
 
-    // Portes fermées = obstacles dynamiques pour canMove.
+    // Closed doors = dynamic obstacles for canMove.
     const doorObstacles = closedDoorObstacles(DOORS, useDoorStore.getState().isOpen)
 
-    // addVectors (pas subVectors) + (right-left) = strafing correct
+    // addVectors (not subVectors) + (right-left) = correct strafing
     frontVector.current.set(0, 0, Number(backward) - Number(forward))
     sideVector.current.set(Number(right) - Number(left), 0, 0)
 
     direction.current
       .addVectors(frontVector.current, sideVector.current)
       .normalize()
-      // delta borné : à bas fps, un pas de SPEED*delta dépasse l'épaisseur
-      // des murs (0,3 m) → canMove saute par-dessus, on sort de la maison
+      // delta capped: at low fps a step of SPEED*delta exceeds wall
+      // thickness (0.3 m) → canMove tunnels through, player exits the house
       .multiplyScalar(SPEED * Math.min(delta, 0.05))
       .applyEuler(camera.rotation)
 
@@ -171,7 +171,7 @@ export function Player() {
       if (canMove(boyPos.current.x, boyPos.current.z, nx, boyPos.current.z, doorObstacles)) boyPos.current.x = nx
       if (canMove(boyPos.current.x, boyPos.current.z, boyPos.current.x, nz, doorObstacles)) boyPos.current.z = nz
 
-      // Garçon tourne vers direction de déplacement
+      // Boy rotates toward movement direction
       if (boyRef.current) {
         boyRef.current.rotation.y = Math.atan2(direction.current.x, direction.current.z)
       }
@@ -185,24 +185,24 @@ export function Player() {
       boyRef.current.position.copy(boyPos.current)
     }
 
-    // Collision NPC : repousser le garçon si trop proche
+    // NPC collision: push boy away if too close
     const [resolvedX, resolvedZ] = resolvePlayerNpcCollision(
       boyPos.current.x, boyPos.current.z, npcPositions.values(), 0.45,
     )
     boyPos.current.x = resolvedX
     boyPos.current.z = resolvedZ
 
-    // Caméra suit derrière le garçon (basée sur direction caméra horizontale)
+    // Camera follows behind the boy (based on horizontal camera direction)
     camera.getWorldDirection(camDir.current)
     camDir.current.y = 0
     if (camDir.current.lengthSq() > 0.001) camDir.current.normalize()
 
-    // Clamp caméra aux murs salon uniquement quand le joueur EST dans le salon.
-    // Ailleurs la caméra suit librement (pièces adjacentes ont leurs propres murs).
-    const inSalon = boyPos.current.x >= SALON_BOUNDS.minX && boyPos.current.x <= SALON_BOUNDS.maxX
-                 && boyPos.current.z >= SALON_BOUNDS.minZ && boyPos.current.z <= SALON_BOUNDS.maxZ
-    // Recul raccourci à la première obstruction (meubles partout, murs du
-    // salon seulement dedans — sinon murs fantômes → caméra collée hors salon).
+    // Clamp camera to salon walls only when the player IS in the salon.
+    // Elsewhere camera follows freely (adjacent rooms have their own walls).
+    const inSalon = boyPos.current.x >= LIVING_ROOM_BOUNDS.minX && boyPos.current.x <= LIVING_ROOM_BOUNDS.maxX
+                 && boyPos.current.z >= LIVING_ROOM_BOUNDS.minZ && boyPos.current.z <= LIVING_ROOM_BOUNDS.maxZ
+    // Pull-back shortened to first obstruction (furniture everywhere, salon
+    // walls only inside — otherwise ghost walls → camera glued outside salon).
     const backDist = cameraBackDistance(
       boyPos.current.x, boyPos.current.z,
       -camDir.current.x, -camDir.current.z,
@@ -216,7 +216,7 @@ export function Player() {
     camera.position.y = CAM_UP
     camera.position.z = camZ
 
-    // Caméra collée au garçon : on le masque plutôt que d'emplir l'écran de sa coque.
+    // Camera very close to boy: hide him rather than filling the screen with his mesh.
     if (boyRef.current) boyRef.current.visible = backDist > BOY_HIDE_DIST
 
     if (hide !== prevHide.current) {
@@ -224,10 +224,10 @@ export function Player() {
       setHidden(hide)
     }
 
-    // Vie du visage : clignement + micro-saccades, par swap de texture.
-    // On mute le matériau ACTUELLEMENT porté par le mesh (traverse) : en
-    // StrictMode le double rendu crée deux matériaux et une référence capturée
-    // peut pointer sur l'orphelin non rendu — swap sans effet visible.
+    // Face life: blink + micro-saccades, via texture swap.
+    // We mutate the material CURRENTLY carried by the mesh (traverse): in
+    // StrictMode double-render creates two materials and a captured reference
+    // may point to the orphan not being rendered — swap has no visible effect.
     const { state: nextFace, output: faceOut } = advanceFace(faceRef.current, delta, {
       blinkDuration: BLINK_DURATION,
       nextBlinkDelay: blinkDelay,
@@ -243,18 +243,18 @@ export function Player() {
           if (mat?.map && mat.map !== want) mat.map = want
         }
       })
-      // Témoin de synchro (?blinktest) : l'état des yeux dans le titre d'onglet
-      if (BLINK_TEST) document.title = faceOut.closed ? '👁 YEUX FERMÉS' : 'yeux ouverts'
+      // Sync indicator (?blinktest): eye state in the tab title
+      if (BLINK_TEST) document.title = faceOut.closed ? '👁 EYES CLOSED' : 'eyes open'
     }
 
-    // Machine à états d'animation : caché > marche > idle, crossfade doux.
+    // Animation state machine: hidden > walk > idle, smooth crossfade.
     const target = hide ? CLIP_HIDE : moving ? CLIP_WALK : CLIP_IDLE
     if (target !== currentClip.current) {
       if (currentClip.current) actions[currentClip.current]?.fadeOut(FADE)
       const next = actions[target]
       if (next) {
         next.reset().fadeIn(FADE).play()
-        // Marche calée sur SPEED (clip Mixamo ~1,5 m/s, enfant réduit → accélérer)
+        // Walk synced to SPEED (Mixamo clip ~1.5 m/s, child scaled down → speed up)
         next.timeScale = target === CLIP_WALK ? 1.5 : 1
       }
       currentClip.current = target

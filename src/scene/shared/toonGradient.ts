@@ -1,17 +1,16 @@
 import * as THREE from 'three'
 
-// Rampe « peinture » : la structure 5 bandes demeure (ombre / pénombre /
-// mi-teinte / lumière / highlight) mais chaque frontière a un épaulement de
-// 1-2 texels et le filtrage est linéaire → les transitions fondent comme un
-// lavis gouache (refs salon) au lieu de casser net (rendu plastique).
-// Plancher relevé (min 60) : l'ombre la plus profonde reste colorée — la
-// teinte vient des lumières de remplissage chaudes (gradientMap ne lit que
-// le canal R, impossible de teinter ici).
+// "Painted" ramp: the 5-band structure remains (shadow / penumbra /
+// midtone / light / highlight) but each boundary has a 1-2 texel shoulder
+// and filtering is linear → transitions blend like gouache wash (salon refs)
+// instead of snapping hard (plastic look).
+// Lifted floor (min 60): the deepest shadow stays coloured — the tint comes
+// from warm fill lights (gradientMap only reads the R channel, can't tint here).
 const ramp = [
-  60, 62, 70,          // ombre
-  95, 100, 112,        // pénombre
-  140, 150, 165,       // mi-teinte
-  195, 210, 222,       // lumière
+  60, 62, 70,          // shadow
+  95, 100, 112,        // penumbra
+  140, 150, 165,       // midtone
+  195, 210, 222,       // light
   240, 250, 255, 255,  // highlight
 ]
 const colors = new Uint8Array(ramp)

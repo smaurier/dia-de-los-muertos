@@ -1,19 +1,18 @@
 // src/scene/shared/RoomGroup.tsx
-// Room culling : masque les MESHES de la pièce (y compris coques Outlines et
-// réflecteurs) quand le joueur n'est ni dedans ni dans une zone visuellement
-// adjacente (roomZones.ts).
+// Room culling: hides the room's MESHES (including Outline shells and
+// reflectors) when the player is neither inside nor in a visually adjacent
+// zone (roomZones.ts).
 //
-// IMPORTANT — les LUMIÈRES ne sont jamais cullées : masquer une lumière
-// change le set de lumières de la scène et force Three à RECOMPILER tous les
-// shaders à chaque bascule de zone (freeze de plusieurs centaines de ms —
-// « les pièces mettent trop de temps à se réafficher »). En gardant le set
-// constant, la bascule est instantanée ; on garde le gain draw calls.
+// IMPORTANT — LIGHTS are never culled: hiding a light changes the scene's
+// light set and forces Three to RECOMPILE all shaders on every zone toggle
+// (freeze of several hundred ms — "rooms take too long to reappear").
+// Keeping the set constant makes the toggle instant; we still gain on draw calls.
 //
-// La visibilité est appliquée mesh par mesh via traverse :
-//  - à chaque changement d'état (rare),
-//  - et toutes les ~30 frames en régime : les GLB (Prop) chargent en async
-//    et ajoutent leurs meshes APRÈS le montage — la réapplication les attrape.
-// Désactivable pour comparaison : ?noculling.
+// Visibility is applied mesh by mesh via traverse:
+//  - on every state change (rare),
+//  - and every ~30 frames at steady state: GLBs (Prop) load asynchronously
+//    and add their meshes AFTER mount — the periodic reapply catches them.
+// Disable for comparison: ?noculling.
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
@@ -39,7 +38,7 @@ export function RoomGroup({ zone, children }: { zone: ZoneId; children: React.Re
     const [px, , pz] = usePlayerStore.getState().position
     const vis = DISABLED || isZoneVisible(zone, px, pz)
     frame.current++
-    // Bascule immédiate + réapplication périodique (meshes GLB tardifs)
+    // Immediate toggle + periodic reapply (late-loaded GLB meshes)
     if (vis !== lastVis.current || frame.current % 30 === 0) {
       lastVis.current = vis
       applyMeshVisibility(ref.current, vis)

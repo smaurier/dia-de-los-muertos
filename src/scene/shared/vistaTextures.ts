@@ -1,9 +1,9 @@
 import * as THREE from 'three'
 
-// Textures du diorama extérieur (vue fenêtre ouest) — générées en canvas,
-// registre quasi photoréaliste : dégradés doux, étoiles à halo, perspective
-// atmosphérique peinte couche par couche (le fog de la scène est désactivé
-// dehors, sinon tout serait avalé par le brun intérieur à 24 m).
+// Exterior diorama textures (west window view) — canvas-generated,
+// near-photorealistic register: soft gradients, haloed stars, atmospheric
+// perspective painted layer by layer (scene fog is disabled outside,
+// otherwise everything would be swallowed by the interior brown at 24 m).
 
 function canvasTexture(w: number, h: number, draw: (ctx: CanvasRenderingContext2D) => void): THREE.CanvasTexture {
   const cv = document.createElement('canvas')
@@ -16,8 +16,8 @@ function canvasTexture(w: number, h: number, draw: (ctx: CanvasRenderingContext2
   return tex
 }
 
-// Générateur pseudo-aléatoire déterministe (mulberry32) : même ciel à chaque
-// chargement, pas de re-tirage Math.random.
+// Deterministic pseudo-random generator (mulberry32): same sky on every
+// load, no re-draw from Math.random.
 function rng(seed: number): () => number {
   let a = seed
   return () => {
@@ -28,7 +28,7 @@ function rng(seed: number): () => number {
   }
 }
 
-// ─── Ciel nocturne : dégradé profond, voie lactée, ~350 étoiles, lune ───────
+// ─── Night sky: deep gradient, Milky Way, ~350 stars, moon ──────────────────
 export const cielNuitTexture = canvasTexture(2048, 1024, (ctx) => {
   const w = 2048
   const h = 1024
@@ -42,7 +42,7 @@ export const cielNuitTexture = canvasTexture(2048, 1024, (ctx) => {
   ctx.fillStyle = sky
   ctx.fillRect(0, 0, w, h)
 
-  // Voie lactée : bande diagonale laiteuse très faible
+  // Milky Way: very faint diagonal milky band
   ctx.save()
   ctx.translate(w * 0.5, h * 0.42)
   ctx.rotate(-0.35)
@@ -54,7 +54,7 @@ export const cielNuitTexture = canvasTexture(2048, 1024, (ctx) => {
   ctx.fillRect(-w, -140, w * 2, 280)
   ctx.restore()
 
-  // Étoiles : tailles/éclats variés, halo doux sur les brillantes
+  // Stars: varied sizes/brightness, soft halo on bright ones
   for (let i = 0; i < 350; i++) {
     const x = rand() * w
     const y = rand() * rand() * h * 0.85
@@ -77,7 +77,7 @@ export const cielNuitTexture = canvasTexture(2048, 1024, (ctx) => {
     ctx.fill()
   }
 
-  // Lune : halo large, disque, mers (taches sombres), liseré éclairé
+  // Moon: wide halo, disc, maria (dark patches), lit rim
   const mx = w * 0.68
   const my = h * 0.26
   const mr = 58
@@ -111,7 +111,7 @@ export const cielNuitTexture = canvasTexture(2048, 1024, (ctx) => {
   }
 })
 
-// ─── Nuages fins dérivants (plane séparé, offset animé) ─────────────────────
+// ─── Drifting thin clouds (separate plane, animated offset) ─────────────────
 export const nuagesTexture = (() => {
   const tex = canvasTexture(1024, 256, (ctx) => {
     const rand = rng(4211)
@@ -138,14 +138,14 @@ export const nuagesTexture = (() => {
   return tex
 })()
 
-// ─── Montagnes lointaines : crête déchiquetée, brume atmosphérique en pied ──
+// ─── Distant mountains: jagged ridge, atmospheric haze at base ──────────────
 export const montagnesTexture = canvasTexture(2048, 512, (ctx) => {
   const w = 2048
   const h = 512
   const rand = rng(77)
   ctx.clearRect(0, 0, w, h)
 
-  // Deux crêtes superposées, la plus lointaine plus claire (perspective)
+  // Two overlapping ridges; the farther one is lighter (atmospheric perspective)
   const ridge = (baseY: number, jag: number, color: string) => {
     ctx.fillStyle = color
     ctx.beginPath()
@@ -163,7 +163,7 @@ export const montagnesTexture = canvasTexture(2048, 512, (ctx) => {
   ridge(h * 0.42, 44, '#1b2c47')
   ridge(h * 0.60, 36, '#131f36')
 
-  // Brume au pied des montagnes
+  // Haze at the mountain base
   const haze = ctx.createLinearGradient(0, h * 0.55, 0, h)
   haze.addColorStop(0, 'rgba(50,72,105,0)')
   haze.addColorStop(1, 'rgba(50,72,105,0.55)')
@@ -171,14 +171,14 @@ export const montagnesTexture = canvasTexture(2048, 512, (ctx) => {
   ctx.fillRect(0, 0, w, h)
 })
 
-// ─── Collines + village : maisons endormies, fenêtres chaudes, clocher ──────
+// ─── Hills + village: sleeping houses, warm windows, church tower ────────────
 export const collinesVillageTexture = canvasTexture(2048, 512, (ctx) => {
   const w = 2048
   const h = 512
   const rand = rng(1102)
   ctx.clearRect(0, 0, w, h)
 
-  // Collines sombres
+  // Dark hills
   ctx.fillStyle = '#0a1220'
   ctx.beginPath()
   ctx.moveTo(0, h)
@@ -189,7 +189,7 @@ export const collinesVillageTexture = canvasTexture(2048, 512, (ctx) => {
   ctx.lineTo(w, h)
   ctx.fill()
 
-  // Village blotti dans le creux : silhouettes de maisons + clocher
+  // Village nestled in the valley: house silhouettes + church tower
   const houses: [number, number, number, number][] = []
   for (let i = 0; i < 22; i++) {
     const hx = w * (0.42 + rand() * 0.26)
@@ -201,14 +201,14 @@ export const collinesVillageTexture = canvasTexture(2048, 512, (ctx) => {
   ctx.fillStyle = '#070d18'
   for (const [hx, hy, hw, hh] of houses) {
     ctx.fillRect(hx, hy - hh, hw, hh)
-    // Toit
+    // Roof
     ctx.beginPath()
     ctx.moveTo(hx - 3, hy - hh)
     ctx.lineTo(hx + hw / 2, hy - hh - 12)
     ctx.lineTo(hx + hw + 3, hy - hh)
     ctx.fill()
   }
-  // Clocher de l'église, croix au sommet
+  // Church tower, cross at top
   const cx = w * 0.55
   const cy = h * 0.68
   ctx.fillRect(cx, cy - 95, 34, 95)
@@ -220,7 +220,7 @@ export const collinesVillageTexture = canvasTexture(2048, 512, (ctx) => {
   ctx.fillRect(cx + 15, cy - 132, 4, 16)
   ctx.fillRect(cx + 10, cy - 127, 14, 4)
 
-  // Fenêtres chaudes : halo + point lumineux (veillée du Día de Muertos)
+  // Warm windows: halo + bright dot (Día de Muertos vigil)
   for (const [hx, hy, hw, hh] of houses) {
     if (rand() > 0.45) continue
     const wx = hx + 6 + rand() * (hw - 14)
@@ -236,7 +236,7 @@ export const collinesVillageTexture = canvasTexture(2048, 512, (ctx) => {
     ctx.fillRect(wx - 2.5, wy - 2, 5, 4)
   }
 
-  // Chemin de lumières vers le cimetière (cempasúchil + bougies, tradition)
+  // Path of lights toward the cemetery (cempasúchil + candles, tradition)
   ctx.fillStyle = '#e8a84e'
   for (let i = 0; i < 9; i++) {
     const px = w * (0.58 + i * 0.022)

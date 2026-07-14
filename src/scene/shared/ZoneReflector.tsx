@@ -1,17 +1,17 @@
 // src/scene/shared/ZoneReflector.tsx
-// MeshReflectorMaterial vendorisé depuis @react-three/drei (MIT) avec trois
-// ajouts DANS sa boucle de rendu — la seule façon fiable de gater la passe :
-//   1. zone : la passe ne tourne que si le joueur est dans la zone du
-//      réflecteur ou une adjacente (roomZones). Hors zone : le FBO garde sa
-//      dernière image, que personne ne regarde. Le matériau reste MONTÉ en
-//      permanence → aucun cycle compile/dispose (les bascules React de la
-//      version précédente recompilaient des shaders et fuyaient des FBO à
-//      chaque frontière de pièce — gels mesurés à 0-1 fps).
-//   2. everyNFrames (défaut 2) : demi-cadence, instances déphasées entre
-//      elles — au plus ~1 passe réflecteur par frame.
-//   3. salonScope : masque le group 'satellite-rooms' pendant la passe (le
-//      reflet du sol/fenêtre du salon ne re-rend que le salon).
-// ?noreflect : gèle toutes les passes (bissection).
+// MeshReflectorMaterial vendored from @react-three/drei (MIT) with three
+// additions INSIDE its render loop — the only reliable way to gate the pass:
+//   1. zone: the pass only runs if the player is in the reflector's zone or
+//      an adjacent one (roomZones). Outside the zone: the FBO keeps its last
+//      frame, which nobody is looking at. The material stays MOUNTED at all
+//      times → no compile/dispose cycle (the React toggle approach from the
+//      previous version recompiled shaders and leaked FBOs at every room
+//      boundary — measured freezes at 0-1 fps).
+//   2. everyNFrames (default 2): half-rate, instances phase-shifted relative
+//      to each other — at most ~1 reflector pass per frame.
+//   3. salonScope: hides the 'satellite-rooms' group during the pass (the
+//      floor/window reflection in the salon only re-renders the salon).
+// ?noreflect: freezes all passes (bisection).
 import * as React from 'react'
 import {
   Plane, Vector3, Matrix4, Vector4, PerspectiveCamera, WebGLRenderTarget,
@@ -32,7 +32,7 @@ declare module '@react-three/fiber' {
 
 const NO_REFLECT = new URLSearchParams(window.location.search).has('noreflect')
 
-// Déphasage global : chaque instance rend sur une frame différente
+// Global phase offset: each instance renders on a different frame
 let nextPhase = 0
 
 type Props = {
@@ -108,7 +108,7 @@ export function ZoneReflectorMaterial({
     normal.applyMatrix4(rotationMatrix)
     reflectorWorldPosition.addScaledVector(normal, reflectorOffset)
     view.subVectors(reflectorWorldPosition, cameraWorldPosition)
-    // Réflecteur vu de dos : rien à faire
+    // Reflector seen from behind: nothing to do
     if (view.dot(normal) > 0) return false
     view.reflect(normal).negate()
     view.add(reflectorWorldPosition)
@@ -174,10 +174,10 @@ export function ZoneReflectorMaterial({
 
   useFrame(() => {
     if (NO_REFLECT) return
-    // ── Gate de zone : la passe ne tourne que si on peut voir ce réflecteur ──
+    // ── Zone gate: pass only runs if this reflector can be seen ──────────────
     const [px, , pz] = usePlayerStore.getState().position
     if (!isZoneVisible(zone, px, pz)) return
-    // ── Demi-cadence déphasée entre instances ──
+    // ── Phase-shifted half-rate between instances ─────────────────────────────
     if (frame.current++ % everyNFrames !== myPhase % everyNFrames) return
 
     const mat = materialRef.current as unknown as { parent?: THREE.Object3D; __r3f?: { parent?: { object?: THREE.Object3D } } } | null
@@ -188,7 +188,7 @@ export function ZoneReflectorMaterial({
     const currentShadowAutoUpdate = gl.shadowMap.autoUpdate
     const ok = beforeRender()
     if (ok) {
-      // ── Scope salon : le reflet ne re-rend que le salon ──
+      // ── Salon scope: reflection only re-renders the salon ─────────────────
       if (salonScope) {
         if (!satellites.current) satellites.current = scene.getObjectByName('satellite-rooms') ?? null
         if (satellites.current) satellites.current.visible = false

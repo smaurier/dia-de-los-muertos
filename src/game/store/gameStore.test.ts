@@ -63,22 +63,22 @@ describe('grandUnclePosition', () => {
   })
 })
 
-describe('salonArcPhase', () => {
+describe('livingRoomArcPhase', () => {
   beforeEach(() => {
-    useGameStore.setState({ salonArcPhase: 0 })
+    useGameStore.setState({ livingRoomArcPhase: 0 })
   })
 
   it('starts at phase 0', () => {
-    expect(useGameStore.getState().salonArcPhase).toBe(0)
+    expect(useGameStore.getState().livingRoomArcPhase).toBe(0)
   })
 
   it('advances to phase 1', () => {
-    useGameStore.getState().setSalonArcPhase(1)
-    expect(useGameStore.getState().salonArcPhase).toBe(1)
+    useGameStore.getState().setLivingRoomArcPhase(1)
+    expect(useGameStore.getState().livingRoomArcPhase).toBe(1)
   })
 
   it('advances to phase 2', () => {
-    useGameStore.getState().setSalonArcPhase(2)
-    expect(useGameStore.getState().salonArcPhase).toBe(2)
+    useGameStore.getState().setLivingRoomArcPhase(2)
+    expect(useGameStore.getState().livingRoomArcPhase).toBe(2)
   })
 })

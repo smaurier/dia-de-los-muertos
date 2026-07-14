@@ -1,26 +1,25 @@
 import * as THREE from 'three'
 
-// Jeu de textures « visage vivant » d'un personnage, généré en mémoire depuis
-// la texture SOURCE du GLB (canvas). On clone flipY/colorSpace/wrap de la
-// source → aucune désynchronisation d'orientation possible (piège du PNG
-// externe). Générique : chaque personnage fournit ses zones d'yeux (pixels
-// atlas, repère PNG).
+// "Living face" texture set for a character, generated in memory from the
+// GLB's SOURCE texture (canvas). Clones flipY/colorSpace/wrap from the source
+// → no orientation mismatch possible (pitfall of external PNGs).
+// Generic: each character provides its eye regions (atlas pixels, PNG space).
 //
-// - blink : paupières fermées (teint échantillonné + pli d'ombre)
-// - gaze  : micro-saccades — l'intérieur de l'œil décalé de quelques pixels
-//   (une vraie saccade est un SAUT instantané : le swap de texture est le bon
-//   modèle, pas une interpolation)
+// - blink : closed eyelids (skin tone sampled + shadow fold)
+// - gaze  : micro-saccades — inner eye shifted a few pixels
+//   (a real saccade is an INSTANT jump: texture swap is the right model,
+//   not interpolation)
 
 export type EyeSpot = { x: number; y: number; r: number }
 
 export type FaceTextureSet = {
   blink: THREE.CanvasTexture
-  gaze: THREE.CanvasTexture[] // gaze[0] = regard centré (copie de la source)
+  gaze: THREE.CanvasTexture[] // gaze[0] = centered gaze (copy of source)
 }
 
-// Décalages de pupille (px atlas). Petits exprès : les charts UV des deux
-// yeux sont orientés différemment, un grand décalage ferait diverger le
-// regard — à ±3-4 px l'incohérence est imperceptible, seule la vie compte.
+// Pupil offsets (atlas px). Kept small on purpose: the UV charts of both
+// eyes are oriented differently — a large offset would make them diverge.
+// At ±3-4 px the inconsistency is imperceptible; only the life effect matters.
 const GAZE_OFFSETS: [number, number][] = [
   [0, 0],
   [4, 0],
@@ -43,7 +42,7 @@ export function makeFaceTextures(source: THREE.Texture, eyes: EyeSpot[]): FaceTe
   const image = source.image as HTMLImageElement | ImageBitmap | undefined
   if (!image || !('width' in image)) return null
 
-  // Canvas de référence (copie de la source, jamais modifié)
+  // Reference canvas (copy of source, never modified)
   const base = document.createElement('canvas')
   base.width = image.width
   base.height = image.height
@@ -51,8 +50,8 @@ export function makeFaceTextures(source: THREE.Texture, eyes: EyeSpot[]): FaceTe
   if (!bctx) return null
   bctx.drawImage(image, 0, 0)
 
-  // Debug ?blinkred : variante rouge uni — isole « le swap ne rend pas » de
-  // « la variante ne se voit pas »
+  // Debug ?blinkred: solid red variant — isolates "swap doesn't render" from
+  // "variant is invisible"
   const debugRed = new URLSearchParams(window.location.search).has('blinkred')
 
   const data = bctx.getImageData(0, 0, base.width, base.height).data
@@ -61,10 +60,10 @@ export function makeFaceTextures(source: THREE.Texture, eyes: EyeSpot[]): FaceTe
     return [data[i], data[i + 1], data[i + 2]]
   }
 
-  // GLTFLoader livre des ImageBitmap parfois PRÉ-RETOURNÉES verticalement
-  // (createImageBitmap imageOrientation). Les coordonnées d'yeux sont données
-  // dans le repère du PNG : on choisit, pour chaque œil, le candidat (y ou
-  // H-y) qui contient réellement du blanc de sclère.
+  // GLTFLoader sometimes delivers PRE-FLIPPED ImageBitmaps vertically
+  // (createImageBitmap imageOrientation). Eye coordinates are given in PNG
+  // space: for each eye, pick the candidate (y or H-y) that actually contains
+  // sclera white.
   const whiteScore = (cx: number, cy: number, r: number) => {
     let score = 0
     for (let dx = -r; dx <= r; dx += 3) {
@@ -97,12 +96,12 @@ export function makeFaceTextures(source: THREE.Texture, eyes: EyeSpot[]): FaceTe
     return { cv, ctx }
   }
 
-  // ── Variante blink : paupières fermées ────────────────────────────────────
+  // ── Blink variant: closed eyelids ─────────────────────────────────────────
   const { cv: blinkCv, ctx: blinkCtx } = newCanvas()
   if (!blinkCtx) return null
   for (const { x: cx, y: cy, r } of resolved) {
-    // Peau : moyenne sur un anneau autour de l'œil (teinte chaude, ni cheveux
-    // noirs ni blanc de sclère)
+    // Skin tone: average over a ring around the eye (warm hue, neither
+    // black hair nor sclera white)
     let sr = 0
     let sg = 0
     let sb = 0
@@ -127,15 +126,15 @@ export function makeFaceTextures(source: THREE.Texture, eyes: EyeSpot[]): FaceTe
     blinkCtx.beginPath()
     blinkCtx.ellipse(cx, cy, r, r, 0, 0, Math.PI * 2)
     blinkCtx.fill()
-    // Pli de paupière : ombre douce horizontale (lisible quelle que soit
-    // l'orientation du chart UV)
+    // Eyelid fold: soft horizontal shadow (readable regardless of UV chart
+    // orientation)
     blinkCtx.fillStyle = `rgb(${(skin[0] * 0.7) | 0}, ${(skin[1] * 0.7) | 0}, ${(skin[2] * 0.7) | 0})`
     blinkCtx.beginPath()
     blinkCtx.ellipse(cx, cy, r * 0.85, 5, 0, 0, Math.PI * 2)
     blinkCtx.fill()
   }
 
-  // ── Variantes gaze : intérieur de l'œil décalé (clip ellipse interne) ─────
+  // ── Gaze variants: inner eye shifted (clipped inner ellipse) ──────────────
   const gaze = GAZE_OFFSETS.map(([dx, dy]) => {
     const { cv, ctx } = newCanvas()
     if (ctx && (dx !== 0 || dy !== 0)) {

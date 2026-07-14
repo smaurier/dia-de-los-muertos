@@ -1,5 +1,5 @@
 // src/game/store/doorStore.ts
-// État d'ouverture des portes interactives. Toutes fermées par défaut.
+// Open/closed state for interactive doors. All closed by default.
 import { create } from 'zustand'
 
 type DoorState = {

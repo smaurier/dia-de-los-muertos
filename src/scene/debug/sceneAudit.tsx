@@ -1,13 +1,13 @@
 // src/scene/debug/sceneAudit.tsx
-// Audit graphique runtime : ?audit dans l'URL → 4 s après le montage, la
-// scène est traversée et un rapport tombe dans la console.
-// Détecte :
-//   1. Z-FIGHTING : paires de planes coplanaires (< 4 mm) qui se chevauchent
-//   2. MURS UNE FACE : grands planes FrontSide (invisibles de dos — normal
-//      pour un mur de fond, suspect pour une cloison entre deux zones)
-//   3. HORS TOON : matériaux mesh sans gradientMap (oubli de style)
-//   4. BUDGET : lumières, réflecteurs planaires, textures lourdes
-// Aucun impact hors ?audit. Lecture seule — ne modifie rien.
+// Runtime graphical audit: ?audit in the URL → 4 s after mount, the scene
+// is traversed and a report is printed to the console.
+// Detects:
+//   1. Z-FIGHTING: pairs of coplanar planes (< 4 mm apart) that overlap
+//   2. SINGLE-SIDED WALLS: large FrontSide planes (invisible from behind —
+//      normal for a back wall, suspect for a partition between two zones)
+//   3. NON-TOON: mesh materials without gradientMap (style oversight)
+//   4. BUDGET: lights, planar reflectors, heavy textures
+// No impact outside ?audit. Read-only — modifies nothing.
 import { useEffect } from 'react'
 import { useThree } from '@react-three/fiber'
 import * as THREE from 'three'
@@ -50,14 +50,14 @@ export function runSceneAudit(scene: THREE.Scene): void {
     const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
     for (const mat of mats) {
       const m = mat as THREE.MeshToonMaterial & { mirror?: number }
-      // MeshReflectorMaterial (drei) expose `mirror`
+      // MeshReflectorMaterial (drei) exposes `mirror`
       if (m.mirror !== undefined) reflectorCount++
-      // Hors toon : mesh « décor » sans gradientMap ni statut spécial
+      // Non-toon: "decor" mesh without gradientMap or special status
       if (
         (m as THREE.Material).type === 'MeshStandardMaterial' ||
         ((m as THREE.Material).type === 'MeshLambertMaterial')
       ) {
-        noToon.push(`${obj.name || '(anonyme)'} @ ${fmt(obj.getWorldPosition(p))} [${(m as THREE.Material).type}]`)
+        noToon.push(`${obj.name || '(unnamed)'} @ ${fmt(obj.getWorldPosition(p))} [${(m as THREE.Material).type}]`)
       }
       const map = (m as THREE.MeshToonMaterial).map
       if (map && !seenTextures.has(map)) {
@@ -69,18 +69,18 @@ export function runSceneAudit(scene: THREE.Scene): void {
       }
     }
 
-    // Collecte des planes pour la détection de coplanarité
+    // Collect planes for coplanarity detection
     if (mesh.geometry.type === 'PlaneGeometry') {
       const geo = mesh.geometry as THREE.PlaneGeometry
       const w = geo.parameters.width
       const h = geo.parameters.height
       const area = w * h
-      if (area < 0.2) return // petits éléments décoratifs : ignorés
+      if (area < 0.2) return // small decorative elements: ignored
       n.set(0, 0, 1).transformDirection(mesh.matrixWorld).normalize()
       mesh.getWorldPosition(p)
       const box = new THREE.Box3().setFromObject(mesh)
       planes.push({
-        name: mesh.name || '(anonyme)',
+        name: mesh.name || '(unnamed)',
         normal: n.clone(),
         offset: n.dot(p),
         box,
@@ -91,8 +91,8 @@ export function runSceneAudit(scene: THREE.Scene): void {
     }
   })
 
-  // 1. Z-fighting : même orientation (±), plans distants < 4 mm, AABB qui
-  // se chevauchent une fois élargies de 5 mm.
+  // 1. Z-fighting: same orientation (±), planes < 4 mm apart, AABBs that
+  // overlap once expanded by 5 mm.
   const zfights: string[] = []
   for (let i = 0; i < planes.length; i++) {
     for (let j = i + 1; j < planes.length; j++) {
@@ -108,27 +108,27 @@ export function runSceneAudit(scene: THREE.Scene): void {
     }
   }
 
-  // 2. Grands planes une face (candidats « mur invisible de dos »)
+  // 2. Large single-sided planes (candidates for "invisible from behind" walls)
   const singleSided = planes
     .filter(pl => !pl.doubleSided && pl.area >= 2.0)
     .map(pl => `${pl.name} ${fmt(pl.pos)} — ${pl.area.toFixed(1)} m², normale ${fmt(pl.normal)}`)
 
   /* eslint-disable no-console */
-  console.group('%c=== AUDIT GRAPHIQUE DE LA SCÈNE ===', 'color:#E8940A;font-weight:bold')
-  console.log(`Meshes : ${meshCount} | Lumières : ${lightCount} | Réflecteurs planaires : ${reflectorCount} | Planes ≥0.2 m² : ${planes.length}`)
-  if (lightCount > 40) console.warn(`⚠ ${lightCount} lumières — budget élevé pour une 1660 Ti`)
-  if (reflectorCount > 6) console.warn(`⚠ ${reflectorCount} réflecteurs planaires — chaque un = une passe de rendu`)
-  if (bigTextures.length) console.warn(`⚠ textures > 2048² : ${bigTextures.join(', ')}`)
+  console.group('%c=== SCENE GRAPHICAL AUDIT ===', 'color:#E8940A;font-weight:bold')
+  console.log(`Meshes: ${meshCount} | Lights: ${lightCount} | Planar reflectors: ${reflectorCount} | Planes ≥0.2 m²: ${planes.length}`)
+  if (lightCount > 40) console.warn(`⚠ ${lightCount} lights — high budget for a 1660 Ti`)
+  if (reflectorCount > 6) console.warn(`⚠ ${reflectorCount} planar reflectors — each one = one render pass`)
+  if (bigTextures.length) console.warn(`⚠ textures > 2048²: ${bigTextures.join(', ')}`)
 
-  console.group(`Z-FIGHTING candidats : ${zfights.length}`)
+  console.group(`Z-FIGHTING candidates: ${zfights.length}`)
   zfights.forEach(z => console.warn(z))
   console.groupEnd()
 
-  console.group(`Murs une face ≥ 2 m² : ${singleSided.length} (vérifier ceux entre deux zones accessibles)`)
+  console.group(`Single-sided walls ≥ 2 m²: ${singleSided.length} (check those between two accessible zones)`)
   singleSided.forEach(s => console.log(s))
   console.groupEnd()
 
-  console.group(`Matériaux hors toon : ${noToon.length}`)
+  console.group(`Non-toon materials: ${noToon.length}`)
   noToon.forEach(s => console.warn(s))
   console.groupEnd()
 
@@ -136,7 +136,7 @@ export function runSceneAudit(scene: THREE.Scene): void {
   /* eslint-enable no-console */
 }
 
-// Sonde à monter dans la scène : ne fait rien sans ?audit.
+// Probe to mount in the scene: does nothing without ?audit.
 export function SceneAuditProbe() {
   const scene = useThree(s => s.scene)
   useEffect(() => {
