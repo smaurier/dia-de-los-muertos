@@ -5,209 +5,28 @@ import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import {
-  murAdobeSide,
-  solTomettes,
   boisSombre,
-  azulejosTalavera,
-  murPierre,
 } from '../shared/paintedTextures'
 import { Prop } from '../shared/Prop'
 import { PhotoFrame } from '../shared/PhotoFrame'
-import { AnimatedDoor } from '../shared/AnimatedDoor'
-import { BlueDoor } from '../shared/BlueDoor'
 import {
-  C_CEIL,
   C_IRON,
   C_WOOD_DARK,
   C_WOOD_MED,
   C_CERAMIC,
   C_CANDLE,
   C_FLAME,
-  CX,
-  CZ,
-  CW,
-  CD,
 } from './kitchen/kitchenConstants'
-import { BulbFlicker } from './kitchen/BulbFlicker'
-
-// Mur en pierre PERCÉ pour la porte du couloir : un seul mesh (ShapeGeometry
-// avec trou) → texture continue sur tout le mur, pas de segments qui cassent
-// les UV. Local : x = longueur (6.2 m, z monde 5.8→12), y = hauteur.
-// Trou porte : local x∈[0.6,1.6] (z monde [6.4,7.4]), y∈[0,2.1].
-const stoneWallGeometry = (() => {
-  const shape = new THREE.Shape()
-  shape.moveTo(0, 0)
-  shape.lineTo(6.2, 0)
-  shape.lineTo(6.2, 2.9)
-  shape.lineTo(0, 2.9)
-  shape.closePath()
-  const hole = new THREE.Path()
-  hole.moveTo(0.6, 0)
-  hole.lineTo(1.6, 0)
-  hole.lineTo(1.6, 2.1)
-  hole.lineTo(0.6, 2.1)
-  hole.closePath()
-  shape.holes.push(hole)
-  const g = new THREE.ShapeGeometry(shape)
-  // ShapeGeometry : UV = coordonnées brutes → normaliser en 0..1
-  const uv = g.getAttribute('uv')
-  for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) / 6.2, uv.getY(i) / 2.9)
-  return g
-})()
+import { KitchenStructure } from './kitchen/KitchenStructure'
+import { Stove } from './kitchen/Stove'
+import { KitchenLighting } from './kitchen/KitchenLighting'
 
 export function Kitchen() {
   return (
     <group>
-      {/* ── Sol tomettes ── */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[CX, 0.001, CZ]}>
-        <planeGeometry args={[CW, CD]} />
-        <meshPhongMaterial map={solTomettes} shininess={40} specular="#4a3420" />
-      </mesh>
-      {/* ── Plafond ── */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[CX, 2.9, CZ]}>
-        <planeGeometry args={[CW, CD]} />
-        <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
-      </mesh>
-      {/* ── Mur fond nord (z=12.0) — adobe, porte OUVRABLE vers le cellier
-          x∈[-6.3,-5.3] (le cellier est derrière ce mur, cf. plan) ── */}
-      <mesh position={[-6.65, 1.45, 12.0]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[0.7, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-2.95, 1.45, 12.0]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[4.7, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-5.8, 2.5, 12.0]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[1.0, 0.8]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      {/* ── Mur ouest (x=-7.0) — adobe plein. La porte bleue du jardin (non
-          ouvrable) est plaquée dessus, à l'ancien emplacement z∈[9.5,10.5] ── */}
-      <mesh position={[-7.0, 1.45, CZ]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[CD, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      {/* ── Mur est (x=-0.6) — pierre (ref cuisine-coin-pierres-01), PERCÉ
-          pour la porte du couloir (z∈[6.4,7.4]) : un seul mesh troué →
-          texture continue. DoubleSide : visible aussi depuis le couloir. ── */}
-      <mesh geometry={stoneWallGeometry} position={[-0.6, 0, 5.8]} rotation={[0, -Math.PI / 2, 0]}>
-        <meshToonMaterial map={murPierre} gradientMap={toonGradient} side={THREE.DoubleSide} />
-      </mesh>
-      {/* Encadrement + porte fermée vers le couloir (plaqués sur la pierre) */}
-      {[6.4, 7.4].map(dz => (
-        <mesh key={dz} position={[-0.66, 1.05, dz]}>
-          <boxGeometry args={[0.1, 2.1, 0.08]} />
-          <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-          <Outlines thickness={0.012} color="black" />
-        </mesh>
-      ))}
-      <mesh position={[-0.66, 2.12, 6.9]}>
-        <boxGeometry args={[0.1, 0.09, 1.08]} />
-        <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-        <Outlines thickness={0.012} color="black" />
-      </mesh>
-      {/* FERMÉE par défaut, touche interact pour ouvrir (s'ouvre vers la
-          cuisine) → couloir nord-est. */}
-      <AnimatedDoor id="couloir-cuisine" position={[-0.68, 0, 6.43]} openAngle={-1.9} width={0.94} />
+      <KitchenStructure />
 
-      {/* ── Azulejos crédence — grand pan derrière le fogón, du soubassement
-          à mi-mur comme dans la ref entree-02 ── */}
-      <mesh position={[-2.2, 1.2, 11.96]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[2.6, 1.5]} />
-        <meshToonMaterial map={azulejosTalavera} gradientMap={toonGradient} />
-      </mesh>
-      {/* Liseré bois en haut de la crédence */}
-      <mesh position={[-2.2, 1.97, 11.95]}>
-        <boxGeometry args={[2.6, 0.045, 0.03]} />
-        <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
-      </mesh>
-      {/* Lueur douce sur la crédence (sinon bande toon sombre au fond) */}
-      <pointLight position={[-2.2, 1.6, 11.2]} intensity={0.8} color="#f5d8a0" distance={2.5} decay={2} />
-
-      {/* ── Porte bleue du jardin (mur ouest, non ouvrable — plan : "porte vers
-          jardin"). Prend l'ancien emplacement de la porte du cellier. ── */}
-      <BlueDoor position={[-6.96, 0, 10.0]} rotationY={Math.PI / 2} />
-
-      {/* ── Fogón (vieux poêle blanc, mur du fond à droite, ref cuisine-entree-02)
-          rotation π : porte du four face au sud (vers la pièce) ── */}
-      <group position={[-2.2, 0, 11.62]} rotation={[0, Math.PI, 0]}>
-        <mesh position={[0, 0.45, 0]}>
-          <boxGeometry args={[0.58, 0.90, 0.62]} />
-          <meshToonMaterial color="#E8E4DC" gradientMap={toonGradient} />
-          <Outlines thickness={0.018} color="black" />
-        </mesh>
-        <mesh position={[0, 0.92, 0]}>
-          <boxGeometry args={[0.60, 0.04, 0.64]} />
-          <meshToonMaterial color="#D0CCC4" gradientMap={toonGradient} />
-        </mesh>
-        {/* 4 brûleurs */}
-        {([-0.13, 0.13] as number[]).flatMap(bx =>
-          ([-0.14, 0.14] as number[]).map((bz, j) => (
-            <mesh key={`b${bx}${j}`} position={[bx, 0.945, bz]}>
-              <cylinderGeometry args={[0.068, 0.068, 0.012, 8]} />
-              <meshToonMaterial color="#888880" gradientMap={toonGradient} />
-            </mesh>
-          ))
-        )}
-        {/* Porte du four */}
-        <mesh position={[0, 0.28, 0.32]}>
-          <boxGeometry args={[0.46, 0.38, 0.022]} />
-          <meshToonMaterial color="#D0CCC4" gradientMap={toonGradient} />
-          <Outlines thickness={0.012} color="black" />
-        </mesh>
-        <mesh position={[0, 0.20, 0.336]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.011, 0.011, 0.30, 6]} />
-          <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
-        </mesh>
-        {/* VAPORERA cabossée (tamales — ref entree-02 : grande marmite alu),
-            vapeur qui s'échappe du couvercle */}
-        <group position={[0.13, 0.95, -0.13]}>
-          <mesh position={[0, 0.19, 0]}>
-            <cylinderGeometry args={[0.16, 0.145, 0.38, 12]} />
-            <meshToonMaterial color="#B8C0C8" gradientMap={toonGradient} />
-            <Outlines thickness={0.012} color="black" />
-          </mesh>
-          {/* Couvercle bombé + bouton */}
-          <mesh position={[0, 0.40, 0]} scale={[1, 0.45, 1]}>
-            <sphereGeometry args={[0.165, 12, 8]} />
-            <meshToonMaterial color="#A8B0B8" gradientMap={toonGradient} />
-            <Outlines thickness={0.010} color="black" />
-          </mesh>
-          <mesh position={[0, 0.485, 0]}>
-            <sphereGeometry args={[0.024, 8, 8]} />
-            <meshToonMaterial color="#1A1512" gradientMap={toonGradient} />
-          </mesh>
-          {/* Poignées */}
-          {[-0.17, 0.17].map(dx => (
-            <mesh key={dx} position={[dx, 0.3, 0]} rotation={[0, 0, Math.PI / 2]}>
-              <torusGeometry args={[0.035, 0.009, 6, 10, Math.PI]} />
-              <meshToonMaterial color="#1A1512" gradientMap={toonGradient} />
-            </mesh>
-          ))}
-          {/* Vapeur */}
-          <mesh position={[0.06, 0.52, 0]}>
-            <sphereGeometry args={[0.048, 6, 6]} />
-            <meshToonMaterial color="#E8E0D0" gradientMap={toonGradient} transparent opacity={0.5} />
-          </mesh>
-          <mesh position={[0.1, 0.6, 0.02]}>
-            <sphereGeometry args={[0.036, 6, 6]} />
-            <meshToonMaterial color="#F0E8D8" gradientMap={toonGradient} transparent opacity={0.32} />
-          </mesh>
-        </group>
-        {/* Petite casserole côté */}
-        <group position={[-0.13, 0.95, -0.14]}>
-          <mesh position={[0, 0.09, 0]}>
-            <cylinderGeometry args={[0.09, 0.08, 0.18, 8]} />
-            <meshToonMaterial color="#606870" gradientMap={toonGradient} />
-            <Outlines thickness={0.010} color="black" />
-          </mesh>
-          <mesh position={[0.20, 0.06, 0]} rotation={[0, 0, -0.25]}>
-            <cylinderGeometry args={[0.010, 0.010, 0.38, 6]} />
-            <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
-          </mesh>
-        </group>
-      </group>
+      <Stove />
 
       {/* ── Étagère murale + ustensiles suspendus (mur du fond, à l'ouest du fogón) ── */}
       <group position={[-4.0, 0, 11.94]}>
@@ -400,14 +219,7 @@ export function Kitchen() {
         <PhotoFrame position={[-0.22, 1.78, 0]} rotY={Math.PI / 2} />
       </group>
 
-      {/* ── Ampoule nue suspendue au-dessus de la table — elle CLIGNOTE
-          (fiche cuisine : prop narratif) ── */}
-      <BulbFlicker />
-
-      {/* ── Lumières d'appoint : mur en pierre (l'ampoule seule le laissait dans
-          la bande toon la plus sombre → mur noir) + lueur du fogón ── */}
-      <pointLight position={[-1.5, 1.8, 9.2]} intensity={1.3} color="#f0c080" distance={4.5} decay={2} />
-      <pointLight position={[-2.2, 1.4, 11.0]} intensity={1.0} color="#ff9040" distance={3.5} decay={2} />
+      <KitchenLighting />
 
       {/* Cadre photo mur fond, près du coin en pierres */}
       <PhotoFrame position={[-0.95, 1.82, 11.96]} rotY={Math.PI} />
