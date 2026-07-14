@@ -12,6 +12,7 @@ import { MeshReflectorMaterial, Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
 import { PorteAnimee } from '../shared/PorteAnimee'
+import { NO_REFLECT } from '../debug/perfFlags'
 
 const C_CEIL = '#E4D6BC'
 
@@ -157,18 +158,22 @@ export function Couloir() {
         {/* Verre : reflet planaire réel */}
         <mesh position={[0, 0, 0.008]}>
           <planeGeometry args={[0.8, 1.7]} />
-          <MeshReflectorMaterial
-            color="#dfe8ec"
-            resolution={512}
-            mirror={1}
-            mixStrength={1.0}
-            mixBlur={0}
-            blur={[0, 0]}
-            roughness={0.04}
-            metalness={0}
-            depthScale={0}
-            side={THREE.DoubleSide}
-          />
+          {NO_REFLECT ? (
+            <meshToonMaterial color="#9FB4C4" gradientMap={toonGradient} />
+          ) : (
+            <MeshReflectorMaterial
+              color="#dfe8ec"
+              resolution={512}
+              mirror={1}
+              mixStrength={1.0}
+              mixBlur={0}
+              blur={[0, 0]}
+              roughness={0.04}
+              metalness={0}
+              depthScale={0}
+              side={THREE.DoubleSide}
+            />
+          )}
         </mesh>
       </group>
       <mesh position={[7.36, 1.45, -3.1]} rotation={[0, Math.PI / 2, 0]}>

@@ -30,6 +30,7 @@ import { Patio } from '../rooms/Patio'
 import { Garage } from '../rooms/Garage'
 import { DomeCiel } from '../shared/DomeCiel'
 import { SceneAuditProbe } from '../debug/sceneAudit'
+import { NO_PAPEL, NO_REFLECT } from '../debug/perfFlags'
 import { PerfProbe } from '../debug/PerfProbe'
 import { Couffin } from './Couffin'
 
@@ -381,23 +382,27 @@ export function SalonRoom() {
           mirent dans les tomettes cirées. Seule entorse au toon, assumée. */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[14, 11.6]} />
-        <MeshReflectorMaterial
-          map={solTomettes}
-          normalMap={solTomettesNormal}
-          normalScale={new THREE.Vector2(0.7, 0.7)}
-          resolution={256}
-          mirror={0.45}
-          mixStrength={0.8}
-          mixBlur={1}
-          blur={[250, 90]}
-          roughness={0.5}
-          metalness={0}
-          distortion={0.12}
-          distortionMap={solTomettesNormal}
-          depthScale={0.6}
-          minDepthThreshold={0.5}
-          maxDepthThreshold={1.2}
-        />
+        {NO_REFLECT ? (
+          <meshPhongMaterial map={solTomettes} normalMap={solTomettesNormal} shininess={30} />
+        ) : (
+          <MeshReflectorMaterial
+            map={solTomettes}
+            normalMap={solTomettesNormal}
+            normalScale={new THREE.Vector2(0.7, 0.7)}
+            resolution={256}
+            mirror={0.45}
+            mixStrength={0.8}
+            mixBlur={1}
+            blur={[250, 90]}
+            roughness={0.5}
+            metalness={0}
+            distortion={0.12}
+            distortionMap={solTomettesNormal}
+            depthScale={0.6}
+            minDepthThreshold={0.5}
+            maxDepthThreshold={1.2}
+          />
+        )}
       </mesh>
 
       {/* ─── Plafond + vigas (poutres bois, ref salon-vue-entree-01) ────────── */}
@@ -661,20 +666,24 @@ export function SalonRoom() {
             planaire — de nuit l'intérieur éclairé se mire dans le verre */}
         <mesh position={[-7.085, 1.8, 0]} rotation={[0, Math.PI / 2, 0]}>
           <planeGeometry args={[3.36, 2.04]} />
-          <MeshReflectorMaterial
-            transparent
-            opacity={0.68}
-            color="#e8f0f4"
-            resolution={512}
-            mirror={1}
-            mixStrength={1.4}
-            mixBlur={0}
-            blur={[0, 0]}
-            roughness={0.06}
-            metalness={0}
-            depthScale={0}
-            side={THREE.DoubleSide}
-          />
+          {NO_REFLECT ? (
+            <meshToonMaterial color="#C8DCE8" transparent opacity={0.35} gradientMap={toonGradient} side={THREE.DoubleSide} />
+          ) : (
+            <MeshReflectorMaterial
+              transparent
+              opacity={0.68}
+              color="#e8f0f4"
+              resolution={512}
+              mirror={1}
+              mixStrength={1.4}
+              mixBlur={0}
+              blur={[0, 0]}
+              roughness={0.06}
+              metalness={0}
+              depthScale={0}
+              side={THREE.DoubleSide}
+            />
+          )}
         </mesh>
         {/* Rejas — fer forgé scellé dans la maçonnerie, PROFOND dans l'embrasure
             (côté extérieur, comme en vrai : la menuiserie est intérieure, la
@@ -713,8 +722,8 @@ export function SalonRoom() {
           </mesh>
         ))}
         {/* Rideaux : panneaux plissés animés, suspendus par anneaux (voir Rideau) */}
-        <RideauPanel z={2.05} />
-        <RideauPanel z={-2.05} />
+        {!NO_PAPEL && <RideauPanel z={2.05} />}
+        {!NO_PAPEL && <RideauPanel z={-2.05} />}
         {/* Tringle bois tournée */}
         <mesh position={[-6.80, 2.98, 0]} rotation={[Math.PI / 2, 0, 0]}>
           <cylinderGeometry args={[0.032, 0.032, 4.75, 10]} />
@@ -757,7 +766,7 @@ export function SalonRoom() {
       </group>
 
       {/* ─── Papel picado ───────────────────────────────────────────────────── */}
-      {PAPEL_X.map((sx, si) => <PapelStrand key={si} sx={sx} si={si} />)}
+      {!NO_PAPEL && PAPEL_X.map((sx, si) => <PapelStrand key={si} sx={sx} si={si} />)}
 
       {/* ─── Table centrale ─────────────────────────────────────────────────── */}
       {/* Plateau resserré (2.3 → 2.1) : proportions banquet plus réalistes sans

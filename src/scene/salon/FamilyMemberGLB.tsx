@@ -28,9 +28,7 @@ function applyToon(scene: THREE.Object3D, meshColor: string) {
     if ((mesh.material as THREE.Material[]).length === 1) {
       mesh.material = (mesh.material as THREE.Material[])[0]
     }
-    mesh.geometry.computeBoundingSphere()
-    if (mesh.geometry.boundingSphere) mesh.geometry.boundingSphere.radius *= 2.5
-    mesh.frustumCulled = true // sphère réelle élargie : cull sans disparitions
+    mesh.frustumCulled = false // skinned : les sphères cullent à tort
     mesh.geometry.computeVertexNormals()
   })
 }

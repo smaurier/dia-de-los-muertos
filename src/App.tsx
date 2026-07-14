@@ -70,10 +70,29 @@ function ReflectionsSansFog() {
 // l'EffectComposer qui vit dans le Suspense). Titre + barre de progression
 // cempasúchil pendant le chargement ; le noir reste 400 ms après la fin
 // (le temps que le composer s'installe) puis fond en 900 ms.
+// Phrases qui tournent pendant le chargement — la maison se prépare.
+const LOADING_LINES = [
+  'la casa se prepara…',
+  'se encienden las velas…',
+  'el papel picado se cuelga…',
+  'la vaporera empieza a silbar…',
+  'el perro sueña bajo la mesa…',
+  'las estrellas se acomodan…',
+  'la familia llega…',
+]
+
 function FadeIn() {
   const { active, progress } = useProgress()
   const [gone, setGone] = useState(false)
   const [fading, setFading] = useState(false)
+  const [lineIdx, setLineIdx] = useState(0)
+
+  // Rotation des phrases toutes les 1,8 s
+  useEffect(() => {
+    if (fading) return
+    const t = setInterval(() => setLineIdx(i => (i + 1) % LOADING_LINES.length), 1800)
+    return () => clearInterval(t)
+  }, [fading])
 
   useEffect(() => {
     if (!active && !fading) {
@@ -84,6 +103,10 @@ function FadeIn() {
   }, [active, fading])
 
   if (gone) return null
+  // useProgress recule quand de nouveaux assets s'annoncent en cours de
+  // route : on ne descend jamais, et on force la barre pleine dès 99,5 %
+  // (sinon « 100 % » affiché avec une barre incomplète).
+  const pct = !active ? 100 : Math.min(100, progress)
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 20, background: '#12080a',
@@ -98,8 +121,8 @@ function FadeIn() {
           <div style={{ color: '#E8940A', fontSize: '42px', letterSpacing: '3px', marginBottom: '6px' }}>
             Día de Muertos
           </div>
-          <div style={{ color: '#8a6a5a', fontSize: '15px', fontStyle: 'italic', marginBottom: '36px' }}>
-            la casa se prepara…
+          <div style={{ color: '#8a6a5a', fontSize: '15px', fontStyle: 'italic', marginBottom: '36px', minHeight: '20px' }}>
+            {LOADING_LINES[lineIdx]}
           </div>
           {/* Barre de progression cempasúchil */}
           <div style={{
@@ -107,13 +130,13 @@ function FadeIn() {
             background: 'rgba(232,148,10,0.15)', overflow: 'hidden',
           }}>
             <div style={{
-              width: `${progress}%`, height: '100%', borderRadius: '3px',
+              width: pct >= 99.5 ? '100%' : `${pct}%`, height: '100%', borderRadius: '3px',
               background: 'linear-gradient(90deg, #C0392B, #E8940A)',
               transition: 'width 300ms ease',
             }} />
           </div>
           <div style={{ color: '#6a5248', fontSize: '12px', marginTop: '12px' }}>
-            {Math.round(progress)} %
+            {Math.round(pct)} %
           </div>
         </>
       )}

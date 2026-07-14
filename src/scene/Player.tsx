@@ -80,13 +80,10 @@ export function Player() {
           gradientMap: toonGradient,
         })
         child.material = mat
-        // Culling actif avec sphère englobante FIXE et généreuse : la bbox
-        // d'un skinned mesh animé est fausse (disparitions), mais une sphère
-        // large figée cull correctement — crucial : les passes des réflecteurs
-        // re-rendent la scène, un perso hors champ ne coûte plus rien.
-        child.geometry.computeBoundingSphere()
-        if (child.geometry.boundingSphere) child.geometry.boundingSphere.radius *= 2.5
-        child.frustumCulled = true
+        // frustumCulled=false assumé : les sphères des skinned meshes
+        // Hunyuan cullent à tort (2 tentatives) et la mesure a montré que la
+        // géométrie n'est pas le coût dominant (59k tris → 15 fps au salon).
+        child.frustumCulled = false
         if (old.map) {
           mats.push(mat)
           baseMap = old.map

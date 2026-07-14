@@ -10,6 +10,7 @@ import { familyConfig } from './familyConfig'
 import { useGameStore } from '../../game/store/gameStore'
 import { useAudioLayers } from '../../hooks/useAudioLayers'
 import { getGrandUnclePosition } from '../../game/systems/npcSystem'
+import { NO_NPC } from '../debug/perfFlags'
 
 const ARC_TIMINGS = [240, 480] // secondes : phase 0→1 à 4min, phase 1→2 à 8min
 const SALON_RADIUS = 8  // m — au-delà = joueur a quitté le salon
@@ -47,15 +48,20 @@ export function Salon() {
   return (
     <group>
       <SalonRoom />
-      <GrandUncle />
-      <Mama />
-      <Chien />
-      {familyConfig.filter(c => c.id !== 'maman').map(config => (
-        <FamilyMember
-          key={config.id}
-          config={config}
-        />
-      ))}
+      {/* ?nonpc : bissection perf — coupe tous les personnages */}
+      {!NO_NPC && (
+        <>
+          <GrandUncle />
+          <Mama />
+          <Chien />
+          {familyConfig.filter(c => c.id !== 'maman').map(config => (
+            <FamilyMember
+              key={config.id}
+              config={config}
+            />
+          ))}
+        </>
+      )}
     </group>
   )
 }

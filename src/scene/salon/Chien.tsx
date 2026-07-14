@@ -35,9 +35,7 @@ export function Chien() {
         color: old.map ? '#ffffff' : '#C4824A',
         gradientMap: toonGradient,
       })
-      mesh.geometry.computeBoundingSphere()
-      if (mesh.geometry.boundingSphere) mesh.geometry.boundingSphere.radius *= 2.5
-      mesh.frustumCulled = true // sphère réelle élargie : cull sans disparitions
+      mesh.frustumCulled = false // skinned : les sphères cullent à tort
       mesh.geometry.computeVertexNormals()
     })
     neckBoneRef.current = scene.getObjectByName(HEAD_BONE) ?? null
