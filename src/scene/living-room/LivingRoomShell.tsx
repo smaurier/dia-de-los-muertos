@@ -1,4 +1,4 @@
-// src/scene/salon/SalonRoom.tsx
+// src/scene/living-room/LivingRoomShell.tsx
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'

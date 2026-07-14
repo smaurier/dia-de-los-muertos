@@ -1,4 +1,4 @@
-// src/scene/salon/familyConfig.ts
+// src/scene/living-room/familyConfig.ts
 import type { NPCConfig, Scenario } from '../../game/systems/npcSystem'
 
 // ─── Scenarios by type ────────────────────────────────────────────────

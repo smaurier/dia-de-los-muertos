@@ -1,4 +1,4 @@
-// src/scene/salon/Dog.tsx
+// src/scene/living-room/Dog.tsx
 // Stylized puppy (Sketchfab) — 5 clips: IdleLayDown / IdleEnergetic / Walk / Run / TPOSE.
 // Salon sandbox phase: lying next to the table on the TV side, passive head-look.
 

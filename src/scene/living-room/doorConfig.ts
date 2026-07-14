@@ -1,4 +1,4 @@
-// src/scene/salon/doorConfig.ts
+// src/scene/living-room/doorConfig.ts
 // Interactive doors in the house (INTERACT_KEY when nearby).
 import type { DoorDef } from '../../game/systems/doorSystem'
 

@@ -1,4 +1,4 @@
-// src/scene/salon/Tablecloth.tsx
+// src/scene/living-room/Tablecloth.tsx
 //
 // Tablecloth for the main feast table — minimal static geometry.
 // 1 top panel + 4 full-width side panels that naturally overlap at corners.

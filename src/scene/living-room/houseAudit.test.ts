@@ -1,4 +1,4 @@
-// src/scene/salon/houseAudit.test.ts
+// src/scene/living-room/houseAudit.test.ts
 // Audit d'intégrité des données de la maison : collisions, portes, bounds.
 // Garde-fou permanent contre les oublis techniques quand une pièce bouge.
 import { describe, it, expect } from 'vitest'

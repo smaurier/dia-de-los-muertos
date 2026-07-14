@@ -1,4 +1,4 @@
-// src/scene/salon/chairConfig.ts
+// src/scene/living-room/chairConfig.ts
 // World positions for sit targetIds used in familyConfig scenarios.
 export const SIT_TARGETS: Record<string, [number, number, number]> = {
   // ─── Adults — north row (z=2.60) ────────────────────────────────────────────

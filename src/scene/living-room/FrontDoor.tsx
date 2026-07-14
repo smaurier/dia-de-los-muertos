@@ -1,4 +1,4 @@
-// src/scene/salon/FrontDoor.tsx
+// src/scene/living-room/FrontDoor.tsx
 // Main house door — centrepiece of the zaguán.
 // Mexican colonial door: two solid-wood panelled leaves with
 // forged-nail (clavo) diamond pattern, strap hinges and ring knockers,

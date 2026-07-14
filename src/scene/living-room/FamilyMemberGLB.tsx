@@ -1,4 +1,4 @@
-// src/scene/salon/FamilyMemberGLB.tsx
+// src/scene/living-room/FamilyMemberGLB.tsx
 // GLB-based NPC renderer. Used by FamilyMember when config.modelUrl is set.
 import { useRef, useEffect, useMemo } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'

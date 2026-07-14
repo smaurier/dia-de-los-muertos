@@ -1,4 +1,4 @@
-// src/scene/salon/livingRoomCollision.ts
+// src/scene/living-room/livingRoomCollision.ts
 // AABB collision zones — [minX, maxX, minZ, maxZ]
 //
 // Rule: the AABB must be SMALLER than the startPositions of NPCs that live

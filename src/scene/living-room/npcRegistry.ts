@@ -1,3 +1,3 @@
-// src/scene/salon/npcRegistry.ts
+// src/scene/living-room/npcRegistry.ts
 // Module-level registry so Player can read NPC positions without React coupling.
 export const npcPositions = new Map<string, [number, number]>()

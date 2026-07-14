@@ -1,4 +1,4 @@
-// src/scene/salon/LivingRoom.tsx
+// src/scene/living-room/LivingRoom.tsx
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { LivingRoomShell } from './LivingRoomShell'

@@ -1,4 +1,4 @@
-// src/scene/salon/FamilyMember.tsx
+// src/scene/living-room/FamilyMember.tsx
 import { FamilyMemberGLB } from './FamilyMemberGLB'
 import { useRef, useEffect, useMemo } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'

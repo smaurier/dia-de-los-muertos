@@ -1,4 +1,4 @@
-// src/scene/salon/GrandUncle.tsx
+// src/scene/living-room/GrandUncle.tsx
 import { useRef, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'

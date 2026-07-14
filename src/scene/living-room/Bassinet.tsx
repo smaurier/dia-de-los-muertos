@@ -1,4 +1,4 @@
-// src/scene/salon/Bassinet.tsx
+// src/scene/living-room/Bassinet.tsx
 // The baby — 22nd presence from V10. Not carried (no carrying animation
 // available in Mixamo): sleeping in a wicker basket placed at the foot of
 // great-aunt Rosa's armchair, who watches over it while dozing.
