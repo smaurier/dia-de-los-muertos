@@ -5,6 +5,7 @@ import {
   shouldUpdatePosition,
   getGrandUnclePosition,
   shouldTurnTowardPlayer,
+  resolvePlayerNpcCollision,
 } from './npcSystem'
 import type { Scenario } from './npcSystem'
 
@@ -118,5 +119,33 @@ describe('shouldTurnTowardPlayer', () => {
 
   it('returns true on threshold boundary', () => {
     expect(shouldTurnTowardPlayer([0, 0, 0], [2, 0, 0], 2)).toBe(true)
+  })
+})
+
+describe('resolvePlayerNpcCollision', () => {
+  const R = 0.45
+
+  it('leaves the player untouched when no NPC is within radius', () => {
+    const [x, z] = resolvePlayerNpcCollision(0, 0, [[5, 5]], R)
+    expect(x).toBe(0)
+    expect(z).toBe(0)
+  })
+
+  it('pushes the player out to exactly the radius along the NPC axis', () => {
+    const [x, z] = resolvePlayerNpcCollision(0.2, 0, [[0, 0]], R)
+    expect(x).toBeCloseTo(0.45, 5)
+    expect(z).toBeCloseTo(0, 5)
+  })
+
+  it('ignores a near-exact overlap to avoid division by zero', () => {
+    const [x, z] = resolvePlayerNpcCollision(0.0005, 0, [[0, 0]], R)
+    expect(x).toBe(0.0005)
+    expect(z).toBe(0)
+  })
+
+  it('resolves against multiple NPCs in sequence', () => {
+    const [x, z] = resolvePlayerNpcCollision(0.2, 0, [[0, 0], [0.9, 0]], R)
+    expect(Number.isFinite(x)).toBe(true)
+    expect(Number.isFinite(z)).toBe(true)
   })
 })

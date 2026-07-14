@@ -9,6 +9,7 @@ import { usePlayerStore } from '../game/store/playerStore'
 import { useDoorStore } from '../game/store/doorStore'
 import { useSubtitleStore } from '../game/store/subtitleStore'
 import { nearestDoorId, closedDoorObstacles } from '../game/systems/doorSystem'
+import { resolvePlayerNpcCollision } from '../game/systems/npcSystem'
 import { canMove, cameraBackDistance, clampCameraToRoom, SALON_BOUNDS } from './salon/salonCollision'
 import { DOORS, DOOR_INTERACT_DIST } from './salon/doorConfig'
 import { npcPositions } from './salon/npcRegistry'
@@ -185,17 +186,11 @@ export function Player() {
     }
 
     // Collision NPC : repousser le garçon si trop proche
-    const NPC_RADIUS = 0.45
-    for (const [nx, nz] of npcPositions.values()) {
-      const dx = boyPos.current.x - nx
-      const dz = boyPos.current.z - nz
-      const dist = Math.sqrt(dx * dx + dz * dz)
-      if (dist < NPC_RADIUS && dist > 0.001) {
-        const inv = NPC_RADIUS / dist
-        boyPos.current.x = nx + dx * inv
-        boyPos.current.z = nz + dz * inv
-      }
-    }
+    const [resolvedX, resolvedZ] = resolvePlayerNpcCollision(
+      boyPos.current.x, boyPos.current.z, npcPositions.values(), 0.45,
+    )
+    boyPos.current.x = resolvedX
+    boyPos.current.z = resolvedZ
 
     // Caméra suit derrière le garçon (basée sur direction caméra horizontale)
     camera.getWorldDirection(camDir.current)
