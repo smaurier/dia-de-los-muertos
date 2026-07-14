@@ -47,7 +47,9 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [-0.6, 4.0, 7.45, 7.75],    // mur nord couloir, segment ouest
   [ 5.0, 10.15, 7.45, 7.75],  // mur nord couloir, entre les deux portes
   [11.2, 13.6, 7.45, 7.75],   // mur nord couloir, segment est
-  [ 8.6, 8.9, 2.0, 6.2],      // mur est branche est (x=8.75, s'arrête au T)
+  // mur est branche est (x=8.75) : percé z∈[2.25,3.19] → porte débarras
+  [ 8.6, 8.9, 2.0, 2.25],     // sliver sud
+  [ 8.6, 8.9, 3.19, 6.2],     // segment nord (jusqu'au T)
   [ 6.95, 7.4, 2.0, 6.2],     // mur ouest branche est (mur est épais du salon)
   // mur sud du prolongement (z=6.2) : percé x∈[10.2,11.14] → porte salle de
   // bain (AABB dynamique doorConfig), EN FACE de la porte chambre 2
@@ -82,6 +84,16 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [ 8.9, 9.6, 5.0, 5.7],      // WC
   [11.3, 11.9, 4.7, 5.3],     // lavabo colonne
   [11.3, 11.85, 3.55, 4.05],  // panier à linge
+  // ── Débarras en L (bande basse x∈[8.9,13.4] z∈[2.2,3.25] + remontée
+  //    x∈[11.9,13.4] z∈[3.25,6.2]) ────────────────────────────────────────────
+  [10.2, 13.6, 1.85, 2.35],   // mur sud débarras (z=2.2, à l'est du zaguán)
+  [13.25, 13.6, 2.2, 6.2],    // mur est débarras (x=13.4, porte patio verrouillée)
+  // ── Mobilier débarras (nav seulement) ─────────────────────────────────────
+  [ 9.1, 11.7, 2.2, 2.75],    // étagères mur sud (boîtes, bocaux, journaux)
+  [12.35, 13.35, 2.3, 3.25],  // fauteuil drapé (coude du L)
+  [12.75, 13.4, 4.25, 5.5],   // cartons empilés (mur est)
+  [12.1, 13.0, 5.5, 6.05],    // malle + couvertures (mur nord remontée)
+  [ 9.15, 9.55, 2.85, 3.25],  // balai + seau (près de la porte)
   // fond z=12 : porte OUVRABLE vers le cellier x∈[-6.3,-5.3]
   [-7.2, -6.3, 11.8, 12.2],   // fond cuisine, segment ouest
   [-5.3, -0.45, 11.8, 12.2],  // fond cuisine, segment est

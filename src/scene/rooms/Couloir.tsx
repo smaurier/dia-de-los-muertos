@@ -99,10 +99,18 @@ export function Couloir() {
       </mesh>
 
       {/* ── Branche est (vers le zaguán) ── */}
-      {/* Mur est x=8.75 — s'arrête à z=6.2 : au-dessus, le couloir continue
-          tout droit (jonction en T) */}
-      <mesh position={[8.75, 1.45, 4.1]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[4.2, 2.9]} />
+      {/* Mur est x=8.75 — s'arrête à z=6.2 (jonction en T au-dessus), percé
+          z∈[2.25,3.19] : porte du débarras (plan : entre la SDB et l'entrée) */}
+      <mesh position={[8.75, 1.45, 2.125]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[0.25, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[8.75, 1.45, 4.695]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[3.01, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[8.75, 2.5, 2.72]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[0.94, 0.8]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
       {/* Mur ouest x=7.36 (1 cm devant la face est du mur épais du salon —

@@ -23,6 +23,7 @@ import { Couloir } from '../rooms/Couloir'
 import { Chambre1 } from '../rooms/Chambre1'
 import { Chambre2 } from '../rooms/Chambre2'
 import { SalleDeBain } from '../rooms/SalleDeBain'
+import { Debarras } from '../rooms/Debarras'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
 const SHOW_AABB = new URLSearchParams(window.location.search).has('aabb')
@@ -508,6 +509,9 @@ export function SalonRoom() {
 
       {/* ─── Salle de bain — porte face à celle de la chambre 2 ─── */}
       <SalleDeBain />
+
+      {/* ─── Débarras (ch7) — en L autour de la SDB, porte sur la branche est ─── */}
+      <Debarras />
 
       {/* ─── Mur Est x=7 — arche d'entrée (zaguán, z=0, ouverture z∈[-0.9,0.9]).
           Mur ÉPAIS (0,35 m, x∈[7,7.35]) comme le mur nord : embrasure profonde,
