@@ -23,6 +23,12 @@ Source plan: `docs/superpowers/plans/2026-06-20-vertical-slice-chapter3.md`
 - ✅ LIVRE Task 4: Corridor MeshToonMaterial — `forwardRef<THREE.Group>`, `meshToonMaterial` on all 6 meshes, `directionalLight` added, TS clean, committed
 - ✅ LIVRE Task 5: Adult MeshToonMaterial — Replaced 2x meshStandardMaterial with meshToonMaterial, gradientMap wired, TS clean, committed
 
+## Bugs connus — NPC tablée (différés 2026-07-14)
+
+- 🐛 **Idle synchronisé** — tous les NPC GLB jouent `Sitting Idle(4)` en phase (mixer démarre à t=0 pour tous). Fix : déphaser (offset aléatoire de `action.time` / `timeScale` léger par instance).
+- 🐛 **Assise pas au fond de la chaise** — les persos assis ne sont pas calés au fond du siège. Fix : ajuster l'offset de position (startPosition ou reflectorOffset équivalent) par chaise.
+- ✅ T-pose intermittente — RÉSOLU (fd00318, binding mixer sur clonedScene).
+
 ## Backlog — Prochaines étapes
 
 - ✅ LIVRE **Cel-Shading (remaining)** — EffectComposer + Outline on Corridor + Adult, corridorRef forwarded, no TS cast needed, 42/42 tests pass, committed
