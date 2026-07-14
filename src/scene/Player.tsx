@@ -5,10 +5,12 @@ import { useKeyboardControls, PointerLockControls, useGLTF, useAnimations } from
 import * as THREE from 'three'
 import { toonGradient } from './shared/toonGradient'
 import { makeFaceTextures } from './shared/blinkTexture'
+import { advanceFace, type FaceState } from './shared/faceState'
 import { usePlayerStore } from '../game/store/playerStore'
 import { useDoorStore } from '../game/store/doorStore'
 import { useSubtitleStore } from '../game/store/subtitleStore'
 import { nearestDoorId, closedDoorObstacles } from '../game/systems/doorSystem'
+import { resolvePlayerNpcCollision } from '../game/systems/npcSystem'
 import { canMove, cameraBackDistance, clampCameraToRoom, SALON_BOUNDS } from './salon/salonCollision'
 import { DOORS, DOOR_INTERACT_DIST } from './salon/doorConfig'
 import { npcPositions } from './salon/npcRegistry'
@@ -96,10 +98,9 @@ export function Player() {
 
   // Clignement : yeux fermés BLINK_DURATION toutes les 2-6 s.
   // Saccades : variante de regard tirée toutes les 0,7-2,4 s.
-  const blinkAt = useRef(blinkDelay())
-  const saccadeAt = useRef(saccadeDelay())
-  const gazeIdx = useRef(0)
-  const clock = useRef(0)
+  const faceRef = useRef<FaceState>({
+    clock: 0, blinkAt: blinkDelay(), saccadeAt: saccadeDelay(), gazeIdx: 0,
+  })
 
   // Anti T-pose : idle lancé AVANT le premier paint (useLayoutEffect, pas
   // useEffect qui laisse passer quelques frames de bind pose) et pose
@@ -185,17 +186,11 @@ export function Player() {
     }
 
     // Collision NPC : repousser le garçon si trop proche
-    const NPC_RADIUS = 0.45
-    for (const [nx, nz] of npcPositions.values()) {
-      const dx = boyPos.current.x - nx
-      const dz = boyPos.current.z - nz
-      const dist = Math.sqrt(dx * dx + dz * dz)
-      if (dist < NPC_RADIUS && dist > 0.001) {
-        const inv = NPC_RADIUS / dist
-        boyPos.current.x = nx + dx * inv
-        boyPos.current.z = nz + dz * inv
-      }
-    }
+    const [resolvedX, resolvedZ] = resolvePlayerNpcCollision(
+      boyPos.current.x, boyPos.current.z, npcPositions.values(), 0.45,
+    )
+    boyPos.current.x = resolvedX
+    boyPos.current.z = resolvedZ
 
     // Caméra suit derrière le garçon (basée sur direction caméra horizontale)
     camera.getWorldDirection(camDir.current)
@@ -233,18 +228,15 @@ export function Player() {
     // On mute le matériau ACTUELLEMENT porté par le mesh (traverse) : en
     // StrictMode le double rendu crée deux matériaux et une référence capturée
     // peut pointer sur l'orphelin non rendu — swap sans effet visible.
-    clock.current += delta
+    const { state: nextFace, output: faceOut } = advanceFace(faceRef.current, delta, {
+      blinkDuration: BLINK_DURATION,
+      nextBlinkDelay: blinkDelay,
+      nextSaccadeDelay: saccadeDelay,
+      pickGaze: () => face.faceSet ? pickGaze(face.faceSet.gaze.length) : 0,
+    })
+    faceRef.current = nextFace
     if (face.faceSet) {
-      let closed = clock.current > blinkAt.current
-      if (closed && clock.current > blinkAt.current + BLINK_DURATION) {
-        blinkAt.current = clock.current + blinkDelay()
-        closed = false
-      }
-      if (clock.current > saccadeAt.current) {
-        saccadeAt.current = clock.current + saccadeDelay()
-        gazeIdx.current = pickGaze(face.faceSet.gaze.length)
-      }
-      const want = closed ? face.faceSet.blink : face.faceSet.gaze[gazeIdx.current]
+      const want = faceOut.closed ? face.faceSet.blink : face.faceSet.gaze[faceOut.gazeIdx]
       heroScene.traverse(child => {
         if (child instanceof THREE.Mesh) {
           const mat = child.material as THREE.MeshToonMaterial
@@ -252,7 +244,7 @@ export function Player() {
         }
       })
       // Témoin de synchro (?blinktest) : l'état des yeux dans le titre d'onglet
-      if (BLINK_TEST) document.title = closed ? '👁 YEUX FERMÉS' : 'yeux ouverts'
+      if (BLINK_TEST) document.title = faceOut.closed ? '👁 YEUX FERMÉS' : 'yeux ouverts'
     }
 
     // Machine à états d'animation : caché > marche > idle, crossfade doux.

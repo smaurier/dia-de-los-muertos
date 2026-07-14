@@ -71,3 +71,28 @@ export function shouldTurnTowardPlayer(
   const dz = pos[2] - playerPos[2]
   return Math.sqrt(dx * dx + dz * dz) <= threshold
 }
+
+/**
+ * Push the player out of any NPC it overlaps. Pure: returns the resolved
+ * [x, z]. Mirrors the loop previously inline in Player.tsx.
+ */
+export function resolvePlayerNpcCollision(
+  px: number,
+  pz: number,
+  npcs: Iterable<[number, number]>,
+  radius: number,
+): [number, number] {
+  let x = px
+  let z = pz
+  for (const [nx, nz] of npcs) {
+    const dx = x - nx
+    const dz = z - nz
+    const dist = Math.sqrt(dx * dx + dz * dz)
+    if (dist < radius && dist > 0.001) {
+      const inv = radius / dist
+      x = nx + dx * inv
+      z = nz + dz * inv
+    }
+  }
+  return [x, z]
+}
