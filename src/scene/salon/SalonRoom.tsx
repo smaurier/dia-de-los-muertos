@@ -30,6 +30,8 @@ import { Patio } from '../rooms/Patio'
 import { Garage } from '../rooms/Garage'
 import { DomeCiel } from '../shared/DomeCiel'
 import { SceneAuditProbe } from '../debug/sceneAudit'
+import { PerfProbe } from '../debug/PerfProbe'
+import { RoomGroup } from '../shared/RoomGroup'
 import { Couffin } from './Couffin'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
@@ -498,42 +500,26 @@ export function SalonRoom() {
         <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ─── Cuisine — voir src/scene/rooms/Cuisine.tsx ─── */}
-      <Cuisine />
-
-      {/* ─── Cellier — garde-manger derrière le fond de la cuisine ─── */}
-      <Cellier />
-
-      {/* ─── Couloir nord-est — part de la porte du mur en pierre ─── */}
-      <Couloir />
-
-      {/* ─── Chambre 1 (Emilio + Sofía) — au nord du couloir, porte face à
-          l'arche 2 ─── */}
-      <Chambre1 />
-
-      {/* ─── Chambre 2 (les parents) — mitoyenne, au bout du couloir prolongé ─── */}
-      <Chambre2 />
-
-      {/* ─── Salle de bain — porte face à celle de la chambre 2 ─── */}
-      <SalleDeBain />
-
-      {/* ─── Débarras (ch7) — en L autour de la SDB, porte sur la branche est ─── */}
-      <Debarras />
-
-      {/* ─── Bureau — au sud du couloir d'entrée, porte sur le couloir sud ─── */}
-      <Bureau />
-
-      {/* ─── Patio (ch8) — cour nocturne derrière la porte verte ─── */}
-      <Patio />
-
-      {/* ─── Garage — devant le patio, côté rue (arche + porte bois) ─── */}
-      <Garage />
+      {/* ─── Pièces satellites — chacune sous RoomGroup : masquée (meshes,
+          lumières, réflecteurs) quand le joueur n'est ni dedans ni dans une
+          zone adjacente. Room culling, house-rooms §3. ?noculling désactive. */}
+      <RoomGroup zone="cuisine"><Cuisine /></RoomGroup>
+      <RoomGroup zone="cellier"><Cellier /></RoomGroup>
+      <RoomGroup zone="couloir"><Couloir /></RoomGroup>
+      <RoomGroup zone="chambre1"><Chambre1 /></RoomGroup>
+      <RoomGroup zone="chambre2"><Chambre2 /></RoomGroup>
+      <RoomGroup zone="sdb"><SalleDeBain /></RoomGroup>
+      <RoomGroup zone="debarras"><Debarras /></RoomGroup>
+      <RoomGroup zone="bureau"><Bureau /></RoomGroup>
+      <RoomGroup zone="patio"><Patio /></RoomGroup>
+      <RoomGroup zone="garage"><Garage /></RoomGroup>
 
       {/* ─── Bulle de ciel étoilé au-dessus de toute la maison ─── */}
       <DomeCiel />
 
-      {/* ─── Audit graphique (?audit) — inactif sinon ─── */}
+      {/* ─── Audit graphique (?audit) + mesure perf (?perf) — inactifs sinon ─── */}
       <SceneAuditProbe />
+      <PerfProbe />
 
       {/* ─── Mur Est x=7 — arche d'entrée (zaguán, z=0, ouverture z∈[-0.9,0.9]).
           Mur ÉPAIS (0,35 m, x∈[7,7.35]) comme le mur nord : embrasure profonde,
@@ -1024,7 +1010,7 @@ export function SalonRoom() {
           x∈[7.35,10], z∈[-0.9,0.9] — LA LARGEUR DE L'ARCHE. Derrière l'arche,
           un carrefour : tout droit la porte principale, à gauche (nord) la
           branche est vers les chambres, à droite (sud) le couloir du bureau. */}
-      <group>
+      <RoomGroup zone="zaguan">
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[8.675, 0.001, 0]}>
           <planeGeometry args={[2.65, 1.8]} />
           <meshPhongMaterial map={solTomettes} shininess={40} specular="#4a3420" />
@@ -1051,7 +1037,7 @@ export function SalonRoom() {
         {/* Porte principale : vantaux cloutés, cantera, imposte, farol —
             voir PorteEntree.tsx */}
         <PorteEntree />
-      </group>
+      </RoomGroup>
 
       {/* ─── Vaisselier (coin nord-est, ref vue-fenetre) ────────────────────── */}
       <group position={[6.15, 0, 5.45]} rotation={[0, Math.PI, 0]}>
