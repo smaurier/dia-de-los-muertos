@@ -3,14 +3,12 @@ import * as THREE from 'three'
 import { Outlines, RoundedBox } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import {
-  murAdobeNorth, murAdobeLintel, murAdobeSouth, murAdobeSide,
-  solTomettes, solTomettesNormal, boisSombre,
+  murAdobeSide,
+  solTomettes, boisSombre,
 } from '../shared/paintedTextures'
-import { plafondBoisTexture } from '../shared/fabricTexture'
 import { WindowVista } from './WindowVista'
 import { Prop } from '../shared/Prop'
 import { Sofa } from './Sofa'
-import { SALON_OBSTACLES } from './livingRoomCollision'
 import { TVScreen } from './shell/TVScreen'
 import { LeafyPlant } from './shell/LeafyPlant'
 import { PapelGarland } from './shell/PapelGarland'
@@ -34,10 +32,9 @@ import { NO_PAPEL } from '../debug/perfFlags'
 import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
 import { PerfProbe } from '../debug/PerfProbe'
 import { LivingRoomLighting } from './shell/LivingRoomLighting'
+import { LivingRoomStructure } from './shell/LivingRoomStructure'
 import { Bassinet } from './Bassinet'
 import {
-  SHOW_AABB,
-  intradosGeometry,
   C_WOOD_DARK, C_WOOD_MED, C_UPHOLSTERY, C_CEIL, C_IRON, C_GOLD,
   C_FRAME, C_PHOTO, C_CACTUS, C_POT, C_CANDLE, C_FLAME, C_LEAF, C_CERAMIC,
   CHAIRS,
@@ -55,131 +52,8 @@ export function LivingRoomShell() {
       {/* ─── Lighting ───────────────────────────────────────────────────────── */}
       <LivingRoomLighting />
 
-      {/* ─── Sol tomettes (texture peinte, palier 3) ─────────────────────────── */}
-      {/* Réflexion planaire floutée : la ref montre chaises/nappe/lustre qui se
-          mirent dans les tomettes cirées. Seule entorse au toon, assumée. */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} userData={{ reflectorScope: 'salon', reflectorZone: 'salon' }}>
-        <planeGeometry args={[14, 11.6]} />
-        <ZoneReflectorMaterial
-          zone="salon"
-          salonScope
-          map={solTomettes}
-          normalMap={solTomettesNormal}
-          normalScale={new THREE.Vector2(0.7, 0.7)}
-          resolution={256}
-          mirror={0.45}
-          mixStrength={0.8}
-          mixBlur={1}
-          blur={[250, 90]}
-          roughness={0.5}
-          metalness={0}
-          distortion={0.12}
-          distortionMap={solTomettesNormal}
-          depthScale={0.6}
-          minDepthThreshold={0.5}
-          maxDepthThreshold={1.2}
-        />
-      </mesh>
-
-      {/* ─── Plafond + vigas (poutres bois, ref salon-vue-entree-01) ────────── */}
-      {!SHOW_AABB && (
-        <>
-          {/* Plafond bois : planches sombres (refs — pas de plâtre au plafond) */}
-          <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 3.2, 0]}>
-            <planeGeometry args={[14, 11.6]} />
-            <meshToonMaterial map={plafondBoisTexture} gradientMap={toonGradient} />
-          </mesh>
-          {/* Vigas : plus nombreuses et massives (refs — poutres ~1,5 m d'entraxe) */}
-          {[-6.3, -4.9, -3.5, -2.1, -0.7, 0.7, 2.1, 3.5, 4.9, 6.3].map(bx => (
-            <mesh key={bx} position={[bx, 3.08, 0]}>
-              <boxGeometry args={[0.22, 0.24, 11.6]} />
-              <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
-            </mesh>
-          ))}
-        </>
-      )}
-      {SHOW_AABB && SALON_OBSTACLES.map(([mx, Mx, mz, Mz], i) => (
-        <mesh key={i} position={[(mx + Mx) / 2, 0.8, (mz + Mz) / 2]}>
-          <boxGeometry args={[Mx - mx, 1.6, Mz - mz]} />
-          <meshBasicMaterial color="#ff2020" transparent opacity={0.35} depthWrite={false} />
-        </mesh>
-      ))}
-
-      {/* ─── Mur Sud z=-5.8 — panneau continu (arche sud supprimée, plan-maison-v1) */}
-      <mesh position={[-0.05, 1.6, -5.8]}>
-        <boxGeometry args={[14, 3.2, 0.35]} />
-        <meshToonMaterial map={murAdobeSouth} gradientMap={toonGradient} />
-      </mesh>
-
-      {/* ─── Mur Nord z=5.8 avec arche vers la cuisine (ref : ouverture chaude) ── */}
-      {/* Mur ÉPAIS (0,35 m, ref : embrasure adobe profonde, aucune menuiserie).
-          Panneaux en boxes de part et d'autre de l'ouverture [-3.4, -1.6],
-          embrasure texturée (jambages plans + intrados cylindrique). */}
-      <mesh position={[-5.2, 1.6, 5.975]}>
-        <boxGeometry args={[3.6, 3.2, 0.35]} />
-        <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
-      </mesh>
-      {/* Panneau nord droit — scindé pour l'arche 2 (x=4.5, ouverture x∈[3.6,5.4]) */}
-      <mesh position={[1.0, 1.6, 5.975]}>
-        <boxGeometry args={[5.2, 3.2, 0.35]} />
-        <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[6.2, 1.6, 5.975]}>
-        <boxGeometry args={[1.6, 3.2, 0.35]} />
-        <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
-      </mesh>
-      {/* Arche 2 — bandeau, cintres, intrados, jambages */}
-      <mesh position={[4.5, 2.95, 5.975]}>
-        <boxGeometry args={[1.8, 0.5, 0.35]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[4.5, 1.8, 5.79]} rotation={[0, Math.PI, 0]}>
-        <ringGeometry args={[0.9, 1.6, 24, 1, 0, Math.PI]} />
-        <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[4.5, 1.8, 6.16]}>
-        <ringGeometry args={[0.9, 1.6, 24, 1, 0, Math.PI]} />
-        <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[4.5, 1.8, 5.975]} geometry={intradosGeometry}>
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[3.6, 0.9, 5.975]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[0.35, 1.8]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[5.4, 0.9, 5.975]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.35, 1.8]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      {/* Bandeau au-dessus de l'arche 1 (de l'apex 2,7 au plafond 3,2) */}
-      <mesh position={[-2.5, 2.95, 5.975]}>
-        <boxGeometry args={[1.8, 0.5, 0.35]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      {/* Cintre : anneaux adobe côté salon et côté cuisine */}
-      <mesh position={[-2.5, 1.8, 5.79]} rotation={[0, Math.PI, 0]}>
-        <ringGeometry args={[0.9, 1.6, 24, 1, 0, Math.PI]} />
-        <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-2.5, 1.8, 6.16]}>
-        <ringGeometry args={[0.9, 1.6, 24, 1, 0, Math.PI]} />
-        <meshToonMaterial map={murAdobeNorth} gradientMap={toonGradient} />
-      </mesh>
-      {/* Intrados : sous-face courbe de l'arche. Normales inversées (on la voit
-          par dessous) — géométrie préparée par intradosGeometry. */}
-      <mesh position={[-2.5, 1.8, 5.975]} geometry={intradosGeometry}>
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      {/* Jambages : faces internes de l'embrasure, normales vers l'ouverture */}
-      <mesh position={[-3.4, 0.9, 5.975]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[0.35, 1.8]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-1.6, 0.9, 5.975]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.35, 1.8]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
+      {/* ─── Structure (floor, ceiling, four walls) ─────────────────────────── */}
+      <LivingRoomStructure />
 
       {/* ─── Pièces satellites. (Room culling retiré : les murs sont partagés
           entre pièces — trous visibles — et la mesure a montré que le coût
@@ -206,92 +80,6 @@ export function LivingRoomShell() {
       {/* ─── Audit graphique (?audit) + mesure perf (?perf) — inactifs sinon ─── */}
       <SceneAuditProbe />
       <PerfProbe />
-
-      {/* ─── Mur Est x=7 — arche d'entrée (zaguán, z=0, ouverture z∈[-0.9,0.9]).
-          Mur ÉPAIS (0,35 m, x∈[7,7.35]) comme le mur nord : embrasure profonde,
-          faces visibles des deux côtés (salon ET zaguán/couloir). ───────────── */}
-      <mesh position={[7.175, 1.6, -3.35]}>
-        <boxGeometry args={[0.35, 3.2, 4.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[7.175, 1.6, 3.35]}>
-        <boxGeometry args={[0.35, 3.2, 4.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      {/* Bandeau au-dessus de l'arche est (de l'apex 2,7 au plafond 3,2) */}
-      <mesh position={[7.175, 2.95, 0]}>
-        <boxGeometry args={[0.35, 0.5, 1.8]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      {/* Cintre : anneaux adobe côté salon et côté zaguán */}
-      <mesh position={[6.99, 1.8, 0]} rotation={[0, -Math.PI / 2, 0]}>
-        <ringGeometry args={[0.9, 1.6, 24, 1, 0, Math.PI]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[7.36, 1.8, 0]} rotation={[0, Math.PI / 2, 0]}>
-        <ringGeometry args={[0.9, 1.6, 24, 1, 0, Math.PI]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      {/* Intrados : sous-face courbe (axe tourné le long de x) */}
-      <mesh position={[7.175, 1.8, 0]} rotation={[0, Math.PI / 2, 0]} geometry={intradosGeometry}>
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      {/* Jambages : faces internes de l'embrasure, normales vers l'ouverture */}
-      <mesh position={[7.175, 0.9, 0.9]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[0.35, 1.8]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[7.175, 0.9, -0.9]}>
-        <planeGeometry args={[0.35, 1.8]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      {/* Croix au-dessus de l'arche est (intérieur salon) */}
-      <mesh position={[6.99, 2.82, 0]}>
-        <boxGeometry args={[0.04, 0.42, 0.07]} />
-        <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
-        <Outlines thickness={0.010} color="black" />
-      </mesh>
-      <mesh position={[6.99, 2.90, 0]}>
-        <boxGeometry args={[0.04, 0.07, 0.26]} />
-        <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
-      </mesh>
-
-      {/* ─── Mur Ouest x=-7, percé pour la fenêtre (ouverture z∈[-1.2,2.2],
-          y∈[0.75,2.85] — la ref lui donne l'essentiel du mur) : 4 segments +
-          embrasure profonde 0,35 m ──────────────────────────────────────────── */}
-      <mesh position={[-7, 1.6, -3.5]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[4.6, 3.2]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-7, 1.6, 4.0]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[3.6, 3.2]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-7, 3.025, 0.5]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[3.4, 0.35]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-7, 0.375, 0.5]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[3.4, 0.75]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      {/* Embrasure : jambages, sous-linteau, appui (faces vers l'ouverture) */}
-      <mesh position={[-7.175, 1.8, 2.2]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[0.35, 2.1]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-7.175, 1.8, -1.2]}>
-        <planeGeometry args={[0.35, 2.1]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-7.175, 2.85, 0.5]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[0.35, 3.4]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-7.175, 0.75, 0.5]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[0.35, 3.4]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
 
       {/* ─── Grande fenêtre à rideaux (mur ouest, ref salon-vue-entree-01) ──── */}
       <group position={[0, 0, WINDOW_CZ]}>
