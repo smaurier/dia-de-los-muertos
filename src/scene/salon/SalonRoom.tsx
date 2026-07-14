@@ -21,6 +21,7 @@ import { Cuisine } from '../rooms/Cuisine'
 import { Cellier } from '../rooms/Cellier'
 import { Couloir } from '../rooms/Couloir'
 import { Chambre1 } from '../rooms/Chambre1'
+import { Chambre2 } from '../rooms/Chambre2'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
 const SHOW_AABB = new URLSearchParams(window.location.search).has('aabb')
@@ -500,6 +501,9 @@ export function SalonRoom() {
       {/* ─── Chambre 1 (Emilio + Sofía) — au nord du couloir, porte face à
           l'arche 2 ─── */}
       <Chambre1 />
+
+      {/* ─── Chambre 2 (les parents) — mitoyenne, au bout du couloir prolongé ─── */}
+      <Chambre2 />
 
       {/* ─── Mur Est x=7 — arche d'entrée (zaguán, z=0, ouverture z∈[-0.9,0.9]).
           Mur ÉPAIS (0,35 m, x∈[7,7.35]) comme le mur nord : embrasure profonde,

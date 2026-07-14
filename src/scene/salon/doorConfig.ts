@@ -11,6 +11,8 @@ export const DOORS: DoorDef[] = [
   { id: 'couloir-cuisine', x: -0.6, z: 6.9, aabb: [-0.85, -0.35, 6.4, 7.4] },
   // Couloir ↔ chambre 1 (Emilio + Sofía), en face de l'arche 2.
   { id: 'chambre-1', x: 4.5, z: 7.6, aabb: [4.0, 5.0, 7.45, 7.75] },
+  // Couloir ↔ chambre 2 (les parents), au bout du couloir prolongé.
+  { id: 'chambre-2', x: 10.67, z: 7.6, aabb: [10.15, 11.2, 7.45, 7.75] },
   // Portes bleues vers le jardin : verrouillées — Emilio commente.
   { id: 'jardin-cuisine', x: -6.96, z: 10.0, aabb: null, locked: true },
   { id: 'jardin-cellier', x: -6.96, z: 13.6, aabb: null, locked: true },

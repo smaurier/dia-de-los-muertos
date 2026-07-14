@@ -42,12 +42,15 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [-0.65, -0.45, 7.4, 12.2],  // pierre, segment nord
   // ── Couloir en L : branche nord (x∈[-0.6,7], z∈[6.2,7.6]) puis branche est
   //    (x∈[7.35,8.75], z∈[2,7.6]) qui débouche dans le zaguán ────────────────
-  // mur nord couloir z=7.6 : percé x∈[4.03,4.97] → porte chambre 1 (AABB
-  // dynamique doorConfig)
+  // mur nord couloir z=7.6 : percé x∈[4.03,4.97] (porte chambre 1) et
+  // x∈[10.2,11.14] (porte chambre 2) — AABB dynamiques doorConfig
   [-0.6, 4.0, 7.45, 7.75],    // mur nord couloir, segment ouest
-  [ 5.0, 8.95, 7.45, 7.75],   // mur nord couloir, segment est (jusqu'au coude)
-  [ 8.6, 8.9, 2.0, 7.6],      // mur est branche est (x=8.75)
+  [ 5.0, 10.15, 7.45, 7.75],  // mur nord couloir, entre les deux portes
+  [11.2, 13.6, 7.45, 7.75],   // mur nord couloir, segment est
+  [ 8.6, 8.9, 2.0, 6.2],      // mur est branche est (x=8.75, s'arrête au T)
   [ 6.95, 7.4, 2.0, 6.2],     // mur ouest branche est (mur est épais du salon)
+  [ 8.75, 13.6, 5.9, 6.35],   // mur sud du prolongement (z=6.2)
+  [13.25, 13.6, 6.2, 7.6],    // bout du couloir (x=13.4)
   // ── Chambre 1 (x∈[-0.6,7], z∈[7.6,12]) — mur ouest = pierre (déjà listé) ──
   [-0.45, 7.2, 11.8, 12.2],   // mur nord chambre (z=12)
   [ 6.8, 7.2, 7.6, 12.2],     // mur est chambre (x=7)
@@ -57,6 +60,17 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [ 2.85, 3.45, 11.45, 11.95], // table de chevet + veilleuse
   [ 6.35, 7.0, 8.45, 9.75],   // armoire (mur est)
   [ 5.05, 6.05, 7.75, 8.4],   // coffre à jouets (près de la porte)
+  // ── Chambre 2 (parents, x∈[7.35,13.4], z∈[7.6,12]) ────────────────────────
+  [ 7.2, 7.5, 7.6, 12.2],     // mur ouest chambre 2 (mitoyen chambre 1)
+  [ 7.2, 13.6, 11.8, 12.2],   // mur nord chambre 2 (z=12)
+  [13.25, 13.6, 7.6, 12.2],   // mur est chambre 2 (x=13.4)
+  // ── Mobilier chambre 2 (nav seulement) ────────────────────────────────────
+  [10.7, 12.5, 9.8, 12.0],    // lit double (cadre + tête)
+  [10.1, 10.7, 11.35, 12.0],  // chevet ouest
+  [12.5, 13.15, 11.35, 12.0], // chevet est
+  [10.85, 12.35, 9.3, 9.8],   // banc-coffre au pied du lit
+  [ 7.35, 8.05, 8.55, 10.25], // grande armoire (mur ouest)
+  [12.75, 13.4, 8.1, 9.3],    // commode (mur est)
   // fond z=12 : porte OUVRABLE vers le cellier x∈[-6.3,-5.3]
   [-7.2, -6.3, 11.8, 12.2],   // fond cuisine, segment ouest
   [-5.3, -0.45, 11.8, 12.2],  // fond cuisine, segment est
@@ -93,7 +107,7 @@ export const SALON_BOUNDS = { minX: -6.7, maxX: 6.7, minZ: -5.6, maxZ: 5.6 }
 // Bounds de navigation totaux — couvre salon + cuisine (nord) + zaguán (est).
 // L'arche sud est supprimée → minZ = -5.7 (mur plein).
 // canMove utilise NAV_BOUNDS ; la caméra reste dans SALON_BOUNDS.
-export const NAV_BOUNDS = { minX: -7.2, maxX: 10.0, minZ: -5.7, maxZ: 15.4 }
+export const NAV_BOUNDS = { minX: -7.2, maxX: 13.6, minZ: -5.7, maxZ: 15.4 }
 
 // Murs physiques du salon (plans à x=±7, z=±5.8) et marge caméra.
 // CAM_MARGIN > near plane (0.1) : la caméra clampée ne coupe jamais un mur.
