@@ -139,21 +139,24 @@ export function Couloir() {
           salon, dans le couloir qui longe la salle de bain. L'enfant s'y
           reflète. L'adulte, non — mécanique layers à venir (backlog
           « Mirror robuste ») ; pour l'instant c'est un vrai miroir. ── */}
-      <group position={[7.38, 1.5, 4.3]} rotation={[0, Math.PI / 2, 0]}>
+      {/* Grand miroir en pied (portrait) : le verre descend à 12 cm du sol —
+          le héros s'y voit en entier, facilement */}
+      <group position={[7.38, 0.97, 4.3]} rotation={[0, Math.PI / 2, 0]}>
         {/* Cadre bois mouluré */}
         <mesh position={[0, 0, -0.015]}>
-          <boxGeometry args={[0.72, 1.04, 0.04]} />
+          <boxGeometry args={[0.94, 1.86, 0.04]} />
           <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
           <Outlines thickness={0.014} color="black" />
         </mesh>
-        <mesh position={[0, 0.55, -0.005]}>
-          <boxGeometry args={[0.5, 0.07, 0.05]} />
+        {/* Fronton mouluré en haut du cadre */}
+        <mesh position={[0, 0.96, -0.005]}>
+          <boxGeometry args={[0.66, 0.08, 0.05]} />
           <meshToonMaterial color="#5C3010" gradientMap={toonGradient} />
           <Outlines thickness={0.010} color="black" />
         </mesh>
         {/* Verre : reflet planaire réel */}
         <mesh position={[0, 0, 0.008]}>
-          <planeGeometry args={[0.6, 0.92]} />
+          <planeGeometry args={[0.8, 1.7]} />
           <MeshReflectorMaterial
             color="#dfe8ec"
             resolution={512}
