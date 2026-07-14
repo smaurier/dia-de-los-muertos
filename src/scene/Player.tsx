@@ -84,7 +84,8 @@ export function Player() {
         // d'un skinned mesh animé est fausse (disparitions), mais une sphère
         // large figée cull correctement — crucial : les passes des réflecteurs
         // re-rendent la scène, un perso hors champ ne coûte plus rien.
-        child.geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 1, 0), 2.5)
+        child.geometry.computeBoundingSphere()
+        if (child.geometry.boundingSphere) child.geometry.boundingSphere.radius *= 2.5
         child.frustumCulled = true
         if (old.map) {
           mats.push(mat)

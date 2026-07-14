@@ -28,8 +28,9 @@ function applyToon(scene: THREE.Object3D, meshColor: string) {
     if ((mesh.material as THREE.Material[]).length === 1) {
       mesh.material = (mesh.material as THREE.Material[])[0]
     }
-    mesh.geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 1, 0), 2.5)
-    mesh.frustumCulled = true // sphère fixe généreuse : cull sans disparitions
+    mesh.geometry.computeBoundingSphere()
+    if (mesh.geometry.boundingSphere) mesh.geometry.boundingSphere.radius *= 2.5
+    mesh.frustumCulled = true // sphère réelle élargie : cull sans disparitions
     mesh.geometry.computeVertexNormals()
   })
 }

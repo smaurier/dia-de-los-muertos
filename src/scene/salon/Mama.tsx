@@ -35,8 +35,9 @@ export function Mama() {
         color: old.map ? '#ffffff' : '#c68642',
         gradientMap: toonGradient,
       })
-      mesh.geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 1, 0), 2.5)
-      mesh.frustumCulled = true // sphère fixe généreuse : cull sans disparitions
+      mesh.geometry.computeBoundingSphere()
+      if (mesh.geometry.boundingSphere) mesh.geometry.boundingSphere.radius *= 2.5
+      mesh.frustumCulled = true // sphère réelle élargie : cull sans disparitions
     })
     headBoneRef.current =
       scene.getObjectByName('mixamorigHead') ??
