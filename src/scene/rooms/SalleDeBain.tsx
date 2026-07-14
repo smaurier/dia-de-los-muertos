@@ -1,9 +1,9 @@
 // src/scene/rooms/SalleDeBain.tsx
-// Salle de bain + WC — au sud du prolongement du couloir, porte EN FACE de
-// celle de la chambre 2 (x∈[10.2,11.14]). Mitoyenne de la branche est du
-// couloir (mur ouest x∈[8.75,8.9]). Intérieur x∈[8.9,11.9], z∈[3.4,6.2].
-// Années 90 : soubassement d'azulejos talavera, baignoire, lavabo colonne,
-// petit miroir banal (LE miroir narratif reste celui du couloir, ch3).
+// Bathroom + WC — south of the hallway extension, door FACING bedroom 2
+// (x∈[10.2,11.14]). Adjoins the east branch of the hallway (west wall x∈[8.75,8.9]).
+// Interior x∈[8.9,11.9], z∈[3.4,6.2].
+// 1990s style: talavera tile wainscoting, bathtub, pedestal sink,
+// small plain mirror (THE narrative mirror stays in the hallway, ch3).
 import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
@@ -13,26 +13,26 @@ import { PorteAnimee } from '../shared/PorteAnimee'
 
 const C_CEIL    = '#E4D6BC'
 const C_WOOD    = '#3A2008'
-const C_CERAM   = '#EDE8DC'   // céramique sanitaire
-const C_TILE    = '#D8D2C2'   // sol carrelé clair
+const C_CERAM   = '#EDE8DC'   // sanitary ceramic
+const C_TILE    = '#D8D2C2'   // light tile floor
 const C_IRON    = '#1A1512'
 const C_NIGHT   = '#16223E'
 
 export function SalleDeBain() {
   return (
     <group>
-      {/* ── Sol carrelé clair ── */}
+      {/* ── Light tile floor ── */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[10.4, 0.001, 4.8]}>
         <planeGeometry args={[3.0, 2.8]} />
         <meshToonMaterial color={C_TILE} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Plafond ── */}
+      {/* ── Ceiling ── */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[10.4, 2.9, 4.8]}>
         <planeGeometry args={[3.0, 2.8]} />
         <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Mur nord z=6.05 (face intérieure du mur du couloir), percé porte ── */}
+      {/* ── North wall z=6.05 (inner face of the hallway wall), pierced door ── */}
       <mesh position={[9.475, 1.45, 6.05]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[1.45, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
@@ -45,9 +45,9 @@ export function SalleDeBain() {
         <planeGeometry args={[0.94, 0.8]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* Porte OUVRABLE (touche F) — ouvre vers l'intérieur (sud) */}
+      {/* Openable door (key F) — opens inward (south) */}
       <PorteAnimee id="salle-de-bain" position={[10.2, 0, 6.13]} rotationY={Math.PI / 2} openAngle={1.9} width={0.94} />
-      {/* Encadrement bois */}
+      {/* Wood casing */}
       {[10.17, 11.17].map(px => (
         <mesh key={px} position={[px, 1.05, 6.13]}>
           <boxGeometry args={[0.08, 2.1, 0.22]} />
@@ -60,13 +60,13 @@ export function SalleDeBain() {
         <meshToonMaterial color={C_WOOD} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Mur ouest x=8.9 (face intérieure, mitoyen branche est du couloir) ── */}
+      {/* ── West wall x=8.9 (inner face, shared with the east hallway branch) ── */}
       <mesh position={[8.9, 1.45, 4.8]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[2.8, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Mur est x=11.9 — percé fenêtre haute z∈[4.6,5.4] y∈[2.1,2.6],
-          AU-DESSUS du miroir (seul mur donnant sur l'extérieur) ── */}
+      {/* ── East wall x=11.9 — pierced high window z∈[4.6,5.4] y∈[2.1,2.6],
+          ABOVE the mirror (only wall facing the outside) ── */}
       <mesh position={[11.9, 1.45, 4.0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[1.2, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
@@ -83,7 +83,7 @@ export function SalleDeBain() {
         <planeGeometry args={[0.8, 2.1]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* Fenêtre haute : nuit + petit encadrement + 2 barreaux */}
+      {/* High window: night + small casing + 2 bars */}
       <mesh position={[12.0, 2.35, 5.0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[0.84, 0.54]} />
         <meshToonMaterial color={C_NIGHT} emissive="#24365E" emissiveIntensity={0.35} gradientMap={toonGradient} />
@@ -106,19 +106,19 @@ export function SalleDeBain() {
           <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
         </mesh>
       ))}
-      {/* Vitre — mêmes propriétés que la grande fenêtre du salon */}
+      {/* Glass — same properties as the salon's large window */}
       <mesh position={[11.97, 2.35, 5.0]} rotation={[0, -Math.PI / 2, 0]} userData={{ reflectorZone: 'sdb' }}>
         <planeGeometry args={[0.76, 0.46]} />
         <ZoneReflectorMaterial zone="sdb" transparent opacity={0.68} color="#e8f0f4" resolution={256} mirror={1} mixStrength={1.4} blur={[0, 0]} roughness={0.06} metalness={0} depthScale={0} side={THREE.DoubleSide} />
       </mesh>
-      {/* ── Mur sud z=3.4 — plein (donne sur l'intérieur : futur débarras) ── */}
+      {/* ── South wall z=3.4 — solid (backs onto the interior: future storage room) ── */}
       <mesh position={[10.4, 1.45, 3.4]}>
         <planeGeometry args={[3.0, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Soubassement d'azulejos talavera (h=1.15, plaqué sur les 4 murs,
-          interrompu à la porte x∈[10.2,11.14]) ── */}
+      {/* ── Talavera tile wainscoting (h=1.15, applied to all 4 walls,
+          interrupted at the door x∈[10.2,11.14]) ── */}
       <mesh position={[9.55, 0.575, 6.04]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[1.3, 1.15]} />
         <meshToonMaterial map={azulejosTalavera} gradientMap={toonGradient} />
@@ -139,7 +139,7 @@ export function SalleDeBain() {
         <planeGeometry args={[2.8, 1.15]} />
         <meshToonMaterial map={azulejosTalavera} gradientMap={toonGradient} />
       </mesh>
-      {/* Liseré bois en haut du soubassement */}
+      {/* Wood trim at the top of the wainscoting */}
       {([[9.55, 6.02, 1.3, 0], [11.52, 6.02, 0.76, 0], [10.4, 3.43, 3.0, 0], [8.93, 4.8, 2.8, 1], [11.87, 4.8, 2.8, 1]] as [number, number, number, number][]).map(([px, pz, w, vert], i) => (
         <mesh key={i} position={[px, 1.16, pz]}>
           <boxGeometry args={vert ? [0.03, 0.05, w] : [w, 0.05, 0.03]} />
@@ -147,9 +147,9 @@ export function SalleDeBain() {
         </mesh>
       ))}
 
-      {/* ── Baignoire contre le mur sud ── */}
+      {/* ── Bathtub against the south wall ── */}
       <group position={[10.3, 0, 3.95]}>
-        {/* Cuve : coque extérieure + rebord + intérieur creusé (simplifié) */}
+        {/* Tub: outer shell + rim + simplified hollow interior */}
         <mesh position={[0, 0.28, 0]}>
           <boxGeometry args={[1.5, 0.56, 0.7]} />
           <meshToonMaterial color={C_CERAM} gradientMap={toonGradient} />
@@ -164,7 +164,7 @@ export function SalleDeBain() {
           <boxGeometry args={[1.34, 0.03, 0.54]} />
           <meshToonMaterial color="#C9C2B2" gradientMap={toonGradient} />
         </mesh>
-        {/* Robinetterie côté est */}
+        {/* Taps on the east side */}
         <mesh position={[0.62, 0.66, 0]} rotation={[0, 0, 0.5]}>
           <cylinderGeometry args={[0.02, 0.02, 0.18, 6]} />
           <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
@@ -178,9 +178,9 @@ export function SalleDeBain() {
         ))}
       </group>
 
-      {/* ── WC contre le mur ouest ── */}
+      {/* ── WC against the west wall ── */}
       <group position={[9.28, 0, 5.35]} rotation={[0, Math.PI / 2, 0]}>
-        {/* Cuvette + abattant + réservoir */}
+        {/* Bowl + seat + cistern */}
         <mesh position={[0, 0.2, 0]}>
           <cylinderGeometry args={[0.19, 0.14, 0.4, 10]} />
           <meshToonMaterial color={C_CERAM} gradientMap={toonGradient} />
@@ -202,7 +202,7 @@ export function SalleDeBain() {
         </mesh>
       </group>
 
-      {/* ── Lavabo colonne + petit miroir (banal) contre le mur est ── */}
+      {/* ── Pedestal sink + small mirror (plain) against the east wall ── */}
       <group position={[11.62, 0, 5.0]} rotation={[0, -Math.PI / 2, 0]}>
         <mesh position={[0, 0.42, 0]}>
           <cylinderGeometry args={[0.09, 0.12, 0.84, 8]} />
@@ -214,20 +214,20 @@ export function SalleDeBain() {
           <meshToonMaterial color={C_CERAM} gradientMap={toonGradient} />
           <Outlines thickness={0.014} color="black" />
         </mesh>
-        {/* Robinet */}
+        {/* Tap */}
         <mesh position={[0, 0.96, -0.18]} rotation={[0.6, 0, 0]}>
           <cylinderGeometry args={[0.016, 0.016, 0.14, 6]} />
           <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
           <Outlines thickness={0.008} color="black" />
         </mesh>
-        {/* Verre à dents */}
+        {/* Toothbrush glass */}
         <mesh position={[0.2, 0.945, -0.1]}>
           <cylinderGeometry args={[0.032, 0.026, 0.09, 8]} />
           <meshToonMaterial color="#C8E0F0" gradientMap={toonGradient} />
         </mesh>
       </group>
-      {/* Petit miroir rectangulaire au-dessus du lavabo (objet banal — aucun
-          rôle narratif : le miroir du jeu est celui du couloir) */}
+      {/* Small rectangular mirror above the sink (plain prop — no narrative role:
+          the game mirror is the one in the hallway) */}
       <group position={[11.88, 1.62, 5.0]} rotation={[0, -Math.PI / 2, 0]}>
         <mesh>
           <boxGeometry args={[0.5, 0.64, 0.03]} />
@@ -240,7 +240,7 @@ export function SalleDeBain() {
         </mesh>
       </group>
 
-      {/* ── Porte-serviettes (mur ouest, près de la baignoire) + serviettes ── */}
+      {/* ── Towel rail (west wall, near the bathtub) + towels ── */}
       <mesh position={[8.95, 1.35, 4.35]} rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.018, 0.018, 0.7, 6]} />
         <meshToonMaterial color={C_WOOD} gradientMap={toonGradient} />
@@ -254,7 +254,7 @@ export function SalleDeBain() {
         </mesh>
       ))}
 
-      {/* ── Tapis de bain + panier à linge ── */}
+      {/* ── Bath mat + laundry basket ── */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[10.3, 0.012, 4.65]}>
         <planeGeometry args={[1.0, 0.5]} />
         <meshToonMaterial color="#C8893A" gradientMap={toonGradient} />
@@ -271,7 +271,7 @@ export function SalleDeBain() {
         </mesh>
       </group>
 
-      {/* ── Lumière : ampoule nue faible, chaude ── */}
+      {/* ── Light: bare weak bulb, warm ── */}
       <pointLight position={[10.4, 2.4, 4.8]} intensity={1.1} color="#f5e3b0" distance={4.5} decay={2} />
       <mesh position={[10.4, 2.62, 4.8]}>
         <sphereGeometry args={[0.045, 8, 8]} />

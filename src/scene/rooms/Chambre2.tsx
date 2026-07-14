@@ -1,8 +1,8 @@
 // src/scene/rooms/Chambre2.tsx
-// Chambre des parents — Papá Carlos + Mamá Elena. La GRANDE chambre.
-// x∈[7.35,13.4], z∈[7.6,12] (~6 × 4.4 m), mitoyenne de la chambre 1
-// (double cloison x∈[7,7.35]). Porte sur le couloir x∈[10.2,11.14].
-// Pièce vide pendant la fête : pénombre, lampes de chevet, clair de lune.
+// Parents' bedroom — Papá Carlos + Mamá Elena. The LARGE bedroom.
+// x∈[7.35,13.4], z∈[7.6,12] (~6 × 4.4 m), adjoining bedroom 1
+// (double partition x∈[7,7.35]). Door on the hallway x∈[10.2,11.14].
+// Room empty during the party: dim light, bedside lamps, moonlight.
 import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
@@ -20,18 +20,18 @@ const C_NIGHT     = '#16223E'
 export function Chambre2() {
   return (
     <group>
-      {/* ── Sol tomettes ── */}
+      {/* ── Tile floor ── */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[10.375, 0.001, 9.8]}>
         <planeGeometry args={[6.05, 4.4]} />
         <meshPhongMaterial map={solTomettes} shininess={20} />
       </mesh>
-      {/* ── Plafond ── */}
+      {/* ── Ceiling ── */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[10.375, 2.9, 9.8]}>
         <planeGeometry args={[6.05, 4.4]} />
         <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Mur sud z=7.75 (face chambre du mur du couloir), percé porte
+      {/* ── South wall z=7.75 (hallway-facing side), pierced door
           x∈[10.2,11.14] ── */}
       <mesh position={[8.775, 1.45, 7.75]}>
         <planeGeometry args={[2.85, 2.9]} />
@@ -45,9 +45,9 @@ export function Chambre2() {
         <planeGeometry args={[0.94, 0.8]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* Porte OUVRABLE (touche F) — gond à l'ouest, ouvre vers la chambre */}
+      {/* Openable door (key F) — hinge on the west side, opens into the bedroom */}
       <PorteAnimee id="chambre-2" position={[10.2, 0, 7.67]} rotationY={Math.PI / 2} openAngle={-1.9} width={0.94} />
-      {/* Encadrement bois */}
+      {/* Wood casing */}
       {[10.17, 11.17].map(px => (
         <mesh key={px} position={[px, 1.05, 7.67]}>
           <boxGeometry args={[0.08, 2.1, 0.22]} />
@@ -60,13 +60,13 @@ export function Chambre2() {
         <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Mur ouest x=7.35 (mitoyen chambre 1, face est) ── */}
+      {/* ── West wall x=7.35 (shared with bedroom 1, east face) ── */}
       <mesh position={[7.35, 1.45, 9.8]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[4.4, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Mur est x=13.4 — GRANDE fenêtre z∈[8.9,10.9] y∈[0.9,2.3] (donne
-          sur l'extérieur ; pas une porte-fenêtre — allège de 0,9 m) ── */}
+      {/* ── East wall x=13.4 — LARGE window z∈[8.9,10.9] y∈[0.9,2.3] (faces
+          the outside; not a French door — sill at 0.9 m) ── */}
       <mesh position={[13.4, 1.45, 8.25]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[1.3, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
@@ -83,7 +83,7 @@ export function Chambre2() {
         <planeGeometry args={[2.0, 0.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* Nuit + encadrement bois + appui + rejas */}
+      {/* Night + wood casing + sill + rejas */}
       <mesh position={[13.52, 1.6, 9.9]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[2.1, 1.5]} />
         <meshToonMaterial color={C_NIGHT} emissive="#24365E" emissiveIntensity={0.35} gradientMap={toonGradient} />
@@ -101,7 +101,7 @@ export function Chambre2() {
           <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
         </mesh>
       ))}
-      {/* Meneau central + appui débordant */}
+      {/* Central mullion + overhanging sill */}
       <mesh position={[13.38, 1.6, 9.9]}>
         <boxGeometry args={[0.06, 1.44, 0.06]} />
         <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
@@ -118,15 +118,15 @@ export function Chambre2() {
           <Outlines thickness={0.006} color="black" />
         </mesh>
       ))}
-      {/* Vitre (deux battants de part et d'autre du meneau) — verre du salon */}
+      {/* Glass (two panes on either side of the mullion) — same as salon window */}
       <mesh position={[13.43, 1.6, 9.9]} rotation={[0, -Math.PI / 2, 0]} userData={{ reflectorZone: 'chambre2' }}>
         <planeGeometry args={[1.96, 1.36]} />
         <ZoneReflectorMaterial zone="chambre2" transparent opacity={0.68} color="#e8f0f4" resolution={256} mirror={1} mixStrength={1.4} blur={[0, 0]} roughness={0.06} metalness={0} depthScale={0} side={THREE.DoubleSide} />
       </mesh>
-      {/* Clair de lune qui entre par la grande fenêtre */}
+      {/* Moonlight entering through the large window */}
       <pointLight position={[12.9, 1.8, 9.9]} intensity={0.7} color="#8aa4d8" distance={4.5} decay={2} />
 
-      {/* ── Mur nord z=12, percé fenêtre x∈[8.3,9.9] y∈[1.0,2.2] ── */}
+      {/* ── North wall z=12, pierced window x∈[8.3,9.9] y∈[1.0,2.2] ── */}
       <mesh position={[7.825, 1.45, 12]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[0.95, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
@@ -143,7 +143,7 @@ export function Chambre2() {
         <planeGeometry args={[1.6, 1.0]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* Fenêtre : nuit bleue + encadrement + rejas */}
+      {/* Window: blue night + casing + rejas */}
       <mesh position={[9.1, 1.6, 12.12]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[1.7, 1.3]} />
         <meshToonMaterial color={C_NIGHT} emissive="#24365E" emissiveIntensity={0.35} gradientMap={toonGradient} />
@@ -168,21 +168,21 @@ export function Chambre2() {
           <Outlines thickness={0.006} color="black" />
         </mesh>
       ))}
-      {/* Vitre — mêmes propriétés que la grande fenêtre du salon */}
+      {/* Glass — same properties as the salon's large window */}
       <mesh position={[9.1, 1.6, 12.03]} rotation={[0, Math.PI, 0]} userData={{ reflectorZone: 'chambre2' }}>
         <planeGeometry args={[1.56, 1.16]} />
         <ZoneReflectorMaterial zone="chambre2" transparent opacity={0.68} color="#e8f0f4" resolution={256} mirror={1} mixStrength={1.4} blur={[0, 0]} roughness={0.06} metalness={0} depthScale={0} side={THREE.DoubleSide} />
       </mesh>
 
-      {/* ── Lit double — tête au mur nord, à l'est de la fenêtre ── */}
+      {/* ── Double bed — head against the north wall, east of the window ── */}
       <group position={[11.6, 0, 10.9]}>
-        {/* Cadre */}
+        {/* Frame */}
         <mesh position={[0, 0.32, 0]}>
           <boxGeometry args={[1.7, 0.18, 2.1]} />
           <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
           <Outlines thickness={0.018} color="black" />
         </mesh>
-        {/* Tête de lit haute (contre le mur nord) */}
+        {/* Tall headboard (against the north wall) */}
         <mesh position={[0, 0.78, 1.02]}>
           <boxGeometry args={[1.7, 0.96, 0.07]} />
           <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
@@ -192,7 +192,7 @@ export function Chambre2() {
           <boxGeometry args={[1.8, 0.09, 0.1]} />
           <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
         </mesh>
-        {/* 4 pieds */}
+        {/* 4 legs */}
         {([-0.78, 0.78] as number[]).flatMap(px =>
           ([-0.98, 0.98] as number[]).map((pz, j) => (
             <mesh key={`${px}-${j}`} position={[px, 0.12, pz]}>
@@ -201,13 +201,13 @@ export function Chambre2() {
             </mesh>
           ))
         )}
-        {/* Matelas */}
+        {/* Mattress */}
         <mesh position={[0, 0.48, 0]}>
           <boxGeometry args={[1.6, 0.16, 2.0]} />
           <meshToonMaterial color="#E8E0D0" gradientMap={toonGradient} />
           <Outlines thickness={0.016} color="black" />
         </mesh>
-        {/* Deux oreillers */}
+        {/* Two pillows */}
         {[-0.4, 0.4].map(px => (
           <mesh key={px} position={[px, 0.6, 0.75]} rotation={[0.1, 0, 0]}>
             <boxGeometry args={[0.62, 0.11, 0.36]} />
@@ -215,7 +215,7 @@ export function Chambre2() {
             <Outlines thickness={0.012} color="black" />
           </mesh>
         ))}
-        {/* Couverture tissée (rouge terre, liseré crème) + retombées */}
+        {/* Woven blanket (terracotta red, cream trim) + drops */}
         <mesh position={[0, 0.565, -0.35]}>
           <boxGeometry args={[1.66, 0.05, 1.26]} />
           <meshToonMaterial color="#8A3A2A" gradientMap={toonGradient} />
@@ -235,7 +235,7 @@ export function Chambre2() {
         ))}
       </group>
 
-      {/* ── Deux tables de chevet + lampes ── */}
+      {/* ── Two bedside tables + lamps ── */}
       {[10.4, 12.85].map((px, i) => (
         <group key={i} position={[px, 0, 11.7]}>
           <mesh position={[0, 0.3, 0]}>
@@ -243,7 +243,7 @@ export function Chambre2() {
             <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
             <Outlines thickness={0.014} color="black" />
           </mesh>
-          {/* Lampe : socle + abat-jour chaud */}
+          {/* Lamp: base + warm shade */}
           <mesh position={[0, 0.66, 0]}>
             <cylinderGeometry args={[0.016, 0.02, 0.12, 8]} />
             <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
@@ -256,14 +256,14 @@ export function Chambre2() {
         </group>
       ))}
 
-      {/* ── Banc-coffre au pied du lit ── */}
+      {/* ── Blanket chest at the foot of the bed ── */}
       <group position={[11.6, 0, 9.55]}>
         <mesh position={[0, 0.24, 0]}>
           <boxGeometry args={[1.3, 0.42, 0.42]} />
           <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
           <Outlines thickness={0.016} color="black" />
         </mesh>
-        {/* Plaid plié dessus */}
+        {/* Folded throw on top */}
         <mesh position={[0.3, 0.49, 0]}>
           <boxGeometry args={[0.5, 0.08, 0.34]} />
           <meshToonMaterial color="#27547A" gradientMap={toonGradient} />
@@ -271,7 +271,7 @@ export function Chambre2() {
         </mesh>
       </group>
 
-      {/* ── Grande armoire contre le mur ouest ── */}
+      {/* ── Large wardrobe against the west wall ── */}
       <group position={[7.68, 0, 9.4]} rotation={[0, Math.PI / 2, 0]}>
         <mesh position={[0, 1.05, 0]}>
           <boxGeometry args={[1.6, 2.1, 0.6]} />
@@ -302,7 +302,7 @@ export function Chambre2() {
         )}
       </group>
 
-      {/* ── Commode contre le mur est ── */}
+      {/* ── Chest of drawers against the east wall ── */}
       <group position={[13.05, 0, 8.7]} rotation={[0, -Math.PI / 2, 0]}>
         <mesh position={[0, 0.45, 0]}>
           <boxGeometry args={[1.1, 0.9, 0.5]} />
@@ -323,7 +323,7 @@ export function Chambre2() {
             ))}
           </group>
         ))}
-        {/* Napperon + photo de mariage encadrée dessus */}
+        {/* Doily + framed wedding photo on top */}
         <mesh position={[0, 0.905, 0]}>
           <boxGeometry args={[0.5, 0.01, 0.3]} />
           <meshToonMaterial color="#F2EDDF" gradientMap={toonGradient} />
@@ -341,7 +341,7 @@ export function Chambre2() {
         </group>
       </group>
 
-      {/* ── Tapis tissé au pied du lit ── */}
+      {/* ── Woven rug at the foot of the bed ── */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[10.7, 0.012, 9.3]}>
         <planeGeometry args={[2.4, 1.6]} />
         <meshToonMaterial color="#5A3A5A" gradientMap={toonGradient} />
@@ -353,7 +353,7 @@ export function Chambre2() {
         </mesh>
       ))}
 
-      {/* ── Croix au-dessus du lit (traverse le long de x — mur le long de x) ── */}
+      {/* ── Cross above the bed (crossbar along x — wall runs along x) ── */}
       <mesh position={[11.6, 2.5, 11.96]}>
         <boxGeometry args={[0.05, 0.38, 0.04]} />
         <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
@@ -364,11 +364,11 @@ export function Chambre2() {
         <meshToonMaterial color={C_WOOD_MED} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Cadres photo (famille) — sur le mur sud, FACE au lit ── */}
+      {/* ── Photo frames (family) — on the south wall, FACING the bed ── */}
       <PhotoFrame position={[11.6, 1.95, 7.78]} rotY={0} />
       <PhotoFrame position={[8.6, 1.9, 7.78]} rotY={0} />
 
-      {/* ── Chaussons au pied du lit + livre sur un chevet ── */}
+      {/* ── Slippers at the foot of the bed + book on a bedside table ── */}
       {([[10.75, 10.6], [10.98, 10.55]] as [number, number][]).map(([px, pz], i) => (
         <mesh key={i} position={[px, 0.035, pz]} rotation={[0, i * 0.5 - 0.2, 0]}>
           <boxGeometry args={[0.1, 0.06, 0.24]} />
@@ -382,7 +382,7 @@ export function Chambre2() {
         <Outlines thickness={0.008} color="black" />
       </mesh>
 
-      {/* ── Lumières : pénombre — lampes de chevet, clair de lune ── */}
+      {/* ── Lights: dim — bedside lamps, moonlight ── */}
       <pointLight position={[10.4, 0.95, 11.5]} intensity={0.85} color="#f5c87a" distance={4} decay={2} />
       <pointLight position={[12.85, 0.95, 11.5]} intensity={0.85} color="#f5c87a" distance={4} decay={2} />
       <pointLight position={[9.1, 1.9, 11.3]} intensity={0.7} color="#8aa4d8" distance={5} decay={2} />

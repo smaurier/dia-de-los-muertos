@@ -1,8 +1,8 @@
 // src/scene/rooms/Bureau.tsx
-// Bureau — au sud du couloir d'entrée, comme sur le plan (entre le débarras
-// et le futur garage). x∈[8.9,12.4], z∈[-4.2,-1.2]. Porte sur le couloir
-// sud (mur ouest, z∈[-2.5,-1.56]). Pièce d'adulte, rangée, un peu solennelle :
-// écritoire, lampe de banquier, bibliothèque, classeur, machine à écrire.
+// Office — south of the entrance hallway, as per the floor plan (between the
+// storage room and the future garage). x∈[8.9,12.4], z∈[-4.2,-1.2]. Door on
+// the south hallway (west wall, z∈[-2.5,-1.56]). Adult room, tidy, slightly
+// solemn: writing desk, banker's lamp, bookshelf, filing cabinet, typewriter.
 import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
@@ -21,18 +21,18 @@ const C_PAPER     = '#EFE9D8'
 export function Bureau() {
   return (
     <group>
-      {/* ── Sol tomettes ── */}
+      {/* ── Tile floor ── */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[10.65, 0.001, -2.7]}>
         <planeGeometry args={[3.5, 3.0]} />
         <meshPhongMaterial map={solTomettes} shininess={20} />
       </mesh>
-      {/* ── Plafond ── */}
+      {/* ── Ceiling ── */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[10.65, 2.9, -2.7]}>
         <planeGeometry args={[3.5, 3.0]} />
         <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Mur ouest x=8.9 (face intérieure), percé porte z∈[-2.5,-1.56] ── */}
+      {/* ── West wall x=8.9 (inner face), pierced door z∈[-2.5,-1.56] ── */}
       <mesh position={[8.9, 1.45, -1.38]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[0.36, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
@@ -45,9 +45,9 @@ export function Bureau() {
         <planeGeometry args={[0.94, 0.8]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* Porte OUVRABLE (touche F) — ouvre vers l'intérieur du bureau */}
+      {/* Openable door (key F) — opens into the office */}
       <PorteAnimee id="bureau" position={[8.82, 0, -2.5]} openAngle={1.9} width={0.94} />
-      {/* Encadrement bois */}
+      {/* Wood casing */}
       {[-2.53, -1.53].map(pz => (
         <mesh key={pz} position={[8.82, 1.05, pz]}>
           <boxGeometry args={[0.22, 2.1, 0.08]} />
@@ -60,17 +60,17 @@ export function Bureau() {
         <meshToonMaterial color={C_WOOD_DARK} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Mur nord z=-1.2 (dos du couloir d'entrée) ── */}
+      {/* ── North wall z=-1.2 (back of the entrance hallway) ── */}
       <mesh position={[10.65, 1.45, -1.2]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[3.5, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Mur sud z=-4.2 ── */}
+      {/* ── South wall z=-4.2 ── */}
       <mesh position={[10.65, 1.45, -4.2]}>
         <planeGeometry args={[3.5, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Mur est x=12.4, percé fenêtre z∈[-3.3,-2.1] y∈[1.0,2.2] ── */}
+      {/* ── East wall x=12.4, pierced window z∈[-3.3,-2.1] y∈[1.0,2.2] ── */}
       <mesh position={[12.4, 1.45, -1.65]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[0.9, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
@@ -87,7 +87,7 @@ export function Bureau() {
         <planeGeometry args={[1.2, 1.0]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* Fenêtre : nuit + encadrement + rejas */}
+      {/* Window: night + casing + rejas */}
       <mesh position={[12.52, 1.6, -2.7]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[1.3, 1.3]} />
         <meshToonMaterial color={C_NIGHT} emissive="#24365E" emissiveIntensity={0.35} gradientMap={toonGradient} />
@@ -112,15 +112,15 @@ export function Bureau() {
           <Outlines thickness={0.006} color="black" />
         </mesh>
       ))}
-      {/* Vitre — mêmes propriétés que la grande fenêtre du salon */}
+      {/* Glass — same properties as the salon's large window */}
       <mesh position={[12.49, 1.6, -2.7]} rotation={[0, -Math.PI / 2, 0]} userData={{ reflectorZone: 'bureau' }}>
         <planeGeometry args={[1.16, 1.16]} />
         <ZoneReflectorMaterial zone="bureau" transparent opacity={0.68} color="#e8f0f4" resolution={256} mirror={1} mixStrength={1.4} blur={[0, 0]} roughness={0.06} metalness={0} depthScale={0} side={THREE.DoubleSide} />
       </mesh>
 
-      {/* ── Écritoire contre le mur est, sous la fenêtre — chaise face à elle ── */}
+      {/* ── Writing desk against the east wall, under the window — chair facing it ── */}
       <group position={[11.85, 0, -2.7]} rotation={[0, -Math.PI / 2, 0]}>
-        {/* Plateau + caissons de tiroirs */}
+        {/* Top + drawer pedestals */}
         <mesh position={[0, 0.74, 0]}>
           <boxGeometry args={[1.4, 0.05, 0.65]} />
           <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
@@ -147,7 +147,7 @@ export function Bureau() {
             ))}
           </group>
         ))}
-        {/* Lampe de banquier (abat-jour vert, allumée) */}
+        {/* Banker's lamp (green shade, lit) */}
         <group position={[-0.42, 0.765, -0.18]}>
           <mesh position={[0, 0.02, 0]}>
             <cylinderGeometry args={[0.06, 0.075, 0.04, 8]} />
@@ -164,7 +164,7 @@ export function Bureau() {
             <Outlines thickness={0.010} color="black" />
           </mesh>
         </group>
-        {/* Machine à écrire */}
+        {/* Typewriter */}
         <group position={[0.25, 0.765, 0.02]} rotation={[0, -0.12, 0]}>
           <mesh position={[0, 0.07, 0]}>
             <boxGeometry args={[0.36, 0.14, 0.3]} />
@@ -181,14 +181,14 @@ export function Bureau() {
             <meshToonMaterial color="#3A3E44" gradientMap={toonGradient} />
           </mesh>
         </group>
-        {/* Papiers épars + tampon */}
+        {/* Scattered papers + rubber stamp */}
         {([[-0.05, 0.2, 0.15], [0.06, 0.28, -0.2], [-0.15, 0.14, 0.32]] as [number, number, number][]).map(([dx, dz, rot], i) => (
           <mesh key={i} position={[dx, 0.768 + i * 0.002, dz]} rotation={[-Math.PI / 2, 0, rot]}>
             <planeGeometry args={[0.21, 0.28]} />
             <meshToonMaterial color={C_PAPER} gradientMap={toonGradient} />
           </mesh>
         ))}
-        {/* Téléphone à cadran */}
+        {/* Rotary-dial telephone */}
         <group position={[0.55, 0.765, -0.18]}>
           <mesh position={[0, 0.05, 0]}>
             <boxGeometry args={[0.2, 0.1, 0.16]} />
@@ -202,10 +202,10 @@ export function Bureau() {
           </mesh>
         </group>
       </group>
-      {/* Lueur de la lampe de banquier */}
+      {/* Banker's lamp glow */}
       <pointLight position={[11.7, 1.2, -2.4]} intensity={0.9} color="#8ADFA8" distance={2.8} decay={2} />
 
-      {/* ── Chaise de bureau (dos à la porte, face à l'écritoire) ── */}
+      {/* ── Office chair (back to the door, facing the desk) ── */}
       <group position={[11.15, 0, -2.7]} rotation={[0, Math.PI / 2, 0]}>
         <mesh position={[0, 0.46, 0]}>
           <boxGeometry args={[0.42, 0.05, 0.42]} />
@@ -227,14 +227,14 @@ export function Bureau() {
         </mesh>
       </group>
 
-      {/* ── Bibliothèque contre le mur sud ── */}
+      {/* ── Bookshelf against the south wall ── */}
       <group position={[10.5, 0, -3.93]}>
         <mesh position={[0, 1.0, 0]}>
           <boxGeometry args={[1.5, 2.0, 0.4]} />
           <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
           <Outlines thickness={0.018} color="black" />
         </mesh>
-        {/* Rayons de livres (tranches colorées) */}
+        {/* Book shelves (coloured spines) */}
         {[0.5, 0.98, 1.46].map((py, r) => (
           <group key={py}>
             <mesh position={[0, py - 0.04, 0.14]}>
@@ -257,7 +257,7 @@ export function Bureau() {
             ))}
           </group>
         ))}
-        {/* Globe terrestre sur le dessus */}
+        {/* Globe on top */}
         <group position={[-0.4, 2.14, 0]}>
           <mesh position={[0, 0.02, 0]}>
             <cylinderGeometry args={[0.06, 0.08, 0.04, 8]} />
@@ -275,7 +275,7 @@ export function Bureau() {
         </group>
       </group>
 
-      {/* ── Classeur métallique (coin nord-est) ── */}
+      {/* ── Metal filing cabinet (north-east corner) ── */}
       <group position={[12.1, 0, -1.5]} rotation={[0, -Math.PI / 2, 0]}>
         <mesh position={[0, 0.66, 0]}>
           <boxGeometry args={[0.45, 1.32, 0.5]} />
@@ -296,7 +296,7 @@ export function Bureau() {
         ))}
       </group>
 
-      {/* ── Petit tapis + cadres + plante ── */}
+      {/* ── Small rug + frames + plant ── */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[10.9, 0.012, -2.7]}>
         <planeGeometry args={[1.5, 1.1]} />
         <meshToonMaterial color="#27406E" gradientMap={toonGradient} />
@@ -309,7 +309,7 @@ export function Bureau() {
       ))}
       <PhotoFrame position={[10.2, 1.95, -1.23]} rotY={Math.PI} />
       <PhotoFrame position={[8.93, 1.85, -3.3]} rotY={Math.PI / 2} />
-      {/* Plante en pot (coin sud-ouest) */}
+      {/* Potted plant (south-west corner) */}
       <group position={[9.25, 0, -3.85]}>
         <mesh position={[0, 0.18, 0]}>
           <cylinderGeometry args={[0.16, 0.12, 0.36, 9]} />
@@ -325,7 +325,7 @@ export function Bureau() {
         ))}
       </group>
 
-      {/* ── Lumières : pièce sobre — lampe verte + appoint chaud faible ── */}
+      {/* ── Lights: sober room — green lamp + weak warm fill ── */}
       <pointLight position={[10.65, 2.3, -2.7]} intensity={0.7} color="#e8d0a0" distance={4.5} decay={2} />
       <pointLight position={[12.0, 1.9, -2.7]} intensity={0.5} color="#8aa4d8" distance={3.5} decay={2} />
     </group>

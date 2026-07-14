@@ -1,10 +1,10 @@
 // src/scene/rooms/Debarras.tsx
-// Débarras (ch7 — le point le plus étouffé de la maison, spec house-rooms).
-// Entre la salle de bain et l'entrée, comme sur le plan : porte sur la
-// branche est du couloir (z∈[2.25,3.19]), celle qui descend au zaguán.
-// Rectangle x∈[8.9,13.4], z∈[1.2,3.25]. À l'est de la salle de bain :
-// l'extérieur (sa fenêtre donne dessus).
-// Pas de fenêtre ici. Ampoule nue faible. On y range ce qu'on ne veut plus voir.
+// Storage room (ch7 — the most oppressive point in the house, spec house-rooms).
+// Between the bathroom and the entrance, as per the floor plan: door on the
+// east branch of the hallway (z∈[2.25,3.19]), the one that descends to the zaguán.
+// Rectangle x∈[8.9,13.4], z∈[1.2,3.25]. East of the bathroom:
+// the outside (its window faces it).
+// No window here. Weak bare bulb. Things go here when nobody wants to see them.
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, boisSombre } from '../shared/paintedTextures'
@@ -14,24 +14,24 @@ const C_CEIL  = '#D8CBB2'
 const C_WOOD  = '#3A2008'
 const C_WOODM = '#5C3010'
 const C_IRON  = '#1A1512'
-const C_FLOOR = '#8A7460'   // ciment brut, pas de tomettes ici
+const C_FLOOR = '#8A7460'   // raw concrete, no tiles here
 
 export function Debarras() {
   return (
     <group>
-      {/* ── Sol (ciment brut) ── */}
+      {/* ── Floor (raw concrete) ── */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[11.15, 0.001, 2.225]}>
         <planeGeometry args={[4.5, 2.05]} />
         <meshToonMaterial color={C_FLOOR} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Plafond ── */}
+      {/* ── Ceiling ── */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[11.15, 2.9, 2.225]}>
         <planeGeometry args={[4.5, 2.05]} />
         <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Mur ouest x=8.9 (face intérieure du mur de la branche est),
-          percé porte z∈[2.25,3.19] ── */}
+      {/* ── West wall x=8.9 (inner face of the east branch wall),
+          pierced door z∈[2.25,3.19] ── */}
       <mesh position={[8.9, 1.45, 1.725]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[1.05, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
@@ -40,9 +40,9 @@ export function Debarras() {
         <planeGeometry args={[0.94, 0.8]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* Porte OUVRABLE (touche F) — ouvre vers l'intérieur du débarras */}
+      {/* Openable door (key F) — opens into the storage room */}
       <PorteAnimee id="debarras" position={[8.82, 0, 2.25]} openAngle={1.9} width={0.94} />
-      {/* Encadrement bois (remplit les slivers de la bande) */}
+      {/* Wood casing (fills the band slivers) */}
       {[2.23, 3.21].map(pz => (
         <mesh key={pz} position={[8.82, 1.05, pz]}>
           <boxGeometry args={[0.22, 2.1, 0.08]} />
@@ -55,23 +55,23 @@ export function Debarras() {
         <meshToonMaterial color={C_WOOD} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Mur sud z=1.2 (dos du couloir d'entrée) ── */}
+      {/* ── South wall z=1.2 (back of the entrance hallway) ── */}
       <mesh position={[11.15, 1.45, 1.2]}>
         <planeGeometry args={[4.5, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Mur nord z=3.25 (dos de la SDB à l'ouest, extérieur à l'est) ── */}
+      {/* ── North wall z=3.25 (back of the bathroom on the west, outside on the east) ── */}
       <mesh position={[11.15, 1.45, 3.25]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[4.5, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Mur est x=13.4 ── */}
+      {/* ── East wall x=13.4 ── */}
       <mesh position={[13.4, 1.45, 2.225]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[2.05, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Étagères brutes le long du mur sud (bocaux, boîtes, journaux) ── */}
+      {/* ── Rough shelves along the south wall (jars, boxes, newspapers) ── */}
       <group position={[10.4, 0, 1.5]}>
         {[0.5, 1.05, 1.6].map(py => (
           <mesh key={py} position={[0, py, 0]}>
@@ -86,7 +86,7 @@ export function Debarras() {
             <meshToonMaterial color={C_WOODM} gradientMap={toonGradient} />
           </mesh>
         ))}
-        {/* Boîtes en carton + bocaux + pile de journaux */}
+        {/* Cardboard boxes + jars + newspaper pile */}
         {([[-0.7, 0.64, '#A08050', 0.34], [0.15, 0.63, '#8A6A42', 0.28], [0.85, 0.62, '#A08050', 0.3]] as [number, number, string, number][]).map(([px, py, c, s], i) => (
           <mesh key={`b${i}`} position={[px, py, 0]} rotation={[0, (i - 1) * 0.15, 0]}>
             <boxGeometry args={[s, 0.22, 0.3]} />
@@ -113,7 +113,7 @@ export function Debarras() {
         </mesh>
       </group>
 
-      {/* ── Pile de cartons + tapis roulé (centre-sud) + pot de peinture ── */}
+      {/* ── Stack of boxes + rolled rug (south-centre) + paint can ── */}
       {([[10.6, 1.55, 0.5, 0.2], [10.55, 1.6, 0.42, 0.72]] as [number, number, number, number][]).map(([px, pz, s, py], i) => (
         <mesh key={`c${i}`} position={[px, py + 0.05, pz]} rotation={[0, i * 0.3 - 0.1, 0]}>
           <boxGeometry args={[s, i === 0 ? 0.5 : 0.42, s * 0.85]} />
@@ -138,7 +138,7 @@ export function Debarras() {
         </mesh>
       </group>
 
-      {/* ── Fauteuil couvert d'un drap (coin sud-est — une forme qui attend) ── */}
+      {/* ── Armchair covered in a sheet (south-east corner — a shape waiting) ── */}
       <group position={[12.75, 0, 1.95] } rotation={[0, -0.4, 0]}>
         <mesh position={[0, 0.42, 0]}>
           <boxGeometry args={[0.8, 0.84, 0.75]} />
@@ -158,7 +158,7 @@ export function Debarras() {
         ))}
       </group>
 
-      {/* ── Cartons empilés contre le mur est (coin nord-est) ── */}
+      {/* ── Stacked boxes against the east wall (north-east corner) ── */}
       {([[13.05, 2.75, 0.3, 0.55, 0.1], [13.1, 3.0, 0.26, 0.45, -0.15], [13.05, 2.85, 0.86, 0.5, 0.05]] as [number, number, number, number, number][]).map(([px, pz, py, s, rot], i) => (
         <mesh key={i} position={[px, py, pz]} rotation={[0, rot, 0]}>
           <boxGeometry args={[s, i === 2 ? 0.5 : 0.55, s * 0.9]} />
@@ -167,7 +167,7 @@ export function Debarras() {
         </mesh>
       ))}
 
-      {/* ── Malle ancienne + pile de couvertures (contre le mur nord) ── */}
+      {/* ── Old trunk + stack of blankets (against the north wall) ── */}
       <group position={[10.35, 0, 2.95]}>
         <mesh position={[0, 0.26, 0]}>
           <boxGeometry args={[0.85, 0.52, 0.45]} />
@@ -191,7 +191,7 @@ export function Debarras() {
         </mesh>
       </group>
 
-      {/* ── Échelle en bois appuyée contre le mur nord ── */}
+      {/* ── Wooden ladder leaning against the north wall ── */}
       <group position={[11.4, 0, 3.05]} rotation={[-0.22, 0, 0]}>
         {[-0.16, 0.16].map(dx => (
           <mesh key={dx} position={[dx, 0.85, 0]}>
@@ -208,7 +208,7 @@ export function Debarras() {
         ))}
       </group>
 
-      {/* ── Balai + seau près de la porte (contre le mur nord) ── */}
+      {/* ── Broom + bucket near the door (against the north wall) ── */}
       <group position={[9.3, 0, 3.0]}>
         <mesh position={[0, 0.75, 0]} rotation={[0.06, 0, 0.14]}>
           <cylinderGeometry args={[0.014, 0.014, 1.5, 6]} />
@@ -227,14 +227,14 @@ export function Debarras() {
         </mesh>
       </group>
 
-      {/* ── Vieux cadre retourné, appuyé contre le mur est (face cachée) ── */}
+      {/* ── Old frame turned face-down, leaning against the east wall ── */}
       <mesh position={[13.3, 0.42, 1.7]} rotation={[0, Math.PI / 2, -0.1]}>
         <boxGeometry args={[0.56, 0.72, 0.035]} />
         <meshToonMaterial color="#7A6248" gradientMap={toonGradient} />
         <Outlines thickness={0.012} color="black" />
       </mesh>
 
-      {/* ── Ampoule nue, faible — la pièce reste dans la pénombre ── */}
+      {/* ── Bare weak bulb — the room stays in shadow ── */}
       <pointLight position={[11.15, 2.3, 2.2]} intensity={0.7} color="#e8d0a0" distance={4.5} decay={2} />
       <mesh position={[11.15, 2.56, 2.2]}>
         <sphereGeometry args={[0.04, 8, 8]} />
