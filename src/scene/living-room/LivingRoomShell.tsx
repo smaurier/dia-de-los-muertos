@@ -14,6 +14,7 @@ import { WindowVista } from './WindowVista'
 import { Prop } from '../shared/Prop'
 import { Sofa } from './Sofa'
 import { SALON_OBSTACLES } from './livingRoomCollision'
+import { TVScreen } from './shell/TVScreen'
 import { Tablecloth } from './Tablecloth'
 import { PhotoFrame } from '../shared/PhotoFrame'
 import { Kitchen } from '../rooms/Kitchen'
@@ -46,35 +47,6 @@ import {
 } from './shell/livingRoomConstants'
 
 // ─── Composants ───────────────────────────────────────────────────────────────
-// Écran CRT : lueur bleutée qui scintille (match/programme lointain).
-// Plaqué sur la face est du tube (TV à (-6.33, -2.15) monde contre le mur
-// ouest, écran vers l'est face au canapé).
-function TVScreen() {
-  const matRef = useRef<THREE.MeshToonMaterial>(null)
-  const t = useRef(0)
-  useFrame((_, delta) => {
-    t.current += delta
-    if (matRef.current) {
-      const flicker =
-        0.95 +
-        0.25 * Math.sin(t.current * 9.3) * Math.sin(t.current * 2.7) +
-        (Math.random() < 0.03 ? 0.35 : 0)
-      matRef.current.emissiveIntensity = flicker
-    }
-  })
-  return (
-    <mesh position={[-6.01, 0.78, -4.81]} rotation={[0, Math.PI / 4, 0]}>
-      <planeGeometry args={[0.44, 0.34]} />
-      <meshToonMaterial
-        ref={matRef}
-        color="#5a7ab0"
-        gradientMap={toonGradient}
-        emissive="#7a9ad0"
-        emissiveIntensity={0.55}
-      />
-    </mesh>
-  )
-}
 
 function PlanteFeuillue({ position }: { position: [number, number, number] }) {
   return (
