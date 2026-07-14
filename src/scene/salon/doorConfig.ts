@@ -19,8 +19,10 @@ export const DOORS: DoorDef[] = [
   { id: 'debarras', x: 8.75, z: 2.72, aabb: [8.6, 8.9, 2.2, 3.24] },
   // Couloir sud ↔ bureau (plan : entre le débarras et le garage).
   { id: 'bureau', x: 8.75, z: -2.03, aabb: [8.6, 8.9, -2.56, -1.5] },
-  // Porte VERTE au bout du couloir sud — ouvrable (le dehors, un jour).
+  // Porte VERTE au bout du couloir sud — ouvre sur le patio.
   { id: 'porte-verte', x: 8.05, z: -5.3, aabb: [7.5, 8.6, -5.45, -5.15] },
+  // Patio ↔ garage : porte en bois dans l'arche du mur mitoyen.
+  { id: 'garage', x: 9.0, z: -8.1, aabb: [8.85, 9.15, -8.62, -7.58] },
   // Portes bleues vers le jardin : verrouillées — Emilio commente.
   { id: 'jardin-cuisine', x: -6.96, z: 10.0, aabb: null, locked: true },
   { id: 'jardin-cellier', x: -6.96, z: 13.6, aabb: null, locked: true },

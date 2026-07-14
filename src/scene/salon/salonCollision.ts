@@ -62,15 +62,25 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [ 6.9, 7.6, -5.6, -5.15],   // pilier du coin ouest de la porte verte
   [ 8.75, 13.6, -5.75, -5.45], // façade nord-est du patio (dos du bureau)
   [-2.2, -1.8, -10.6, -5.6],  // enceinte ouest
-  [13.25, 13.6, -10.6, -5.6], // enceinte est
-  [-2.2, 13.6, -10.75, -10.45], // enceinte sud
+  [-2.2, 13.6, -10.75, -10.45], // enceinte sud (patio + garage)
+  // mur mitoyen patio/garage x=9.0 : arche z∈[-8.6,-7.6], porte en bois
+  // ouvrable (AABB dynamique doorConfig)
+  [ 8.85, 9.15, -10.6, -8.6], // segment sud
+  [ 8.85, 9.15, -7.6, -5.6],  // segment nord
   // ── Mobilier patio (nav seulement) ────────────────────────────────────────
-  [ 3.9, 7.5, -9.35, -6.85],  // bassin ovale (bordure pierre)
-  [-0.7, 1.1, -6.9, -6.2],    // ofrenda (contre la façade, à l'ouest)
-  [ 9.8, 11.4, -6.2, -5.7],   // banc en bois
-  [12.5, 13.3, -9.8, -8.8],   // bougainvillier
+  [ 2.4, 6.0, -9.55, -7.05],  // bassin ovale (bordure pierre)
+  [-2.0, -1.2, -8.95, -7.25], // ofrenda (contre le mur ouest)
+  [ 4.85, 6.35, -6.75, -6.25], // banc en bois
+  [ 7.1, 8.1, -10.6, -9.7],   // bougainvillier (mur sud)
   [-1.75, -0.85, -10.25, -9.35], // grande agave
-  [12.2, 13.0, -6.8, -6.0],   // petite agave
+  [ 7.9, 8.7, -6.5, -5.7],    // petite agave
+  // ── Garage (x∈[9.0,13.4], z∈[-10.6,-5.6]) ─────────────────────────────────
+  [13.25, 13.6, -10.6, -5.6], // mur est garage (porte basculante fermée)
+  // ── Mobilier garage (nav seulement) ───────────────────────────────────────
+  [10.6, 12.4, -10.1, -6.5],  // le vocho
+  [10.1, 11.9, -10.6, -9.85], // établi
+  [12.65, 13.35, -6.3, -5.6], // pneus empilés
+  [ 9.3, 10.05, -10.45, -9.95], // bidons
   [ 6.95, 7.4, 2.0, 6.2],     // mur ouest branche est (mur est épais du salon)
   // mur sud du prolongement (z=6.2) : percé x∈[10.2,11.14] → porte salle de
   // bain (AABB dynamique doorConfig), EN FACE de la porte chambre 2

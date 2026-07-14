@@ -1,15 +1,18 @@
 // src/scene/rooms/Patio.tsx
 // Le patio (ch8 — l'ofrenda). Cour nocturne à ciel ouvert derrière la porte
-// verte, au sud de la maison. x∈[-2,13.4], z∈[-10.6,-5.6].
-// La façade nord = les murs sud du salon, du couloir et du bureau, vus de
-// dehors. Enceinte adobe basse (2,6 m) avec chaperon. Bassin ovale au centre
-// (le plan le montre), eau qui reflète la nuit. L'ofrenda est contre la
-// façade, à l'ouest — loin de la porte : trop loin pour être lue avant le
-// ch8 (anti-spoiler, spec house-rooms). État ch1-2 : préparée, pas chargée.
+// verte, au sud de la maison. x∈[-2,9.0], z∈[-10.6,-5.6].
+// La façade nord = les murs sud du salon et du couloir, vus de dehors.
+// Enceinte adobe basse (2,6 m) avec chaperon. Bassin ovale au centre.
+// L'ofrenda est contre le MUR OUEST — loin de la porte : trop loin pour
+// être lue avant le ch8 (anti-spoiler, spec house-rooms). État ch1-2 :
+// préparée, pas chargée, bougies éteintes.
+// À l'est (x=9.0) : le mur mitoyen du garage, percé d'une arche avec une
+// porte en bois ouvrable.
 import * as THREE from 'three'
 import { MeshReflectorMaterial, Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide } from '../shared/paintedTextures'
+import { PorteAnimee } from '../shared/PorteAnimee'
 
 const C_IRON    = '#1A1512'
 const C_WOOD    = '#3A2008'
@@ -22,7 +25,6 @@ const C_CEMPA2  = '#D97E08'
 const C_LEAF    = '#3E7C3A'
 const C_AGAVE   = '#5A8A6E'
 const C_BOUGAIN = '#C0356E'   // bougainvillier
-const C_SKY     = '#0A1424'
 const C_CANDLE  = '#F5E8D0'
 
 // Touffe de cempasúchil dans un pot en terre cuite.
@@ -110,62 +112,82 @@ export function Patio() {
   return (
     <group>
       {/* ── Sol : terre battue + dalles de pierre éparses ── */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[5.7, 0.001, -8.1]}>
-        <planeGeometry args={[15.4, 5.0]} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[3.5, 0.001, -8.1]}>
+        <planeGeometry args={[11.0, 5.0]} />
         <meshToonMaterial color={C_SOL} gradientMap={toonGradient} />
       </mesh>
-      {([[7.9, -6.3, 0.1], [7.3, -7.1, -0.2], [8.3, -7.6, 0.3], [6.4, -6.6, 0.15], [4.9, -7.0, -0.1], [3.4, -6.8, 0.25], [1.9, -6.9, 0], [0.6, -6.7, -0.3], [9.4, -8.3, 0.1], [10.6, -7.2, -0.15]] as [number, number, number][]).map(([px, pz, rot], i) => (
+      {([[7.9, -6.3, 0.1], [7.3, -7.1, -0.2], [8.3, -7.9, 0.3], [6.4, -6.6, 0.15], [4.9, -7.0, -0.1], [3.4, -6.8, 0.25], [1.9, -6.9, 0], [0.6, -6.7, -0.3], [2.6, -8.9, 0.1], [0.9, -8.2, -0.15]] as [number, number, number][]).map(([px, pz, rot], i) => (
         <mesh key={i} rotation={[-Math.PI / 2, 0, rot]} position={[px, 0.006, pz]}>
           <circleGeometry args={[0.32 + (i % 3) * 0.05, 7]} />
           <meshToonMaterial color={C_DALLE} gradientMap={toonGradient} />
         </mesh>
       ))}
 
-      {/* ── Ciel nocturne (plane sombre au-dessus de la cour) ── */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[5.7, 7.5, -8.1]}>
-        <planeGeometry args={[18, 8]} />
-        <meshToonMaterial color={C_SKY} />
-      </mesh>
+      {/* (le ciel est le DomeCiel étoilé, monté au niveau de la scène) */}
 
-      {/* ── Enceinte adobe (2,6 m) : sud, ouest, est + chaperons ── */}
-      <mesh position={[5.7, 1.3, -10.6]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[15.4, 2.6]} />
+      {/* ── Enceinte adobe (2,6 m) : sud, ouest + chaperons ── */}
+      <mesh position={[3.5, 1.3, -10.6]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[11.0, 2.6]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
       </mesh>
       <mesh position={[-2, 1.3, -8.1]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[5.0, 2.6]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
       </mesh>
-      <mesh position={[13.4, 1.3, -8.1]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[5.0, 2.6]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
-      </mesh>
-      {/* Chaperons de tuiles sur les murs */}
-      <mesh position={[5.7, 2.64, -10.6]}>
-        <boxGeometry args={[15.6, 0.1, 0.3]} />
+      {/* Chaperons de tuiles */}
+      <mesh position={[3.5, 2.64, -10.6]}>
+        <boxGeometry args={[11.2, 0.1, 0.3]} />
         <meshToonMaterial color="#8A4A2A" gradientMap={toonGradient} />
         <Outlines thickness={0.012} color="black" />
       </mesh>
-      {[-2, 13.4].map(px => (
-        <mesh key={px} position={[px, 2.64, -8.1]}>
-          <boxGeometry args={[0.3, 0.1, 5.2]} />
-          <meshToonMaterial color="#8A4A2A" gradientMap={toonGradient} />
-          <Outlines thickness={0.012} color="black" />
-        </mesh>
-      ))}
-      {/* Façade nord-est (entre la porte verte et l'angle est) + pilier du coin
-          ouest de la porte */}
-      <mesh position={[11.075, 1.45, -5.6]}>
-        <planeGeometry args={[4.65, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
+      <mesh position={[-2, 2.64, -8.1]}>
+        <boxGeometry args={[0.3, 0.1, 5.2]} />
+        <meshToonMaterial color="#8A4A2A" gradientMap={toonGradient} />
+        <Outlines thickness={0.012} color="black" />
       </mesh>
+      {/* Pilier du coin ouest de la porte verte (colmate la façade) */}
       <mesh position={[7.16, 1.45, -5.38]}>
         <boxGeometry args={[0.5, 2.9, 0.35]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Bassin ovale au centre (le plan) : bordure pierre + eau-miroir ── */}
-      <group position={[5.7, 0, -8.1]}>
+      {/* ── Mur mitoyen du garage x=9.0 — percé d'une ARCHE z∈[-8.6,-7.6]
+          avec une porte en bois ouvrable ── */}
+      <mesh position={[9.0, 1.3, -9.6]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[2.0, 2.6]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh position={[9.0, 1.3, -6.6]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[2.0, 2.6]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
+      </mesh>
+      {/* Bandeau + cintre de l'arche (des deux côtés) */}
+      <mesh position={[9.0, 2.35, -8.1]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[1.0, 0.5]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
+      </mesh>
+      {[8.99, 9.01].map((px, i) => (
+        <mesh key={px} position={[px, 2.1, -8.1]} rotation={[0, (i === 0 ? -1 : 1) * Math.PI / 2, 0]}>
+          <ringGeometry args={[0.5, 0.85, 18, 1, 0, Math.PI]} />
+          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+        </mesh>
+      ))}
+      {/* Chaperon du mur mitoyen */}
+      <mesh position={[9.0, 2.64, -9.6]}>
+        <boxGeometry args={[0.3, 0.1, 2.0]} />
+        <meshToonMaterial color="#8A4A2A" gradientMap={toonGradient} />
+        <Outlines thickness={0.012} color="black" />
+      </mesh>
+      <mesh position={[9.0, 2.64, -6.6]}>
+        <boxGeometry args={[0.3, 0.1, 2.0]} />
+        <meshToonMaterial color="#8A4A2A" gradientMap={toonGradient} />
+        <Outlines thickness={0.012} color="black" />
+      </mesh>
+      {/* Porte en bois OUVRABLE (touche F) dans l'arche */}
+      <PorteAnimee id="garage" position={[9.0, 0, -8.57]} openAngle={-1.9} width={0.94} />
+
+      {/* ── Bassin ovale au centre : bordure pierre + eau-miroir ── */}
+      <group position={[4.2, 0, -8.3]}>
         <mesh position={[0, 0.18, 0]} scale={[1.7, 1, 1.15]}>
           <cylinderGeometry args={[1.06, 1.12, 0.36, 20, 1, true]} />
           <meshToonMaterial color={C_DALLE} gradientMap={toonGradient} side={THREE.DoubleSide} />
@@ -195,10 +217,10 @@ export function Patio() {
         </mesh>
       </group>
 
-      {/* ── L'ofrenda — contre la façade, à l'ouest, loin de la porte.
+      {/* ── L'ofrenda — contre le MUR OUEST, loin de la porte verte.
           État ch1-2 : table dressée, arche de cempasúchil, quelques bougies
           ÉTEINTES, une petite photo illisible d'ici. Discrète. ── */}
-      <group position={[0.2, 0, -6.55]}>
+      <group position={[-1.6, 0, -8.1]} rotation={[0, Math.PI / 2, 0]}>
         {/* Deux niveaux drapés */}
         <mesh position={[0, 0.42, 0]}>
           <boxGeometry args={[1.6, 0.84, 0.6]} />
@@ -257,8 +279,8 @@ export function Patio() {
       </group>
 
       {/* ── Végétation ── */}
-      {/* Bougainvillier contre le mur est : tronc tordu + masses magenta */}
-      <group position={[12.9, 0, -9.3]}>
+      {/* Bougainvillier contre le mur sud */}
+      <group position={[7.6, 0, -10.2]}>
         <mesh position={[0, 0.6, 0]} rotation={[0.1, 0, -0.25]}>
           <cylinderGeometry args={[0.05, 0.08, 1.2, 7]} />
           <meshToonMaterial color={C_WOOD_M} gradientMap={toonGradient} />
@@ -274,12 +296,12 @@ export function Patio() {
       </group>
       {/* Agaves + pots de cempasúchil + touffes vertes */}
       <Agave position={[-1.3, 0, -9.8]} scale={1.3} />
-      <Agave position={[12.6, 0, -6.4]} scale={0.9} />
+      <Agave position={[8.3, 0, -6.1]} scale={0.9} />
       <PotCempasuchil position={[1.4, 0, -6.4]} />
       <PotCempasuchil position={[-1.0, 0, -6.6]} />
-      <PotCempasuchil position={[9.2, 0, -6.1]} />
+      <PotCempasuchil position={[6.9, 0, -6.0]} />
       <PotCempasuchil position={[3.2, 0, -10.1]} />
-      {([[2.2, -9.9, 0.2], [8.8, -10.0, 0.26], [11.4, -9.6, 0.18]] as [number, number, number][]).map(([px, pz, r], i) => (
+      {([[2.2, -9.9, 0.2], [6.3, -10.1, 0.26], [0.5, -9.7, 0.18]] as [number, number, number][]).map(([px, pz, r], i) => (
         <mesh key={i} position={[px, r * 0.9, pz]} scale={[1, 1.2, 1]}>
           <sphereGeometry args={[r, 8, 8]} />
           <meshToonMaterial color={C_LEAF} gradientMap={toonGradient} />
@@ -287,8 +309,8 @@ export function Patio() {
         </mesh>
       ))}
 
-      {/* ── Banc en bois contre la façade du bureau ── */}
-      <group position={[10.6, 0, -5.95]}>
+      {/* ── Banc en bois contre la façade du salon ── */}
+      <group position={[5.6, 0, -6.5]}>
         <mesh position={[0, 0.4, 0]}>
           <boxGeometry args={[1.5, 0.06, 0.42]} />
           <meshToonMaterial color={C_WOOD_M} gradientMap={toonGradient} />
@@ -308,7 +330,7 @@ export function Patio() {
       </group>
 
       {/* ── Lanterne murale près de la porte verte (côté patio) ── */}
-      <group position={[8.9, 2.1, -5.5]}>
+      <group position={[8.8, 2.1, -5.5]}>
         <mesh position={[0, 0.1, 0]}>
           <boxGeometry args={[0.05, 0.16, 0.05]} />
           <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
@@ -331,8 +353,8 @@ export function Patio() {
 
       {/* ── Lumières : clair de lune bleu + lanterne chaude ── */}
       <directionalLight position={[3, 8, -9]} intensity={0.35} color="#8aa4d8" />
-      <pointLight position={[8.9, 2.0, -5.9]} intensity={1.1} color="#f8dfa0" distance={5} decay={2} />
-      <pointLight position={[5.7, 2.5, -8.1]} intensity={0.5} color="#6a84b8" distance={8} decay={2} />
+      <pointLight position={[8.8, 2.0, -5.9]} intensity={1.1} color="#f8dfa0" distance={5} decay={2} />
+      <pointLight position={[4.2, 2.5, -8.3]} intensity={0.5} color="#6a84b8" distance={8} decay={2} />
     </group>
   )
 }

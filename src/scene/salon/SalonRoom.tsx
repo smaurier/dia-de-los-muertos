@@ -27,6 +27,8 @@ import { Debarras } from '../rooms/Debarras'
 import { Bureau } from '../rooms/Bureau'
 import { PorteEntree } from './PorteEntree'
 import { Patio } from '../rooms/Patio'
+import { Garage } from '../rooms/Garage'
+import { DomeCiel } from '../shared/DomeCiel'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
 const SHOW_AABB = new URLSearchParams(window.location.search).has('aabb')
@@ -521,6 +523,12 @@ export function SalonRoom() {
 
       {/* ─── Patio (ch8) — cour nocturne derrière la porte verte ─── */}
       <Patio />
+
+      {/* ─── Garage — devant le patio, côté rue (arche + porte bois) ─── */}
+      <Garage />
+
+      {/* ─── Bulle de ciel étoilé au-dessus de toute la maison ─── */}
+      <DomeCiel />
 
       {/* ─── Mur Est x=7 — arche d'entrée (zaguán, z=0, ouverture z∈[-0.9,0.9]).
           Mur ÉPAIS (0,35 m, x∈[7,7.35]) comme le mur nord : embrasure profonde,
