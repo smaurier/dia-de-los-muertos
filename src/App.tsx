@@ -64,13 +64,13 @@ function ReflectionsSansFog() {
   return null
 }
 
-// Fondu d'ouverture : couvre le chargement des assets. Sans lui, les
-// premières frames rendent AVANT le montage de l'EffectComposer (qui vit dans
-// le Suspense) → couleurs brûlées sans tone mapping ni vignette, puis saut
-// visuel quand le composer arrive. Le noir reste 400 ms après la fin du
-// chargement (le temps que le composer s'installe) puis fond en 900 ms.
+// Écran de chargement + fondu d'ouverture : couvre le chargement des assets
+// (sans lui : impression de freeze, puis couleurs brûlées avant le montage de
+// l'EffectComposer qui vit dans le Suspense). Titre + barre de progression
+// cempasúchil pendant le chargement ; le noir reste 400 ms après la fin
+// (le temps que le composer s'installe) puis fond en 900 ms.
 function FadeIn() {
-  const { active } = useProgress()
+  const { active, progress } = useProgress()
   const [gone, setGone] = useState(false)
   const [fading, setFading] = useState(false)
 
@@ -85,10 +85,38 @@ function FadeIn() {
   if (gone) return null
   return (
     <div style={{
-      position: 'fixed', inset: 0, zIndex: 20, background: '#000',
+      position: 'fixed', inset: 0, zIndex: 20, background: '#12080a',
       opacity: fading ? 0 : 1, transition: 'opacity 900ms ease',
       pointerEvents: 'none',
-    }} />
+      display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
+      fontFamily: 'Georgia, serif',
+    }}>
+      {!fading && (
+        <>
+          <div style={{ color: '#E8940A', fontSize: '42px', letterSpacing: '3px', marginBottom: '6px' }}>
+            Día de Muertos
+          </div>
+          <div style={{ color: '#8a6a5a', fontSize: '15px', fontStyle: 'italic', marginBottom: '36px' }}>
+            la casa se prepara…
+          </div>
+          {/* Barre de progression cempasúchil */}
+          <div style={{
+            width: '280px', height: '5px', borderRadius: '3px',
+            background: 'rgba(232,148,10,0.15)', overflow: 'hidden',
+          }}>
+            <div style={{
+              width: `${progress}%`, height: '100%', borderRadius: '3px',
+              background: 'linear-gradient(90deg, #C0392B, #E8940A)',
+              transition: 'width 300ms ease',
+            }} />
+          </div>
+          <div style={{ color: '#6a5248', fontSize: '12px', marginTop: '12px' }}>
+            {Math.round(progress)} %
+          </div>
+        </>
+      )}
+    </div>
   )
 }
 

@@ -1,5 +1,5 @@
 // src/scene/Player.tsx
-import { useLayoutEffect, useMemo, useRef } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useKeyboardControls, PointerLockControls, useGLTF, useAnimations } from '@react-three/drei'
 import * as THREE from 'three'
@@ -45,6 +45,16 @@ const pickGaze = (count: number) => (Math.random() < 0.45 ? 0 : 1 + Math.floor(M
 
 export function Player() {
   const boyRef = useRef<THREE.Group>(null)
+  // PointerLockControls monté APRÈS le premier clic : monté d'emblée, il
+  // tente le verrouillage alors que le document n'a pas encore le focus
+  // (reload avec DevTools actifs) → DOMException « document is not focused »
+  // en rejection non gérée à chaque lancement.
+  const [pointerReady, setPointerReady] = useState(false)
+  useEffect(() => {
+    const arm = () => setPointerReady(true)
+    document.addEventListener('pointerdown', arm, { once: true })
+    return () => document.removeEventListener('pointerdown', arm)
+  }, [])
   const { camera } = useThree()
   const [, getKeys] = useKeyboardControls()
   const setPosition = usePlayerStore(s => s.setPosition)
@@ -256,7 +266,7 @@ export function Player() {
 
   return (
     <>
-      <PointerLockControls />
+      {pointerReady && <PointerLockControls />}
       <group ref={boyRef}>
         <primitive object={heroScene} />
       </group>
