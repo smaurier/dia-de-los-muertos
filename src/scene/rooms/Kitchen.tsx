@@ -17,8 +17,19 @@ import { Prop } from '../shared/Prop'
 import { PhotoFrame } from '../shared/PhotoFrame'
 import { AnimatedDoor } from '../shared/AnimatedDoor'
 import { BlueDoor } from '../shared/BlueDoor'
-
-const C_CEIL      = '#F0E0C8'
+import {
+  C_CEIL,
+  C_IRON,
+  C_WOOD_DARK,
+  C_WOOD_MED,
+  C_CERAMIC,
+  C_CANDLE,
+  C_FLAME,
+  CX,
+  CZ,
+  CW,
+  CD,
+} from './kitchen/kitchenConstants'
 
 // Mur en pierre PERCÉ pour la porte du couloir : un seul mesh (ShapeGeometry
 // avec trou) → texture continue sur tout le mur, pas de segments qui cassent
@@ -44,18 +55,6 @@ const stoneWallGeometry = (() => {
   for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) / 6.2, uv.getY(i) / 2.9)
   return g
 })()
-const C_IRON      = '#1A1512'
-const C_WOOD_DARK = '#3A2008'
-const C_WOOD_MED  = '#5C3010'
-const C_CERAMIC   = '#E8E0D0'
-const C_CANDLE    = '#F5E8D0'
-const C_FLAME     = '#FF7700'
-
-// Cuisine : x∈[-7,-0.6], z∈[5.8,12.0] → centre (-3.8, 8.9), taille (6.4, 6.2)
-const CX = -3.8
-const CZ =  8.9
-const CW =  6.4  // largeur x
-const CD =  6.2  // profondeur z
 
 // Ampoule nue qui CLIGNOTE (fiche cuisine : prop narratif — micro-tension
 // permanente, « parce qu'elle est vieille »). Baisse brève et aléatoire
