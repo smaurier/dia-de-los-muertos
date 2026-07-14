@@ -1,4 +1,4 @@
 // src/game/controlsConfig.ts
-// Touches configurables — source unique si on reconfigure plus tard.
-export const INTERACT_KEY = 'KeyF'   // code clavier (KeyboardEvent.code)
-export const INTERACT_LABEL = 'F'    // libellé affiché dans les indices UI
+// Configurable keys — single source of truth if remapping is needed later.
+export const INTERACT_KEY = 'KeyF'   // keyboard code (KeyboardEvent.code)
+export const INTERACT_LABEL = 'F'    // label displayed in UI hints
