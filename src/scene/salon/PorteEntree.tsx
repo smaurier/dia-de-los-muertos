@@ -30,9 +30,10 @@ function Vantail({ side }: { side: 1 | -1 }) {
   const zc = side * 0.45 // centre du vantail (z de ±0.02 à ±0.88)
   return (
     <group position={[9.94, 0, zc]}>
-      {/* Panneau principal */}
+      {/* Panneau principal — 0.90 : jointif au centre (z=0), affleure le
+          jambage (±0.9). Aucun jour entre les vantaux. */}
       <mesh position={[0, 1.1, 0]}>
-        <boxGeometry args={[0.1, 2.1, 0.86]} />
+        <boxGeometry args={[0.1, 2.1, 0.9]} />
         <meshToonMaterial map={boisSombre} gradientMap={toonGradient} />
         <Outlines thickness={0.016} color="black" />
       </mesh>
@@ -206,6 +207,13 @@ export function PorteEntree() {
       {/* ── Les deux vantaux ── */}
       <Vantail side={1} />
       <Vantail side={-1} />
+
+      {/* ── Couvre-joint de battement : baguette bois sur le joint central ── */}
+      <mesh position={[9.94, 1.1, 0]}>
+        <boxGeometry args={[0.13, 2.06, 0.09]} />
+        <meshToonMaterial color={C_WOOD_DK} gradientMap={toonGradient} />
+        <Outlines thickness={0.010} color="black" />
+      </mesh>
 
       {/* ── Verrou central : targette forgée entre les deux heurtoirs ── */}
       <mesh position={[9.87, 1.08, 0]}>
