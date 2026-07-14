@@ -8,7 +8,7 @@ import { Outlines } from '@react-three/drei'
 import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
-import { PorteAnimee } from '../shared/PorteAnimee'
+import { AnimatedDoor } from '../shared/AnimatedDoor'
 import { PhotoFrame } from '../shared/PhotoFrame'
 
 const C_CEIL      = '#E4D6BC'
@@ -46,7 +46,7 @@ export function Chambre2() {
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
       {/* Openable door (key F) — hinge on the west side, opens into the bedroom */}
-      <PorteAnimee id="chambre-2" position={[10.2, 0, 7.67]} rotationY={Math.PI / 2} openAngle={-1.9} width={0.94} />
+      <AnimatedDoor id="chambre-2" position={[10.2, 0, 7.67]} rotationY={Math.PI / 2} openAngle={-1.9} width={0.94} />
       {/* Wood casing */}
       {[10.17, 11.17].map(px => (
         <mesh key={px} position={[px, 1.05, 7.67]}>

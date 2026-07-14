@@ -28,7 +28,7 @@ import { Bureau } from '../rooms/Bureau'
 import { PorteEntree } from './PorteEntree'
 import { Patio } from '../rooms/Patio'
 import { Garage } from '../rooms/Garage'
-import { DomeCiel } from '../shared/DomeCiel'
+import { SkyDome } from '../shared/SkyDome'
 import { SceneAuditProbe } from '../debug/sceneAudit'
 import { NO_PAPEL } from '../debug/perfFlags'
 import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
@@ -524,7 +524,7 @@ export function SalonRoom() {
       </group>
 
       {/* ─── Bulle de ciel étoilé au-dessus de toute la maison ─── */}
-      <DomeCiel />
+      <SkyDome />
 
       {/* ─── Audit graphique (?audit) + mesure perf (?perf) — inactifs sinon ─── */}
       <SceneAuditProbe />

@@ -11,7 +11,7 @@ import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
-import { PorteAnimee } from '../shared/PorteAnimee'
+import { AnimatedDoor } from '../shared/AnimatedDoor'
 import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
 
 const C_CEIL = '#E4D6BC'

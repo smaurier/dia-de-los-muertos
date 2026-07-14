@@ -1,4 +1,4 @@
-// src/scene/shared/DomeCiel.tsx
+// src/scene/shared/SkyDome.tsx
 // Starry sky dome above the entire house: hemisphere seen from inside
 // (BackSide), star texture generated at load time (canvas).
 // Visible from the patio, above the enclosure walls, and behind any
@@ -68,7 +68,7 @@ const cieloTexture = (() => {
   return tex
 })()
 
-export function DomeCiel() {
+export function SkyDome() {
   return (
     // Centered on the house (x∈[-7.2,13.6], z∈[-10.75,15.4]), wide radius.
     // meshBasicMaterial: the sky is not lit by scene lights.

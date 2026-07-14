@@ -1,13 +1,13 @@
-// src/scene/shared/PorteAnimee.tsx
+// src/scene/shared/AnimatedDoor.tsx
 // Interactive door: reads its state from doorStore and animates rotation around
 // the hinge (lerp). Closed by default; opens/closes via toggleDoor (F key).
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import { Porte } from './Porte'
+import { Door } from './Door'
 import { useDoorStore } from '../../game/store/doorStore'
 
-type PorteAnimeeProps = {
+type AnimatedDoorProps = {
   id: string
   position: [number, number, number]
   rotationY?: number
@@ -18,7 +18,7 @@ type PorteAnimeeProps = {
   panelColor?: string
 }
 
-export function PorteAnimee({ id, position, rotationY = 0, openAngle, width, height, color, panelColor }: PorteAnimeeProps) {
+export function AnimatedDoor({ id, position, rotationY = 0, openAngle, width, height, color, panelColor }: AnimatedDoorProps) {
   const hingeRef = useRef<THREE.Group>(null)
   const isOpen = useDoorStore(s => !!s.open[id])
 
@@ -33,7 +33,7 @@ export function PorteAnimee({ id, position, rotationY = 0, openAngle, width, hei
   return (
     <group position={position} rotation={[0, rotationY, 0]}>
       <group ref={hingeRef}>
-        <Porte position={[0, 0, 0]} width={width} height={height} color={color} panelColor={panelColor} />
+        <Door position={[0, 0, 0]} width={width} height={height} color={color} panelColor={panelColor} />
       </group>
     </group>
   )

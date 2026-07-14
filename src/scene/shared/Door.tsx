@@ -1,4 +1,4 @@
-// src/scene/shared/Porte.tsx
+// src/scene/shared/Door.tsx
 // Reusable hinged wooden door. The group is placed at the HINGE:
 // the panel extends in local +z by `width`. `angle` (radians) rotates the
 // panel around the hinge — 0 = closed, negative = opens toward -x, positive
@@ -8,7 +8,7 @@ import { toonGradient } from '../shared/toonGradient'
 
 const C_HANDLE = '#1A1512'
 
-type PorteProps = {
+type DoorProps = {
   position: [number, number, number]
   rotationY?: number
   angle?: number
@@ -18,7 +18,7 @@ type PorteProps = {
   panelColor?: string
 }
 
-export function Porte({
+export function Door({
   position,
   rotationY = 0,
   angle = 0,

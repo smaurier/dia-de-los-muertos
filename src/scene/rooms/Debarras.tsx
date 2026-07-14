@@ -8,7 +8,7 @@
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, boisSombre } from '../shared/paintedTextures'
-import { PorteAnimee } from '../shared/PorteAnimee'
+import { AnimatedDoor } from '../shared/AnimatedDoor'
 
 const C_CEIL  = '#D8CBB2'
 const C_WOOD  = '#3A2008'
@@ -41,7 +41,7 @@ export function Debarras() {
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
       {/* Openable door (key F) — opens into the storage room */}
-      <PorteAnimee id="debarras" position={[8.82, 0, 2.25]} openAngle={1.9} width={0.94} />
+      <AnimatedDoor id="debarras" position={[8.82, 0, 2.25]} openAngle={1.9} width={0.94} />
       {/* Wood casing (fills the band slivers) */}
       {[2.23, 3.21].map(pz => (
         <mesh key={pz} position={[8.82, 1.05, pz]}>

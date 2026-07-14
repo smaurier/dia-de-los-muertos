@@ -8,7 +8,7 @@ import { Outlines } from '@react-three/drei'
 import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
-import { PorteAnimee } from '../shared/PorteAnimee'
+import { AnimatedDoor } from '../shared/AnimatedDoor'
 import { PhotoFrame } from '../shared/PhotoFrame'
 
 const C_CEIL      = '#E4D6BC'
@@ -46,7 +46,7 @@ export function Bureau() {
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
       {/* Openable door (key F) — opens into the office */}
-      <PorteAnimee id="bureau" position={[8.82, 0, -2.5]} openAngle={1.9} width={0.94} />
+      <AnimatedDoor id="bureau" position={[8.82, 0, -2.5]} openAngle={1.9} width={0.94} />
       {/* Wood casing */}
       {[-2.53, -1.53].map(pz => (
         <mesh key={pz} position={[8.82, 1.05, pz]}>

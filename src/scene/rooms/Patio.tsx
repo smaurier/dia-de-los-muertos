@@ -12,7 +12,7 @@ import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide } from '../shared/paintedTextures'
-import { PorteAnimee } from '../shared/PorteAnimee'
+import { AnimatedDoor } from '../shared/AnimatedDoor'
 
 const C_IRON    = '#1A1512'
 const C_WOOD    = '#3A2008'
@@ -222,7 +222,7 @@ export function Patio() {
         <Outlines thickness={0.012} color="black" />
       </mesh>
       {/* Openable wooden door (key F) in the arch */}
-      <PorteAnimee id="garage" position={[9.0, 0, -8.57]} openAngle={-1.9} width={0.94} />
+      <AnimatedDoor id="garage" position={[9.0, 0, -8.57]} openAngle={-1.9} width={0.94} />
 
       {/* (basin removed: the center of the patio stays clear — that is where
           the petal path of ch9 will pass, toward the ofrenda) */}

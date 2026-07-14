@@ -15,8 +15,8 @@ import {
 } from '../shared/paintedTextures'
 import { Prop } from '../shared/Prop'
 import { PhotoFrame } from '../shared/PhotoFrame'
-import { PorteAnimee } from '../shared/PorteAnimee'
-import { PorteBleue } from '../shared/PorteBleue'
+import { AnimatedDoor } from '../shared/AnimatedDoor'
+import { BlueDoor } from '../shared/BlueDoor'
 
 const C_CEIL      = '#F0E0C8'
 
@@ -150,7 +150,7 @@ export function Cuisine() {
       </mesh>
       {/* FERMÉE par défaut, touche interact pour ouvrir (s'ouvre vers la
           cuisine) → couloir nord-est. */}
-      <PorteAnimee id="couloir-cuisine" position={[-0.68, 0, 6.43]} openAngle={-1.9} width={0.94} />
+      <AnimatedDoor id="couloir-cuisine" position={[-0.68, 0, 6.43]} openAngle={-1.9} width={0.94} />
 
       {/* ── Azulejos crédence — grand pan derrière le fogón, du soubassement
           à mi-mur comme dans la ref entree-02 ── */}
@@ -168,7 +168,7 @@ export function Cuisine() {
 
       {/* ── Porte bleue du jardin (mur ouest, non ouvrable — plan : "porte vers
           jardin"). Prend l'ancien emplacement de la porte du cellier. ── */}
-      <PorteBleue position={[-6.96, 0, 10.0]} rotationY={Math.PI / 2} />
+      <BlueDoor position={[-6.96, 0, 10.0]} rotationY={Math.PI / 2} />
 
       {/* ── Fogón (vieux poêle blanc, mur du fond à droite, ref cuisine-entree-02)
           rotation π : porte du four face au sud (vers la pièce) ── */}

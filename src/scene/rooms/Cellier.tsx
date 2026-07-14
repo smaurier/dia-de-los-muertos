@@ -6,8 +6,8 @@
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
-import { PorteAnimee } from '../shared/PorteAnimee'
-import { PorteBleue } from '../shared/PorteBleue'
+import { AnimatedDoor } from '../shared/AnimatedDoor'
+import { BlueDoor } from '../shared/BlueDoor'
 
 const C_CEIL      = '#D8CCB4'
 const C_WOOD_DARK = '#3A2008'
@@ -90,10 +90,10 @@ export function Cellier() {
       </mesh>
       {/* Pantry door — hinge on the west jamb (x=-6.3). CLOSED by default,
           key F to open (opens into the pantry). */}
-      <PorteAnimee id="cellier" position={[-6.27, 0, 12.05]} rotationY={Math.PI / 2} openAngle={-2.3} width={0.94} />
+      <AnimatedDoor id="cellier" position={[-6.27, 0, 12.05]} rotationY={Math.PI / 2} openAngle={-2.3} width={0.94} />
 
       {/* ── Blue door to the garden (west wall, not openable) ── */}
-      <PorteBleue position={[-6.96, 0, 13.6]} rotationY={Math.PI / 2} />
+      <BlueDoor position={[-6.96, 0, 13.6]} rotationY={Math.PI / 2} />
 
       {/* ── Wall shelves (east wall — the west wall holds the garden door) ── */}
       <group position={[-0.88, 0, 13.6]} rotation={[0, -Math.PI / 2, 0]}>

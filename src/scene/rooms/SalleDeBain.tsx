@@ -9,7 +9,7 @@ import { Outlines } from '@react-three/drei'
 import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, azulejosTalavera } from '../shared/paintedTextures'
-import { PorteAnimee } from '../shared/PorteAnimee'
+import { AnimatedDoor } from '../shared/AnimatedDoor'
 
 const C_CEIL    = '#E4D6BC'
 const C_WOOD    = '#3A2008'
@@ -46,7 +46,7 @@ export function SalleDeBain() {
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
       {/* Openable door (key F) — opens inward (south) */}
-      <PorteAnimee id="salle-de-bain" position={[10.2, 0, 6.13]} rotationY={Math.PI / 2} openAngle={1.9} width={0.94} />
+      <AnimatedDoor id="salle-de-bain" position={[10.2, 0, 6.13]} rotationY={Math.PI / 2} openAngle={1.9} width={0.94} />
       {/* Wood casing */}
       {[10.17, 11.17].map(px => (
         <mesh key={px} position={[px, 1.05, 6.13]}>

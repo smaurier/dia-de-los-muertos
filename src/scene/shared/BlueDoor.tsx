@@ -1,4 +1,4 @@
-// src/scene/shared/PorteBleue.tsx
+// src/scene/shared/BlueDoor.tsx
 // Decorative Mexican blue door (non-openable) — flush against a wall.
 // Local: panel in the XY plane, details toward +z. rotationY π/2 → details toward +x.
 import { Outlines } from '@react-three/drei'
@@ -6,7 +6,7 @@ import { toonGradient } from '../shared/toonGradient'
 
 const C_IRON = '#1A1512'
 
-export function PorteBleue({ position, rotationY = 0 }: { position: [number, number, number]; rotationY?: number }) {
+export function BlueDoor({ position, rotationY = 0 }: { position: [number, number, number]; rotationY?: number }) {
   return (
     <group position={position} rotation={[0, rotationY, 0]}>
       <mesh position={[0, 1.10, 0]}>
