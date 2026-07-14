@@ -43,7 +43,12 @@ export function FamilyMemberGLB({ config }: Props) {
   // Clone per instance so shared GLBs (base-01 used by 3 NPCs) don't share the same scene graph
   const clonedScene = useMemo(() => SkeletonUtils.clone(originalScene), [originalScene])
 
-  const { actions, names } = useAnimations(animations, groupRef)
+  // Bind the mixer to the cloned hierarchy (which already holds every bone),
+  // NOT the outer group. Binding to the group races the primitive mount:
+  // three resolves PropertyBindings lazily on first play() and caches a failed
+  // bind if the bones aren't mounted yet → intermittent T-pose. clonedScene is
+  // stable (useMemo) and always contains the bones. (drei-recommended root.)
+  const { actions, names } = useAnimations(animations, clonedScene)
 
   useEffect(() => {
     applyToon(clonedScene, config.meshColor)
