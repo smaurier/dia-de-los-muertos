@@ -63,51 +63,52 @@ export function SalleDeBain() {
         <planeGeometry args={[2.8, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Mur est x=11.9 ── */}
-      <mesh position={[11.9, 1.45, 4.8]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[2.8, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      {/* ── Mur sud z=3.4, petite fenêtre haute x∈[9.9,10.7] y∈[2.0,2.5] ── */}
-      <mesh position={[9.4, 1.45, 3.4]}>
-        <planeGeometry args={[1.0, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[11.3, 1.45, 3.4]}>
+      {/* ── Mur est x=11.9 — percé fenêtre haute z∈[4.6,5.4] y∈[2.1,2.6],
+          AU-DESSUS du miroir (seul mur donnant sur l'extérieur) ── */}
+      <mesh position={[11.9, 1.45, 4.0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[1.2, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[10.3, 2.7, 3.4]}>
-        <planeGeometry args={[0.8, 0.4]} />
+      <mesh position={[11.9, 1.45, 5.8]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[0.8, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[10.3, 1.0, 3.4]}>
-        <planeGeometry args={[0.8, 2.0]} />
+      <mesh position={[11.9, 2.75, 5.0]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[0.8, 0.3]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[11.9, 1.05, 5.0]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[0.8, 2.1]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
       {/* Fenêtre haute : nuit + petit encadrement + 2 barreaux */}
-      <mesh position={[10.3, 2.25, 3.3]}>
+      <mesh position={[12.0, 2.35, 5.0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[0.84, 0.54]} />
         <meshToonMaterial color={C_NIGHT} emissive="#24365E" emissiveIntensity={0.35} gradientMap={toonGradient} />
       </mesh>
-      {[9.9, 10.7].map(px => (
-        <mesh key={px} position={[px, 2.25, 3.42]}>
-          <boxGeometry args={[0.06, 0.56, 0.08]} />
+      {[4.6, 5.4].map(pz => (
+        <mesh key={pz} position={[11.88, 2.35, pz]}>
+          <boxGeometry args={[0.08, 0.56, 0.06]} />
           <meshToonMaterial color={C_WOOD} gradientMap={toonGradient} />
         </mesh>
       ))}
-      {[2.0, 2.5].map(py => (
-        <mesh key={py} position={[10.3, py, 3.42]}>
-          <boxGeometry args={[0.86, 0.06, 0.08]} />
+      {[2.1, 2.6].map(py => (
+        <mesh key={py} position={[11.88, py, 5.0]}>
+          <boxGeometry args={[0.08, 0.06, 0.86]} />
           <meshToonMaterial color={C_WOOD} gradientMap={toonGradient} />
         </mesh>
       ))}
-      {[10.15, 10.45].map(px => (
-        <mesh key={px} position={[px, 2.25, 3.36]}>
+      {[4.85, 5.15].map(pz => (
+        <mesh key={pz} position={[11.94, 2.35, pz]}>
           <boxGeometry args={[0.018, 0.46, 0.018]} />
           <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
         </mesh>
       ))}
+      {/* ── Mur sud z=3.4 — plein (donne sur l'intérieur : futur débarras) ── */}
+      <mesh position={[10.4, 1.45, 3.4]}>
+        <planeGeometry args={[3.0, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
 
       {/* ── Soubassement d'azulejos talavera (h=1.15, plaqué sur les 4 murs,
           interrompu à la porte x∈[10.2,11.14]) ── */}
