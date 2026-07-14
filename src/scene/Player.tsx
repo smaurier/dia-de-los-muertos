@@ -5,6 +5,7 @@ import { useKeyboardControls, PointerLockControls, useGLTF, useAnimations } from
 import * as THREE from 'three'
 import { toonGradient } from './shared/toonGradient'
 import { makeFaceTextures } from './shared/blinkTexture'
+import { advanceFace, type FaceState } from './shared/faceState'
 import { usePlayerStore } from '../game/store/playerStore'
 import { useDoorStore } from '../game/store/doorStore'
 import { useSubtitleStore } from '../game/store/subtitleStore'
@@ -97,10 +98,9 @@ export function Player() {
 
   // Clignement : yeux fermés BLINK_DURATION toutes les 2-6 s.
   // Saccades : variante de regard tirée toutes les 0,7-2,4 s.
-  const blinkAt = useRef(blinkDelay())
-  const saccadeAt = useRef(saccadeDelay())
-  const gazeIdx = useRef(0)
-  const clock = useRef(0)
+  const faceRef = useRef<FaceState>({
+    clock: 0, blinkAt: blinkDelay(), saccadeAt: saccadeDelay(), gazeIdx: 0,
+  })
 
   // Anti T-pose : idle lancé AVANT le premier paint (useLayoutEffect, pas
   // useEffect qui laisse passer quelques frames de bind pose) et pose
@@ -228,18 +228,15 @@ export function Player() {
     // On mute le matériau ACTUELLEMENT porté par le mesh (traverse) : en
     // StrictMode le double rendu crée deux matériaux et une référence capturée
     // peut pointer sur l'orphelin non rendu — swap sans effet visible.
-    clock.current += delta
+    const { state: nextFace, output: faceOut } = advanceFace(faceRef.current, delta, {
+      blinkDuration: BLINK_DURATION,
+      nextBlinkDelay: blinkDelay,
+      nextSaccadeDelay: saccadeDelay,
+      pickGaze: () => face.faceSet ? pickGaze(face.faceSet.gaze.length) : 0,
+    })
+    faceRef.current = nextFace
     if (face.faceSet) {
-      let closed = clock.current > blinkAt.current
-      if (closed && clock.current > blinkAt.current + BLINK_DURATION) {
-        blinkAt.current = clock.current + blinkDelay()
-        closed = false
-      }
-      if (clock.current > saccadeAt.current) {
-        saccadeAt.current = clock.current + saccadeDelay()
-        gazeIdx.current = pickGaze(face.faceSet.gaze.length)
-      }
-      const want = closed ? face.faceSet.blink : face.faceSet.gaze[gazeIdx.current]
+      const want = faceOut.closed ? face.faceSet.blink : face.faceSet.gaze[faceOut.gazeIdx]
       heroScene.traverse(child => {
         if (child instanceof THREE.Mesh) {
           const mat = child.material as THREE.MeshToonMaterial
@@ -247,7 +244,7 @@ export function Player() {
         }
       })
       // Témoin de synchro (?blinktest) : l'état des yeux dans le titre d'onglet
-      if (BLINK_TEST) document.title = closed ? '👁 YEUX FERMÉS' : 'yeux ouverts'
+      if (BLINK_TEST) document.title = faceOut.closed ? '👁 YEUX FERMÉS' : 'yeux ouverts'
     }
 
     // Machine à états d'animation : caché > marche > idle, crossfade doux.
