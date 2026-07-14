@@ -4,7 +4,7 @@
 // sud (mur ouest, z∈[-2.5,-1.56]). Pièce d'adulte, rangée, un peu solennelle :
 // écritoire, lampe de banquier, bibliothèque, classeur, machine à écrire.
 import * as THREE from 'three'
-import { MeshReflectorMaterial, Outlines } from '@react-three/drei'
+import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
 import { PorteAnimee } from '../shared/PorteAnimee'
@@ -114,20 +114,7 @@ export function Bureau() {
       {/* Vitre — mêmes propriétés que la grande fenêtre du salon */}
       <mesh position={[12.49, 1.6, -2.7]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[1.16, 1.16]} />
-        <MeshReflectorMaterial
-          transparent
-          opacity={0.68}
-          color="#e8f0f4"
-          resolution={256}
-          mirror={1}
-          mixStrength={1.4}
-          mixBlur={0}
-          blur={[0, 0]}
-          roughness={0.06}
-          metalness={0}
-          depthScale={0}
-          side={THREE.DoubleSide}
-        />
+        <meshToonMaterial color="#C8DCE8" transparent opacity={0.35} emissive="#4A6080" emissiveIntensity={0.2} gradientMap={toonGradient} side={THREE.DoubleSide} />
       </mesh>
 
       {/* ── Écritoire contre le mur est, sous la fenêtre — chaise face à elle ── */}

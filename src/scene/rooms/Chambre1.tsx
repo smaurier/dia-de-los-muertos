@@ -6,7 +6,7 @@
 // construction d'origine — visible des deux côtés, aucun mesh à ajouter).
 // Pièce vide pendant la fête : pénombre, veilleuse, clair de lune.
 import * as THREE from 'three'
-import { MeshReflectorMaterial, Outlines } from '@react-three/drei'
+import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
 import { PorteAnimee } from '../shared/PorteAnimee'
@@ -167,20 +167,7 @@ export function Chambre1() {
       {/* Vitre — mêmes propriétés que la grande fenêtre du salon */}
       <mesh position={[3.0, 1.6, 12.03]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[1.56, 1.16]} />
-        <MeshReflectorMaterial
-          transparent
-          opacity={0.68}
-          color="#e8f0f4"
-          resolution={256}
-          mirror={1}
-          mixStrength={1.4}
-          mixBlur={0}
-          blur={[0, 0]}
-          roughness={0.06}
-          metalness={0}
-          depthScale={0}
-          side={THREE.DoubleSide}
-        />
+        <meshToonMaterial color="#C8DCE8" transparent opacity={0.35} emissive="#4A6080" emissiveIntensity={0.2} gradientMap={toonGradient} side={THREE.DoubleSide} />
       </mesh>
 
       {/* ── Mur est x=7 ── */}

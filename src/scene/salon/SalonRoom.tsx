@@ -31,7 +31,6 @@ import { Garage } from '../rooms/Garage'
 import { DomeCiel } from '../shared/DomeCiel'
 import { SceneAuditProbe } from '../debug/sceneAudit'
 import { PerfProbe } from '../debug/PerfProbe'
-import { RoomGroup } from '../shared/RoomGroup'
 import { Couffin } from './Couffin'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
@@ -214,7 +213,8 @@ function PapelFlag({ x, y, color, tex, phase }: {
       pos.setZ(i, Math.sin(t.current * 1.1 + bx * 5 + by * 3) * 0.022 * hang)
     }
     pos.needsUpdate = true
-    geo.computeVertexNormals()
+    // (pas de computeVertexNormals par frame : ×52 drapeaux c'était un des
+    // coûts fixes CPU mesurés — l'ondulation de 2 cm ne change pas l'ombrage)
   })
 
   return (
@@ -309,7 +309,7 @@ function RideauPanel({ z }: { z: number }) {
       pos.setZ(i, bz + Math.sin(t.current * 0.8 + bx * 4 + by * 1.5) * 0.028 * hang)
     }
     pos.needsUpdate = true
-    geo.computeVertexNormals()
+    // (normales des plis bakées à l'init — pas de recalcul par frame)
   })
 
   return (
@@ -385,7 +385,7 @@ export function SalonRoom() {
           map={solTomettes}
           normalMap={solTomettesNormal}
           normalScale={new THREE.Vector2(0.7, 0.7)}
-          resolution={1024}
+          resolution={512}
           mirror={0.45}
           mixStrength={0.8}
           mixBlur={1}
@@ -500,19 +500,19 @@ export function SalonRoom() {
         <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ─── Pièces satellites — chacune sous RoomGroup : masquée (meshes,
-          lumières, réflecteurs) quand le joueur n'est ni dedans ni dans une
-          zone adjacente. Room culling, house-rooms §3. ?noculling désactive. */}
-      <RoomGroup zone="cuisine"><Cuisine /></RoomGroup>
-      <RoomGroup zone="cellier"><Cellier /></RoomGroup>
-      <RoomGroup zone="couloir"><Couloir /></RoomGroup>
-      <RoomGroup zone="chambre1"><Chambre1 /></RoomGroup>
-      <RoomGroup zone="chambre2"><Chambre2 /></RoomGroup>
-      <RoomGroup zone="sdb"><SalleDeBain /></RoomGroup>
-      <RoomGroup zone="debarras"><Debarras /></RoomGroup>
-      <RoomGroup zone="bureau"><Bureau /></RoomGroup>
-      <RoomGroup zone="patio"><Patio /></RoomGroup>
-      <RoomGroup zone="garage"><Garage /></RoomGroup>
+      {/* ─── Pièces satellites. (Room culling retiré : les murs sont partagés
+          entre pièces — trous visibles — et la mesure a montré que le coût
+          dominant est ailleurs : réflecteurs + coûts fixes par frame.) */}
+      <Cuisine />
+      <Cellier />
+      <Couloir />
+      <Chambre1 />
+      <Chambre2 />
+      <SalleDeBain />
+      <Debarras />
+      <Bureau />
+      <Patio />
+      <Garage />
 
       {/* ─── Bulle de ciel étoilé au-dessus de toute la maison ─── */}
       <DomeCiel />
@@ -1010,7 +1010,7 @@ export function SalonRoom() {
           x∈[7.35,10], z∈[-0.9,0.9] — LA LARGEUR DE L'ARCHE. Derrière l'arche,
           un carrefour : tout droit la porte principale, à gauche (nord) la
           branche est vers les chambres, à droite (sud) le couloir du bureau. */}
-      <RoomGroup zone="zaguan">
+      <group>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[8.675, 0.001, 0]}>
           <planeGeometry args={[2.65, 1.8]} />
           <meshPhongMaterial map={solTomettes} shininess={40} specular="#4a3420" />
@@ -1037,7 +1037,7 @@ export function SalonRoom() {
         {/* Porte principale : vantaux cloutés, cantera, imposte, farol —
             voir PorteEntree.tsx */}
         <PorteEntree />
-      </RoomGroup>
+      </group>
 
       {/* ─── Vaisselier (coin nord-est, ref vue-fenetre) ────────────────────── */}
       <group position={[6.15, 0, 5.45]} rotation={[0, Math.PI, 0]}>

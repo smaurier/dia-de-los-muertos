@@ -5,7 +5,7 @@
 // Années 90 : soubassement d'azulejos talavera, baignoire, lavabo colonne,
 // petit miroir banal (LE miroir narratif reste celui du couloir, ch3).
 import * as THREE from 'three'
-import { MeshReflectorMaterial, Outlines } from '@react-three/drei'
+import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, azulejosTalavera } from '../shared/paintedTextures'
 import { PorteAnimee } from '../shared/PorteAnimee'
@@ -108,20 +108,7 @@ export function SalleDeBain() {
       {/* Vitre — mêmes propriétés que la grande fenêtre du salon */}
       <mesh position={[11.97, 2.35, 5.0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[0.76, 0.46]} />
-        <MeshReflectorMaterial
-          transparent
-          opacity={0.68}
-          color="#e8f0f4"
-          resolution={256}
-          mirror={1}
-          mixStrength={1.4}
-          mixBlur={0}
-          blur={[0, 0]}
-          roughness={0.06}
-          metalness={0}
-          depthScale={0}
-          side={THREE.DoubleSide}
-        />
+        <meshToonMaterial color="#C8DCE8" transparent opacity={0.35} emissive="#4A6080" emissiveIntensity={0.2} gradientMap={toonGradient} side={THREE.DoubleSide} />
       </mesh>
       {/* ── Mur sud z=3.4 — plein (donne sur l'intérieur : futur débarras) ── */}
       <mesh position={[10.4, 1.45, 3.4]}>
