@@ -6,14 +6,23 @@ import * as THREE from 'three'
 import { ZoneReflectorMaterial } from './ZoneReflector'
 import type { ZoneId } from '../../game/systems/roomZones'
 
-export function GlassReflector({ zone }: { zone: ZoneId }) {
+export function GlassReflector({
+  zone,
+  resolution = 256,
+  salonScope = false,
+}: {
+  zone: ZoneId
+  resolution?: number
+  salonScope?: boolean
+}) {
   return (
     <ZoneReflectorMaterial
       zone={zone}
+      salonScope={salonScope}
       transparent
       opacity={0.68}
       color="#e8f0f4"
-      resolution={256}
+      resolution={resolution}
       mirror={1}
       mixStrength={1.4}
       blur={[0, 0]}
