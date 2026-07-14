@@ -1,10 +1,11 @@
 // src/scene/rooms/Garage.tsx
-// Le garage — devant le patio (côté rue), ALLONGÉ dans le sens de la
-// voiture : x∈[9.0,13.4], z∈[-12.4,-5.6] (6,8 m de long). La porte
-// basculante est au bout sud (côté rue) : le vocho est entré tout droit,
-// nez vers l'arche du patio. Communique avec le patio par l'arche du mur
-// mitoyen (porte en bois ouvrable, id 'garage', définie dans Patio.tsx).
-import { Outlines } from '@react-three/drei'
+// Le garage — devant le patio, allongé vers l'EST, côté rue (même côté que
+// la porte d'entrée de la maison) : x∈[9.0,15.0], z∈[-10.6,-5.6].
+// Le portail basculant est à l'est : le vocho est entré tout droit depuis
+// la rue, nez vers l'arche du patio (mur mitoyen ouest, porte en bois
+// ouvrable id 'garage', définie dans Patio.tsx).
+import * as THREE from 'three'
+import { MeshReflectorMaterial, Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide } from '../shared/paintedTextures'
 
@@ -19,71 +20,128 @@ export function Garage() {
   return (
     <group>
       {/* ── Sol béton + tache d'huile ── */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[11.2, 0.001, -9.0]}>
-        <planeGeometry args={[4.4, 6.8]} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[12.0, 0.001, -8.1]}>
+        <planeGeometry args={[6.0, 5.0]} />
         <meshToonMaterial color={C_BETON} gradientMap={toonGradient} />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0.4]} position={[11.5, 0.005, -7.2]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0.4]} position={[12.4, 0.005, -8.0]}>
         <circleGeometry args={[0.35, 9]} />
         <meshToonMaterial color="#4A463E" gradientMap={toonGradient} />
       </mesh>
       {/* ── Toit (le garage est couvert, lui) ── */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[11.2, 2.7, -9.0]}>
-        <planeGeometry args={[4.4, 6.8]} />
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[12.0, 2.7, -8.1]}>
+        <planeGeometry args={[6.0, 5.0]} />
         <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
       </mesh>
 
-      {/* ── Mur nord (dos de la façade de la maison) ── */}
-      <mesh position={[11.2, 1.35, -5.62]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[4.4, 2.7]} />
+      {/* ── Mur nord (dos de la façade et de la rue) ── */}
+      <mesh position={[12.0, 1.35, -5.62]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[6.0, 2.7]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Mur est x=13.4 (plein sur toute la longueur) ── */}
-      <mesh position={[13.4, 1.35, -9.0]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[6.8, 2.7]} />
+      {/* ── Mur sud z=-10.6 — percé de deux fenêtres hautes d'atelier
+          x∈[10.3,11.3] et x∈[12.7,13.7], y∈[1.5,2.2] ── */}
+      <mesh position={[9.65, 1.35, -10.58]}>
+        <planeGeometry args={[1.3, 2.7]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* ── Mur ouest x=9.0, segment sud (au-delà du mur mitoyen du patio,
-          qui couvre z∈[-10.6,-5.6] avec l'arche) ── */}
-      <mesh position={[9.0, 1.35, -11.5]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[1.8, 2.7]} />
+      <mesh position={[12.0, 1.35, -10.58]}>
+        <planeGeometry args={[1.4, 2.7]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
+      <mesh position={[14.35, 1.35, -10.58]}>
+        <planeGeometry args={[1.3, 2.7]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      {[10.8, 13.2].map(px => (
+        <group key={px}>
+          <mesh position={[px, 2.45, -10.58]}>
+            <planeGeometry args={[1.0, 0.5]} />
+            <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+          </mesh>
+          <mesh position={[px, 0.75, -10.58]}>
+            <planeGeometry args={[1.0, 1.5]} />
+            <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+          </mesh>
+          {/* Nuit + encadrement + 2 barreaux + vitre (verre du salon) */}
+          <mesh position={[px, 1.85, -10.72]}>
+            <planeGeometry args={[1.04, 0.74]} />
+            <meshToonMaterial color="#16223E" emissive="#24365E" emissiveIntensity={0.35} gradientMap={toonGradient} />
+          </mesh>
+          {[-0.5, 0.5].map(dx => (
+            <mesh key={dx} position={[px + dx, 1.85, -10.56]}>
+              <boxGeometry args={[0.07, 0.76, 0.08]} />
+              <meshToonMaterial color="#3A2008" gradientMap={toonGradient} />
+              <Outlines thickness={0.010} color="black" />
+            </mesh>
+          ))}
+          {[1.5, 2.2].map(py => (
+            <mesh key={py} position={[px, py, -10.56]}>
+              <boxGeometry args={[1.06, 0.07, 0.08]} />
+              <meshToonMaterial color="#3A2008" gradientMap={toonGradient} />
+            </mesh>
+          ))}
+          {[-0.18, 0.18].map(dx => (
+            <mesh key={dx} position={[px + dx, 1.85, -10.62]}>
+              <boxGeometry args={[0.018, 0.64, 0.018]} />
+              <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
+            </mesh>
+          ))}
+          <mesh position={[px, 1.85, -10.65]}>
+            <planeGeometry args={[0.96, 0.66]} />
+            <MeshReflectorMaterial
+              transparent
+              opacity={0.68}
+              color="#e8f0f4"
+              resolution={256}
+              mirror={1}
+              mixStrength={1.4}
+              mixBlur={0}
+              blur={[0, 0]}
+              roughness={0.06}
+              metalness={0}
+              depthScale={0}
+              side={THREE.DoubleSide}
+            />
+          </mesh>
+        </group>
+      ))}
+      {/* (mur ouest = mur mitoyen du patio avec l'arche — voir Patio.tsx) */}
 
-      {/* ── Mur sud z=-12.4 : PORTE BASCULANTE (côté rue) — la voiture entre
+      {/* ── PORTAIL BASCULANT à l'est x=15.0 (côté rue) — la voiture entre
           par là, dans l'axe ── */}
-      <mesh position={[11.2, 1.2, -12.38]}>
+      <mesh position={[14.98, 1.2, -8.1]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[3.4, 2.4]} />
         <meshToonMaterial color={C_WOOD_M} gradientMap={toonGradient} />
       </mesh>
-      {[-1.2, -0.6, 0, 0.6, 1.2].map(dx => (
-        <mesh key={dx} position={[11.2 + dx, 1.2, -12.36]}>
-          <boxGeometry args={[0.03, 2.36, 0.02]} />
+      {[-1.2, -0.6, 0, 0.6, 1.2].map(dz => (
+        <mesh key={dz} position={[14.96, 1.2, -8.1 + dz]}>
+          <boxGeometry args={[0.02, 2.36, 0.03]} />
           <meshToonMaterial color="#4A2808" gradientMap={toonGradient} />
         </mesh>
       ))}
-      <mesh position={[11.2, 1.1, -12.34]} rotation={[Math.PI / 2, 0, Math.PI / 2]}>
+      <mesh position={[14.94, 1.1, -8.1]} rotation={[0, 0, Math.PI / 2]}>
         <cylinderGeometry args={[0.018, 0.018, 0.24, 6]} />
         <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
         <Outlines thickness={0.008} color="black" />
       </mesh>
-      {/* Bandeau + piliers latéraux autour de la porte basculante */}
-      <mesh position={[11.2, 2.55, -12.38]}>
+      {/* Bandeau + piliers latéraux autour du portail */}
+      <mesh position={[14.98, 2.55, -8.1]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[3.4, 0.3]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[9.25, 1.35, -12.38]}>
-        <planeGeometry args={[0.5, 2.7]} />
+      <mesh position={[14.98, 1.35, -6.0]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[0.8, 2.7]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[13.15, 1.35, -12.38]}>
-        <planeGeometry args={[0.5, 2.7]} />
+      <mesh position={[14.98, 1.35, -10.2]} rotation={[0, -Math.PI / 2, 0]}>
+        <planeGeometry args={[0.8, 2.7]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
 
       {/* ── Le vocho (placeholder — modèle 3D pipeline à venir) — dans l'axe
-          du garage, nez vers l'arche du patio (il est entré en marche avant) ── */}
-      <group position={[11.3, 0, -9.4]} rotation={[0, Math.PI / 2, 0]}>
+          est-ouest, nez vers l'arche du patio (entré depuis la rue) ── */}
+      <group position={[12.2, 0, -8.3]} rotation={[0, Math.PI, 0]}>
         {/* Caisse basse */}
         <mesh position={[0, 0.5, 0]}>
           <boxGeometry args={[3.1, 0.55, 1.45]} />
@@ -189,15 +247,15 @@ export function Garage() {
         ))}
       </group>
 
-      {/* ── Pneus empilés (coin nord-est) + bidons (coin sud-ouest) ── */}
+      {/* ── Pneus empilés (coin sud-ouest) + bidons (coin nord-est) ── */}
       {[0.13, 0.39, 0.65].map((py, i) => (
-        <mesh key={py} position={[13.0 - i * 0.03, py, -5.95 + (i % 2) * 0.05]} rotation={[0, i, 0]}>
+        <mesh key={py} position={[9.5 - i * 0.03, py, -10.15 + (i % 2) * 0.05]} rotation={[0, i, 0]}>
           <cylinderGeometry args={[0.3, 0.3, 0.24, 12]} />
           <meshToonMaterial color={C_TIRE} gradientMap={toonGradient} />
           <Outlines thickness={0.014} color="black" />
         </mesh>
       ))}
-      {([[9.45, -12.0, '#8A2A2A'], [9.8, -12.05, '#27547A']] as [number, number, string][]).map(([px, pz, c], i) => (
+      {([[14.35, -5.95, '#8A2A2A'], [14.7, -6.0, '#27547A']] as [number, number, string][]).map(([px, pz, c], i) => (
         <group key={i} position={[px, 0, pz]}>
           <mesh position={[0, 0.24, 0]}>
             <boxGeometry args={[0.26, 0.48, 0.26]} />
@@ -212,14 +270,14 @@ export function Garage() {
       ))}
 
       {/* ── Deux ampoules nues (le garage est long) ── */}
-      {[-7.2, -10.8].map(pz => (
-        <group key={pz}>
-          <pointLight position={[11.2, 2.2, pz]} intensity={0.8} color="#e8d0a0" distance={4.5} decay={2} />
-          <mesh position={[11.2, 2.5, pz]}>
+      {[10.8, 13.8].map(px => (
+        <group key={px}>
+          <pointLight position={[px, 2.2, -8.1]} intensity={0.8} color="#e8d0a0" distance={4.5} decay={2} />
+          <mesh position={[px, 2.5, -8.1]}>
             <sphereGeometry args={[0.04, 8, 8]} />
             <meshToonMaterial color="#E8D8B0" emissive="#D8C080" emissiveIntensity={1.0} gradientMap={toonGradient} />
           </mesh>
-          <mesh position={[11.2, 2.62, pz]}>
+          <mesh position={[px, 2.62, -8.1]}>
             <cylinderGeometry args={[0.007, 0.007, 0.2, 4]} />
             <meshToonMaterial color={C_IRON} gradientMap={toonGradient} />
           </mesh>

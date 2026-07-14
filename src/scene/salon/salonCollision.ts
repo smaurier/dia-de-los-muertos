@@ -60,9 +60,9 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   // ── Patio (x∈[-2,13.4], z∈[-10.6,-5.6]) — derrière la porte verte ────────
   [-7.2, 6.95, -6.2, -5.75],  // mur sud du salon (le patio est derrière)
   [ 6.9, 7.6, -5.6, -5.15],   // pilier du coin ouest de la porte verte
-  [ 8.75, 13.6, -5.75, -5.45], // façade nord-est du patio (dos du bureau)
+  [ 8.75, 15.2, -5.75, -5.45], // façade nord-est (dos du bureau + garage)
   [-2.2, -1.8, -10.6, -5.6],  // enceinte ouest
-  [-2.2, 8.85, -10.75, -10.45], // enceinte sud du patio (le garage continue)
+  [-2.2, 15.2, -10.75, -10.45], // enceinte sud (patio + garage, fenêtres hautes)
   // mur mitoyen patio/garage x=9.0 : arche z∈[-8.6,-7.6], porte en bois
   // ouvrable (AABB dynamique doorConfig)
   [ 8.85, 9.15, -10.6, -8.6], // segment sud
@@ -73,16 +73,14 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [ 7.1, 8.1, -10.6, -9.7],   // bougainvillier (mur sud)
   [-1.75, -0.85, -10.25, -9.35], // grande agave
   [ 7.9, 8.7, -6.5, -5.7],    // petite agave
-  // ── Garage ALLONGÉ (x∈[9.0,13.4], z∈[-12.4,-5.6]) — porte basculante au
-  //    bout sud, dans l'axe de la voiture ────────────────────────────────────
-  [13.25, 13.6, -12.4, -5.6], // mur est garage
-  [ 8.85, 9.15, -12.4, -10.6], // mur ouest garage, segment sud
-  [ 8.85, 13.6, -12.55, -12.25], // mur sud + porte basculante (fermée)
+  // ── Garage allongé vers l'EST (x∈[9.0,15.0], z∈[-10.6,-5.6]) — portail
+  //    basculant à l'est, côté rue, dans l'axe de la voiture ─────────────────
+  [14.85, 15.2, -10.6, -5.6], // mur est + portail basculant (fermé)
   // ── Mobilier garage (nav seulement) ───────────────────────────────────────
-  [10.4, 12.2, -11.2, -7.6],  // le vocho
+  [10.4, 14.0, -9.15, -7.45], // le vocho (dans l'axe est-ouest)
   [ 9.75, 11.45, -6.35, -5.6], // établi (mur nord)
-  [12.65, 13.35, -6.3, -5.6], // pneus empilés
-  [ 9.25, 9.95, -12.35, -11.7], // bidons
+  [ 9.15, 9.85, -10.5, -9.8], // pneus empilés (coin sud-ouest)
+  [14.15, 14.9, -6.35, -5.6], // bidons (coin nord-est)
   [ 6.95, 7.4, 2.0, 6.2],     // mur ouest branche est (mur est épais du salon)
   // mur sud du prolongement (z=6.2) : percé x∈[10.2,11.14] → porte salle de
   // bain (AABB dynamique doorConfig), EN FACE de la porte chambre 2
@@ -176,7 +174,7 @@ export const SALON_BOUNDS = { minX: -6.7, maxX: 6.7, minZ: -5.6, maxZ: 5.6 }
 // Bounds de navigation totaux — couvre salon + cuisine (nord) + zaguán (est).
 // L'arche sud est supprimée → minZ = -5.7 (mur plein).
 // canMove utilise NAV_BOUNDS ; la caméra reste dans SALON_BOUNDS.
-export const NAV_BOUNDS = { minX: -7.2, maxX: 13.6, minZ: -12.3, maxZ: 15.4 }
+export const NAV_BOUNDS = { minX: -7.2, maxX: 15.2, minZ: -10.5, maxZ: 15.4 }
 
 // Murs physiques du salon (plans à x=±7, z=±5.8) et marge caméra.
 // CAM_MARGIN > near plane (0.1) : la caméra clampée ne coupe jamais un mur.
