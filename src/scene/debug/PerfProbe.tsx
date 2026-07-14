@@ -16,9 +16,22 @@ import { usePlayerStore } from '../../game/store/playerStore'
 const ENABLED = new URLSearchParams(window.location.search).has('perf')
 const LOG = new URLSearchParams(window.location.search).has('perflog')
 
+type PerfSample = Record<string, string | number>
+
+function downloadReport(samples: PerfSample[]): void {
+  const blob = new Blob([JSON.stringify(samples, null, 1)], { type: 'application/json' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = 'perf-report.json'
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
+
 function PerfLogger() {
   const gl = useThree(s => s.gl)
   const acc = useRef({ frames: 0, time: 0, worst: 0, t0: performance.now() / 1000 })
+  const samples = useRef<PerfSample[]>([])
+  const downloaded = useRef(false)
 
   useFrame((_, delta) => {
     const a = acc.current
@@ -29,8 +42,7 @@ function PerfLogger() {
 
     const [px, , pz] = usePlayerStore.getState().position
     const info = gl.info
-    // eslint-disable-next-line no-console
-    console.log('[PERF]', JSON.stringify({
+    const sample: PerfSample = {
       t: Math.round(performance.now() / 1000 - a.t0),
       zone: zoneAt(px, pz),
       x: Math.round(px * 10) / 10,
@@ -42,11 +54,27 @@ function PerfLogger() {
       geoms: info.memory.geometries,
       tex: info.memory.textures,
       programs: info.programs?.length ?? 0,
-    }))
+    }
+    samples.current.push(sample)
+    // eslint-disable-next-line no-console
+    console.log('[PERF]', JSON.stringify(sample))
     a.frames = 0
     a.time = 0
     a.worst = 0
+
+    // Après 60 s de jeu : téléchargement automatique de perf-report.json
+    // (l'échantillon console dépend trop du navigateur/des extensions).
+    // Dump manuel à tout moment : window.__perfDump()
+    if (!downloaded.current && samples.current.length >= 30) {
+      downloaded.current = true
+      downloadReport(samples.current)
+    }
   })
+
+  // Dump manuel exposé
+  ;(window as unknown as { __perfDump?: () => void }).__perfDump = () =>
+    downloadReport(samples.current)
+
   return null
 }
 

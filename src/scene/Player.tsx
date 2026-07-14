@@ -19,7 +19,7 @@ const CAM_UP = 1.3        // hauteur camera
 const BOY_HIDE_DIST = 0.35 // caméra plus proche → garçon masqué
 
 // Héros texturé (pipeline Hunyuan → Mixamo, 5 clips).
-const HERO_URL = '/models/characters/heros.glb'
+const HERO_URL = '/models/characters/heros.glb?v=3'
 const HERO_HEIGHT = 1.15  // enfant ~1,15 m (le modèle sort à ~2 m)
 // Clips par état ; le crossfade lisse les transitions.
 const CLIP_IDLE = 'standing-idle'

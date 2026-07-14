@@ -871,7 +871,7 @@ export function SalonRoom() {
       {CHAIRS.map((c, i) => (
         <group key={i} scale={[1, 1.14, 1]}>
           <Prop
-            url="/models/props/chaise.glb"
+            url="/models/props/chaise.glb?v=3"
             color={C_WOOD_DARK}
             position={c.pos}
             rotationY={c.rot}
@@ -939,7 +939,7 @@ export function SalonRoom() {
       {/* ─── Fauteuil dossier contre le bas de la fenêtre, face à la pièce
           (ref vue-entree) ───────────────────────────────────────────────────── */}
       <Prop
-        url="/models/props/fauteuil.glb"
+        url="/models/props/fauteuil.glb?v=3"
         color={C_UPHOLSTERY}
         position={[-6.42, 0, -0.6]}
         rotationY={Math.PI / 2}
@@ -953,7 +953,7 @@ export function SalonRoom() {
           écran vers le nord-est : les deux segments du canapé en L la voient.
           (Meuble TV : model dédié à venir — backlog props texturés.) ────────── */}
       <Prop
-        url="/models/props/tv.glb"
+        url="/models/props/tv.glb?v=3"
         color="#3a3a3e"
         position={[-6.15, 0, -4.95]}
         rotationY={Math.PI / 4}
@@ -968,7 +968,7 @@ export function SalonRoom() {
 
       {/* ─── Buffet/commode (mur nord, à gauche en entrant — ref vue-entrée) ─── */}
       <Prop
-        url="/models/props/buffet.glb"
+        url="/models/props/buffet.glb?v=3"
         color={C_WOOD_MED}
         position={[2.0, 0, 5.35]}
         rotationY={Math.PI}

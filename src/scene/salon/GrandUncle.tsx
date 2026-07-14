@@ -20,7 +20,7 @@ const GRAND_UNCLE_POSITIONS: Record<string, [number, number, number]> = {
 // Origine aux pieds, 1,75 m, texture 2048 embarquée. 7 clips : sitting-idle,
 // sit-to-stand, stand-to-sit, sitting-clap, sitting-disbelief, standing-idle,
 // happy-walk (in-place).
-const MODEL_URL = '/models/characters/grand-oncle.glb'
+const MODEL_URL = '/models/characters/grand-oncle.glb?v=3'
 const CLIP_SIT = 'sitting-idle'
 const MODEL_TUNING = {
   scale: 1,

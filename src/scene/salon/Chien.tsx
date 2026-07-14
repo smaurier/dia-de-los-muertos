@@ -8,7 +8,7 @@ import * as THREE from 'three'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 
-const MODEL_URL = '/models/characters/chien-puppy2.glb'
+const MODEL_URL = '/models/characters/chien-puppy2.glb?v=3'
 
 const POSITION: [number, number, number] = [3.5, 0, -3.8]
 const ROTATION_Y = Math.PI * 0.75

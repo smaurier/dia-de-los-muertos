@@ -3,11 +3,11 @@ import * as THREE from 'three'
 import { useGLTF, useTexture } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 
-const BODY_URL = '/models/props/canape-body.glb'
+const BODY_URL = '/models/props/canape-body.glb?v=3'
 const CUSHION_URLS = [
-  '/models/props/coussin-rouge.glb',
-  '/models/props/coussin-creme.glb',
-  '/models/props/coussin-violet.glb',
+  '/models/props/coussin-rouge.glb?v=3',
+  '/models/props/coussin-creme.glb?v=3',
+  '/models/props/coussin-violet.glb?v=3',
 ] as const
 
 const TEXTURE_URLS = [

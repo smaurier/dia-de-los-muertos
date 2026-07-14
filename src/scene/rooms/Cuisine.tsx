@@ -374,14 +374,14 @@ export function Cuisine() {
 
       {/* ── Chaises cuisine : une au sud face à la table, une à l'ouest (ref) ── */}
       <Prop
-        url="/models/props/chaise.glb"
+        url="/models/props/chaise.glb?v=3"
         color={C_WOOD_DARK}
         position={[-3.6, 0, 8.05]}
         rotationY={0}
         targetHeight={0.95}
       />
       <Prop
-        url="/models/props/chaise.glb"
+        url="/models/props/chaise.glb?v=3"
         color={C_WOOD_DARK}
         position={[-4.85, 0, 8.9]}
         rotationY={Math.PI / 2}

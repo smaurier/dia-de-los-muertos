@@ -6,7 +6,7 @@ import { toonGradient } from '../shared/toonGradient'
 import { shouldTurnTowardPlayer } from '../../game/systems/npcSystem'
 // SEATED_Y non utilisé ici : le modèle mama.glb animé gère sa propre hauteur
 
-const MODEL_URL = '/models/characters/mama.glb'
+const MODEL_URL = '/models/characters/mama.glb?v=3'
 
 // chair-1 (nord table) — assise face au centre de la pièce (sud)
 // y=0 : l'animation sitting-idle place les hanches à y≈0.4 local → sol visible, pas sous les tomettes
