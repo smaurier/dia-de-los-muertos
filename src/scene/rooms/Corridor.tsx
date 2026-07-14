@@ -179,7 +179,7 @@ export function Corridor() {
         <planeGeometry args={[0.94, 0.8]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      <PorteAnimee
+      <AnimatedDoor
         id="porte-verte"
         position={[7.58, 0, -5.3]}
         rotationY={Math.PI / 2}

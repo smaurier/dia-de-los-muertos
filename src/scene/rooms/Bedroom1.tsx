@@ -5,9 +5,8 @@
 // West wall = the kitchen's stone wall (DoubleSide, remnant of the original
 // construction — visible from both sides, no mesh to add).
 // Room empty during the party: dim light, night-light, moonlight.
-import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
-import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
+import { GlassReflector } from '../shared/GlassReflector'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
 import { AnimatedDoor } from '../shared/AnimatedDoor'
@@ -168,7 +167,7 @@ export function Bedroom1() {
       {/* Glass — same properties as the salon's large window */}
       <mesh position={[3.0, 1.6, 12.03]} rotation={[0, Math.PI, 0]} userData={{ reflectorZone: 'chambre1' }}>
         <planeGeometry args={[1.56, 1.16]} />
-        <ZoneReflectorMaterial zone="chambre1" transparent opacity={0.68} color="#e8f0f4" resolution={256} mirror={1} mixStrength={1.4} blur={[0, 0]} roughness={0.06} metalness={0} depthScale={0} side={THREE.DoubleSide} />
+        <GlassReflector zone="chambre1" />
       </mesh>
 
       {/* ── East wall x=7 ── */}

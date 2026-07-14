@@ -4,9 +4,8 @@
 // Interior x∈[8.9,11.9], z∈[3.4,6.2].
 // 1990s style: talavera tile wainscoting, bathtub, pedestal sink,
 // small plain mirror (THE narrative mirror stays in the hallway, ch3).
-import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
-import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
+import { GlassReflector } from '../shared/GlassReflector'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide, azulejosTalavera } from '../shared/paintedTextures'
 import { AnimatedDoor } from '../shared/AnimatedDoor'
@@ -109,7 +108,7 @@ export function Bathroom() {
       {/* Glass — same properties as the salon's large window */}
       <mesh position={[11.97, 2.35, 5.0]} rotation={[0, -Math.PI / 2, 0]} userData={{ reflectorZone: 'sdb' }}>
         <planeGeometry args={[0.76, 0.46]} />
-        <ZoneReflectorMaterial zone="sdb" transparent opacity={0.68} color="#e8f0f4" resolution={256} mirror={1} mixStrength={1.4} blur={[0, 0]} roughness={0.06} metalness={0} depthScale={0} side={THREE.DoubleSide} />
+        <GlassReflector zone="sdb" />
       </mesh>
       {/* ── South wall z=3.4 — solid (backs onto the interior: future storage room) ── */}
       <mesh position={[10.4, 1.45, 3.4]}>

@@ -68,7 +68,7 @@ export function Sofa({
     [redScene, creamScene, purpleScene],
   )
 
-  const [texRed, texCream, texPurple] = useTexture(TEXTURE_URLS)
+  const [texRed, texCream, texPurple] = useTexture([...TEXTURE_URLS])
 
   const { scale, yOffset } = useMemo(() => {
     const box = new THREE.Box3().setFromObject(bodyObj)

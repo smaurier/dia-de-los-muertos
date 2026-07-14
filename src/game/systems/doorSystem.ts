@@ -41,5 +41,5 @@ export function closedDoorObstacles(
   return doors
     .filter((d): d is DoorDef & { aabb: readonly [number, number, number, number] } =>
       d.aabb !== null && !isOpen(d.id))
-    .map(d => d.aabb)
+    .map(d => d.aabb as [number, number, number, number])
 }

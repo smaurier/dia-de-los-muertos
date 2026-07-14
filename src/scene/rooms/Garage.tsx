@@ -4,9 +4,8 @@
 // The rolling gate is to the east: the vocho drove straight in from the
 // street, nose toward the patio arch (shared west wall, openable wooden
 // door id 'garage', defined in Patio.tsx).
-import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
-import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
+import { GlassReflector } from '../shared/GlassReflector'
 import { toonGradient } from '../shared/toonGradient'
 import { murAdobeSide } from '../shared/paintedTextures'
 
@@ -97,7 +96,7 @@ export function Garage() {
           ))}
           <mesh position={[px, 1.85, -10.65]} userData={{ reflectorZone: 'garage' }}>
             <planeGeometry args={[0.96, 0.66]} />
-            <ZoneReflectorMaterial zone="garage" transparent opacity={0.68} color="#e8f0f4" resolution={256} mirror={1} mixStrength={1.4} blur={[0, 0]} roughness={0.06} metalness={0} depthScale={0} side={THREE.DoubleSide} />
+            <GlassReflector zone="garage" />
           </mesh>
         </group>
       ))}
