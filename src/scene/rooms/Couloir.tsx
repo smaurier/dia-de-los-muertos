@@ -45,10 +45,19 @@ export function Couloir() {
         <planeGeometry args={[1.95, 2.9]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
-      {/* Mur sud du prolongement (z=6.2, x∈[8.75,13.4] — derrière : extérieur ;
-          l'ouverture x∈[7.35,8.75] est le départ de la branche est) */}
-      <mesh position={[11.075, 1.45, 6.2]}>
-        <planeGeometry args={[4.65, 2.9]} />
+      {/* Mur sud du prolongement (z=6.2, x∈[8.75,13.4]), percé x∈[10.2,11.14] :
+          porte de la salle de bain, EN FACE de la porte de la chambre 2.
+          L'ouverture x∈[7.35,8.75] est le départ de la branche est. */}
+      <mesh position={[9.475, 1.45, 6.2]}>
+        <planeGeometry args={[1.45, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[12.27, 1.45, 6.2]}>
+        <planeGeometry args={[2.26, 2.9]} />
+        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
+      </mesh>
+      <mesh position={[10.67, 2.5, 6.2]}>
+        <planeGeometry args={[0.94, 0.8]} />
         <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
       </mesh>
       <mesh position={[4.5, 2.8, 6.2]}>

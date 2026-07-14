@@ -49,7 +49,10 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [11.2, 13.6, 7.45, 7.75],   // mur nord couloir, segment est
   [ 8.6, 8.9, 2.0, 6.2],      // mur est branche est (x=8.75, s'arrête au T)
   [ 6.95, 7.4, 2.0, 6.2],     // mur ouest branche est (mur est épais du salon)
-  [ 8.75, 13.6, 5.9, 6.35],   // mur sud du prolongement (z=6.2)
+  // mur sud du prolongement (z=6.2) : percé x∈[10.2,11.14] → porte salle de
+  // bain (AABB dynamique doorConfig), EN FACE de la porte chambre 2
+  [ 8.75, 10.15, 5.9, 6.35],  // segment ouest
+  [11.2, 13.6, 5.9, 6.35],    // segment est
   [13.25, 13.6, 6.2, 7.6],    // bout du couloir (x=13.4)
   // ── Chambre 1 (x∈[-0.6,7], z∈[7.6,12]) — mur ouest = pierre (déjà listé) ──
   [-0.45, 7.2, 11.8, 12.2],   // mur nord chambre (z=12)
@@ -71,6 +74,14 @@ const ROOM_WALLS: readonly [number, number, number, number][] = [
   [10.85, 12.35, 9.3, 9.8],   // banc-coffre au pied du lit
   [ 7.35, 8.05, 8.55, 10.25], // grande armoire (mur ouest)
   [12.75, 13.4, 8.1, 9.3],    // commode (mur est)
+  // ── Salle de bain (x∈[8.9,11.9], z∈[3.4,6.2]) — mur ouest = branche est ──
+  [11.75, 12.05, 3.4, 6.2],   // mur est SDB (x=11.9)
+  [ 8.6, 12.05, 3.05, 3.55],  // mur sud SDB (z=3.4)
+  // ── Mobilier salle de bain (nav seulement) ────────────────────────────────
+  [ 9.5, 11.1, 3.55, 4.35],   // baignoire
+  [ 8.9, 9.6, 5.0, 5.7],      // WC
+  [11.3, 11.9, 4.7, 5.3],     // lavabo colonne
+  [11.3, 11.85, 3.55, 4.05],  // panier à linge
   // fond z=12 : porte OUVRABLE vers le cellier x∈[-6.3,-5.3]
   [-7.2, -6.3, 11.8, 12.2],   // fond cuisine, segment ouest
   [-5.3, -0.45, 11.8, 12.2],  // fond cuisine, segment est
