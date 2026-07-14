@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cameraBackDistance, canMove, clampCameraToRoom, SALON_BOUNDS } from './salonCollision'
+import { cameraBackDistance, canMove, clampCameraToRoom, LIVING_ROOM_BOUNDS } from './livingRoomCollision'
 
 // La caméra suit le garçon 1,2 m derrière lui : dos au mur, elle sortait de la
 // pièce (murs = planes une face → écran entièrement sombre). Elle doit rester
@@ -41,8 +41,8 @@ describe('clampCameraToRoom', () => {
   it('la marge caméra reste plus large que les bornes du garçon', () => {
     // Le garçon va jusqu'à ±6.7/±4.8 : la caméra doit pouvoir rester derrière
     // lui sans être clampée plus fort que lui (sinon à-coups visibles).
-    const [x] = clampCameraToRoom(SALON_BOUNDS.maxX, 0)
-    expect(x).toBeGreaterThanOrEqual(SALON_BOUNDS.maxX)
+    const [x] = clampCameraToRoom(LIVING_ROOM_BOUNDS.maxX, 0)
+    expect(x).toBeGreaterThanOrEqual(LIVING_ROOM_BOUNDS.maxX)
   })
 })
 

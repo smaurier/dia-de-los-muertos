@@ -1,10 +1,10 @@
-// src/scene/salon/Salon.tsx
+// src/scene/salon/LivingRoom.tsx
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { SalonRoom } from './SalonRoom'
+import { LivingRoomShell } from './LivingRoomShell'
 import { GrandUncle } from './GrandUncle'
 import { Mama } from './Mama'
-import { Chien } from './Chien'
+import { Dog } from './Dog'
 import { FamilyMember } from './FamilyMember'
 import { familyConfig } from './familyConfig'
 import { useGameStore } from '../../game/store/gameStore'
@@ -15,24 +15,24 @@ import { NO_NPC } from '../debug/perfFlags'
 const ARC_TIMINGS = [240, 480] // seconds: phase 0→1 at 4min, phase 1→2 at 8min
 const SALON_RADIUS = 8  // m — beyond this = player has left the salon
 
-export function Salon() {
+export function LivingRoom() {
   const arcTimer   = useRef(0)
   const wasInside  = useRef(true)
   const exitSeed   = useRef(Math.floor(Math.random() * 10000))
 
   const adultIsNear           = false
-  const setSalonArcPhase      = useGameStore(s => s.setSalonArcPhase)
-  const salonArcPhase         = useGameStore(s => s.salonArcPhase)
+  const setLivingRoomArcPhase      = useGameStore(s => s.setLivingRoomArcPhase)
+  const livingRoomArcPhase         = useGameStore(s => s.livingRoomArcPhase)
   const setGrandUnclePosition = useGameStore(s => s.setGrandUnclePosition)
 
   useAudioLayers({ adultIsNear })
 
   useFrame(({ camera }, delta) => {
     arcTimer.current += delta
-    if (salonArcPhase === 0 && arcTimer.current > ARC_TIMINGS[0]) {
-      setSalonArcPhase(1)
-    } else if (salonArcPhase === 1 && arcTimer.current > ARC_TIMINGS[1]) {
-      setSalonArcPhase(2)
+    if (livingRoomArcPhase === 0 && arcTimer.current > ARC_TIMINGS[0]) {
+      setLivingRoomArcPhase(1)
+    } else if (livingRoomArcPhase === 1 && arcTimer.current > ARC_TIMINGS[1]) {
+      setLivingRoomArcPhase(2)
     }
 
     // Grand-uncle: repositions when player leaves the salon
@@ -47,13 +47,13 @@ export function Salon() {
 
   return (
     <group>
-      <SalonRoom />
+      <LivingRoomShell />
       {/* ?nonpc: perf bisect — cuts all characters */}
       {!NO_NPC && (
         <>
           <GrandUncle />
           <Mama />
-          <Chien />
+          <Dog />
           {familyConfig.filter(c => c.id !== 'maman').map(config => (
             <FamilyMember
               key={config.id}

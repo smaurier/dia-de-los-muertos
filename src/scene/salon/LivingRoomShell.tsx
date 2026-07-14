@@ -13,9 +13,9 @@ import {
 import { rideauTexture, plafondBoisTexture } from '../shared/fabricTexture'
 import { WindowVista } from './WindowVista'
 import { Prop } from '../shared/Prop'
-import { Canape } from './Canape'
-import { SALON_OBSTACLES } from './salonCollision'
-import { NappeCloth } from './NappeCloth'
+import { Sofa } from './Sofa'
+import { SALON_OBSTACLES } from './livingRoomCollision'
+import { Tablecloth } from './Tablecloth'
 import { PhotoFrame } from '../shared/PhotoFrame'
 import { Kitchen } from '../rooms/Kitchen'
 import { Pantry } from '../rooms/Pantry'
@@ -25,7 +25,7 @@ import { Bedroom2 } from '../rooms/Bedroom2'
 import { Bathroom } from '../rooms/Bathroom'
 import { StorageRoom } from '../rooms/StorageRoom'
 import { Office } from '../rooms/Office'
-import { PorteEntree } from './PorteEntree'
+import { FrontDoor } from './FrontDoor'
 import { Patio } from '../rooms/Patio'
 import { Garage } from '../rooms/Garage'
 import { SkyDome } from '../shared/SkyDome'
@@ -33,7 +33,7 @@ import { SceneAuditProbe } from '../debug/sceneAudit'
 import { NO_PAPEL } from '../debug/perfFlags'
 import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
 import { PerfProbe } from '../debug/PerfProbe'
-import { Couffin } from './Couffin'
+import { Bassinet } from './Bassinet'
 
 // Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
 const SHOW_AABB = new URLSearchParams(window.location.search).has('aabb')
@@ -356,7 +356,7 @@ function SashFrame({ x, zMin, zMax }: { x: number; zMin: number; zMax: number })
 }
 
 // ─── Scene ────────────────────────────────────────────────────────────────────
-export function SalonRoom() {
+export function LivingRoomShell() {
   return (
     <group>
       {/* ─── Éclairage ──────────────────────────────────────────────────────── */}
@@ -793,7 +793,7 @@ export function SalonRoom() {
       )}
 
       {/* ─── Table dressée ──────────────────────────────────────────────────── */}
-      <NappeCloth />
+      <Tablecloth />
       {/* Assiettes + verres — une assiette + un verre par convive */}
       {PLATE_X.flatMap((px, pi) => PLATE_Z.map((pz, zi) => (
         <group key={`p-${pi}-${zi}`} position={[px, 0.814, pz]}>
@@ -914,7 +914,7 @@ export function SalonRoom() {
       {/* ─── Canapé d'angle — canape-full.glb (body + coussins séparés).
           Coussins : MeshToonMaterial + motif PNG (RepeatWrapping), override
           par Object3D.name dans Canape.tsx. ────────────────────────────────── */}
-      <Canape
+      <Sofa
         position={[-3.15, 0, -3.9]}
         rotationY={-Math.PI / 2}
         targetLength={3.6}
@@ -943,7 +943,7 @@ export function SalonRoom() {
       />
       {/* Le bébé (22e présent) dort dans son couffin au pied du fauteuil —
           la grande-tante Rosa veille dessus en sommeillant */}
-      <Couffin position={[-6.25, 0, 0.35]} />
+      <Bassinet position={[-6.25, 0, 0.35]} />
 
       {/* ─── Télé CRT 90s + meuble TV — en diagonale DANS L'ANGLE sud-ouest,
           écran vers le nord-est : les deux segments du canapé en L la voient.
@@ -1032,7 +1032,7 @@ export function SalonRoom() {
         </mesh>
         {/* Porte principale : vantaux cloutés, cantera, imposte, farol —
             voir PorteEntree.tsx */}
-        <PorteEntree />
+        <FrontDoor />
       </group>
 
       {/* ─── Vaisselier (coin nord-est, ref vue-fenetre) ────────────────────── */}

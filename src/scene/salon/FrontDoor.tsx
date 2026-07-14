@@ -1,4 +1,4 @@
-// src/scene/salon/PorteEntree.tsx
+// src/scene/salon/FrontDoor.tsx
 // Main house door — centrepiece of the zaguán.
 // Mexican colonial door: two solid-wood panelled leaves with
 // forged-nail (clavo) diamond pattern, strap hinges and ring knockers,
@@ -123,7 +123,7 @@ function FarolFlame() {
   return <pointLight ref={lightRef} position={[9.2, 1.95, 0]} intensity={1.3} color="#f8dfa0" distance={5} decay={2} />
 }
 
-export function PorteEntree() {
+export function FrontDoor() {
   return (
     <group>
       {/* ── Worn stone threshold (extends into corridor) ── */}

@@ -1,4 +1,4 @@
-// src/scene/salon/Couffin.tsx
+// src/scene/salon/Bassinet.tsx
 // The baby — 22nd presence from V10. Not carried (no carrying animation
 // available in Mixamo): sleeping in a wicker basket placed at the foot of
 // great-aunt Rosa's armchair, who watches over it while dozing.
@@ -9,7 +9,7 @@ import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 
-export function Couffin({ position }: { position: [number, number, number] }) {
+export function Bassinet({ position }: { position: [number, number, number] }) {
   const blanketRef = useRef<THREE.Mesh>(null)
   const t = useRef(0)
   useFrame((_, delta) => {

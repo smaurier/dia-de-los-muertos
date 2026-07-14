@@ -11,7 +11,7 @@ import { useDoorStore } from '../game/store/doorStore'
 import { useSubtitleStore } from '../game/store/subtitleStore'
 import { nearestDoorId, closedDoorObstacles } from '../game/systems/doorSystem'
 import { resolvePlayerNpcCollision } from '../game/systems/npcSystem'
-import { canMove, cameraBackDistance, clampCameraToRoom, SALON_BOUNDS } from './salon/salonCollision'
+import { canMove, cameraBackDistance, clampCameraToRoom, LIVING_ROOM_BOUNDS } from './salon/livingRoomCollision'
 import { DOORS, DOOR_INTERACT_DIST } from './salon/doorConfig'
 import { npcPositions } from './salon/npcRegistry'
 
@@ -199,8 +199,8 @@ export function Player() {
 
     // Clamp camera to salon walls only when the player IS in the salon.
     // Elsewhere camera follows freely (adjacent rooms have their own walls).
-    const inSalon = boyPos.current.x >= SALON_BOUNDS.minX && boyPos.current.x <= SALON_BOUNDS.maxX
-                 && boyPos.current.z >= SALON_BOUNDS.minZ && boyPos.current.z <= SALON_BOUNDS.maxZ
+    const inSalon = boyPos.current.x >= LIVING_ROOM_BOUNDS.minX && boyPos.current.x <= LIVING_ROOM_BOUNDS.maxX
+                 && boyPos.current.z >= LIVING_ROOM_BOUNDS.minZ && boyPos.current.z <= LIVING_ROOM_BOUNDS.maxZ
     // Pull-back shortened to first obstruction (furniture everywhere, salon
     // walls only inside — otherwise ghost walls → camera glued outside salon).
     const backDist = cameraBackDistance(

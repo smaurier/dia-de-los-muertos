@@ -6,7 +6,7 @@ import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { useSubtitleStore } from '../../game/store/subtitleStore'
-import { canMove } from './salonCollision'
+import { canMove } from './livingRoomCollision'
 import { npcPositions } from './npcRegistry'
 import { SIT_TARGETS, SEATED_Y } from './chairConfig'
 import {

@@ -1,4 +1,4 @@
-// src/scene/salon/NappeCloth.tsx
+// src/scene/salon/Tablecloth.tsx
 //
 // Tablecloth for the main feast table — minimal static geometry.
 // 1 top panel + 4 full-width side panels that naturally overlap at corners.
@@ -22,7 +22,7 @@ const SKIRT_BOT  = 0.30   // ~30cm off floor → table legs clearly visible
 const SKIRT_H    = TABLE_Y - SKIRT_BOT
 const SKIRT_CY   = (TABLE_Y + SKIRT_BOT) / 2
 
-export function NappeCloth() {
+export function Tablecloth() {
   const tex = useMemo(() => {
     const t = nappeBrodee.clone()
     t.wrapS = THREE.MirroredRepeatWrapping

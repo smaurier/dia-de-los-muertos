@@ -1,4 +1,4 @@
-// src/scene/salon/Chien.tsx
+// src/scene/salon/Dog.tsx
 // Stylized puppy (Sketchfab) — 5 clips: IdleLayDown / IdleEnergetic / Walk / Run / TPOSE.
 // Salon sandbox phase: lying next to the table on the TV side, passive head-look.
 
@@ -17,7 +17,7 @@ const SCALE = 1.6   // 1.0 = chiot (0.37m), 1.6 = chien moyen, 2.2 = grand chien
 const CLIP_IDLE = 'Armature|PuppyALL_IdleLayDown'
 const HEAD_BONE = 'Bip01_Head'
 
-export function Chien() {
+export function Dog() {
   const groupRef = useRef<THREE.Group>(null)
   const neckBoneRef = useRef<THREE.Object3D | null>(null)
   const { camera } = useThree()

@@ -1,4 +1,4 @@
-// src/scene/salon/salonCollision.ts
+// src/scene/salon/livingRoomCollision.ts
 // AABB collision zones — [minX, maxX, minZ, maxZ]
 //
 // Rule: the AABB must be SMALLER than the startPositions of NPCs that live
@@ -175,7 +175,7 @@ export const ROOM_WALLS: readonly [number, number, number, number][] = [
 ]
 
 // Salon-only bounds — used by camera and tests.
-export const SALON_BOUNDS = { minX: -6.7, maxX: 6.7, minZ: -5.6, maxZ: 5.6 }
+export const LIVING_ROOM_BOUNDS = { minX: -6.7, maxX: 6.7, minZ: -5.6, maxZ: 5.6 }
 
 // Total navigation bounds — covers salon + kitchen (north) + zaguán (east).
 // South arch removed → minZ = -5.7 (solid wall).

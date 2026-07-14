@@ -48,7 +48,7 @@ const CUSHION_DEFS = [
   },
 ] as const
 
-export function Canape({
+export function Sofa({
   position,
   rotationY = 0,
   targetLength,

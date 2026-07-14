@@ -7,7 +7,7 @@ import { EffectComposer, Bloom, Vignette, Noise } from '@react-three/postprocess
 import { BlendFunction } from 'postprocessing'
 import { Suspense, useState, useEffect, useRef } from 'react'
 import { Player } from './scene/Player'
-import { Salon } from './scene/salon/Salon'
+import { LivingRoom } from './scene/salon/LivingRoom'
 import { Subtitles } from './scene/ui/Subtitles'
 import { DoorHint } from './scene/ui/DoorHint'
 import { INTERACT_KEY } from './game/controlsConfig'
@@ -203,7 +203,7 @@ export default function App() {
           {NOFX && <ManualRender />}
           <Suspense fallback={null}>
             {PHOTO ? <PhotoCamera conf={PHOTO} /> : <Player />}
-            <Salon />
+            <LivingRoom />
             {/* INSIDE Suspense: mounted outside Suspense, the composer captures an
                 empty framebuffer during GLB loading and renders a solid screen
                 (fog color) permanently. */}

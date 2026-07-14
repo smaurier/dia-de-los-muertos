@@ -2,7 +2,7 @@
 // Audit d'intégrité des données de la maison : collisions, portes, bounds.
 // Garde-fou permanent contre les oublis techniques quand une pièce bouge.
 import { describe, it, expect } from 'vitest'
-import { SALON_OBSTACLES, ROOM_WALLS, NAV_BOUNDS, canMove } from './salonCollision'
+import { SALON_OBSTACLES, ROOM_WALLS, NAV_BOUNDS, canMove } from './livingRoomCollision'
 import { DOORS, DOOR_INTERACT_DIST } from './doorConfig'
 
 const ALL = [...SALON_OBSTACLES, ...ROOM_WALLS]
