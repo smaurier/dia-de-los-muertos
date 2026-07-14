@@ -4,7 +4,6 @@
 // Interior x∈[8.9,11.9], z∈[3.4,6.2].
 // 1990s style: talavera tile wainscoting, bathtub, pedestal sink,
 // small plain mirror (THE narrative mirror stays in the hallway, ch3).
-import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { GlassReflector } from '../shared/GlassReflector'
 import { toonGradient } from '../shared/toonGradient'

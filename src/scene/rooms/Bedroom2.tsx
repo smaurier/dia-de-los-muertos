@@ -3,7 +3,6 @@
 // x∈[7.35,13.4], z∈[7.6,12] (~6 × 4.4 m), adjoining bedroom 1
 // (double partition x∈[7,7.35]). Door on the hallway x∈[10.2,11.14].
 // Room empty during the party: dim light, bedside lamps, moonlight.
-import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { GlassReflector } from '../shared/GlassReflector'
 import { toonGradient } from '../shared/toonGradient'

@@ -5,7 +5,6 @@
 // West wall = the kitchen's stone wall (DoubleSide, remnant of the original
 // construction — visible from both sides, no mesh to add).
 // Room empty during the party: dim light, night-light, moonlight.
-import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { GlassReflector } from '../shared/GlassReflector'
 import { toonGradient } from '../shared/toonGradient'

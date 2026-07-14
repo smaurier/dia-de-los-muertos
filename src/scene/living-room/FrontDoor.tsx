@@ -14,7 +14,6 @@ import { toonGradient } from '../shared/toonGradient'
 import { boisSombre } from '../shared/paintedTextures'
 
 const C_IRON     = '#1A1512'
-const C_WOOD     = '#5C3010'
 const C_WOOD_DK  = '#3E2008'
 const C_PANEL    = '#6E3A14'
 const C_CANTERA  = '#C9B8A2'

@@ -8,7 +8,6 @@ import { papelTextures } from '../shared/papelTexture'
 import {
   murAdobeNorth, murAdobeLintel, murAdobeSouth, murAdobeSide,
   solTomettes, solTomettesNormal, boisSombre,
-  azulejosTalavera, murPierre,
 } from '../shared/paintedTextures'
 import { rideauTexture, plafondBoisTexture } from '../shared/fabricTexture'
 import { WindowVista } from './WindowVista'
@@ -62,8 +61,6 @@ const intradosGeometry = (() => {
 // ─── Couleurs ────────────────────────────────────────────────────────────────
 const C_WOOD_DARK  = '#3A2008'
 const C_WOOD_MED   = '#5C3010'
-const C_WOOD_LIGHT = '#7A4820'
-const C_CUSHION    = '#6B3520'
 const C_UPHOLSTERY = '#4A2E1A'
 const C_CEIL       = '#F0E0C8'
 const C_IRON       = '#1A1512' // fer forgé quasi noir (l'ancien #2A3530 tirait au vert)

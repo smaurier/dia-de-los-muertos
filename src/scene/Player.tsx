@@ -22,7 +22,6 @@ const BOY_HIDE_DIST = 0.35 // camera too close → hide boy mesh
 
 // Textured hero (Hunyuan → Mixamo pipeline, 5 clips).
 const HERO_URL = '/models/characters/heros.glb?v=3'
-const HERO_HEIGHT = 1.15  // child ~1.15 m (model comes out at ~2 m)
 // Clips per state; crossfade smooths transitions.
 const CLIP_IDLE = 'standing-idle'
 const CLIP_WALK = 'walking'

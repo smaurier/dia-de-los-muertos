@@ -4,7 +4,6 @@
 // The rolling gate is to the east: the vocho drove straight in from the
 // street, nose toward the patio arch (shared west wall, openable wooden
 // door id 'garage', defined in Patio.tsx).
-import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { GlassReflector } from '../shared/GlassReflector'
 import { toonGradient } from '../shared/toonGradient'

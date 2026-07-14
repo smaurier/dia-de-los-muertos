@@ -3,7 +3,6 @@
 // storage room and the future garage). x∈[8.9,12.4], z∈[-4.2,-1.2]. Door on
 // the south hallway (west wall, z∈[-2.5,-1.56]). Adult room, tidy, slightly
 // solemn: writing desk, banker's lamp, bookshelf, filing cabinet, typewriter.
-import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { GlassReflector } from '../shared/GlassReflector'
 import { toonGradient } from '../shared/toonGradient'

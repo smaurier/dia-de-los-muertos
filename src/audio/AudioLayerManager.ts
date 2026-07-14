@@ -16,8 +16,8 @@ export class AudioLayerManager {
   private howls = new Map<AudioLayer, HowlPort>()
 
   constructor(
-    private readonly factory: HowlFactory,
-    private readonly sources: Partial<Record<AudioLayer, string>> = {},
+    factory: HowlFactory,
+    sources: Partial<Record<AudioLayer, string>> = {},
     private readonly configs: Record<AudioLayer, LayerConfig> = LAYER_DEFAULTS
   ) {
     for (const layer of Object.values(AudioLayer)) {
