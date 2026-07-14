@@ -12,17 +12,17 @@ import { Subtitles } from './scene/ui/Subtitles'
 import { DoorHint } from './scene/ui/DoorHint'
 import { INTERACT_KEY } from './game/controlsConfig'
 
-// Toon riche (expérience DA) : fog chaud + bloom bougies + vignette.
-// Cible mood : docs/references/rooms/cuisine/cuisine-entree-02.png
+// Rich toon (art direction experience): warm fog + candle bloom + vignette.
+// Mood target: docs/references/rooms/cuisine/cuisine-entree-02.png
 const TOON_RICHE = {
   enabled: true,
-  fogColor: '#26140b',   // brun profond, prolonge le fond #1a0e07
-  fogNear: 7,            // resserré : les fonds de pièce fondent dans la pénombre (palier 2)
+  fogColor: '#26140b',   // deep brown, extends the #1a0e07 background
+  fogNear: 7,            // tight: room backs fade into shadow (level 2)
   fogFar: 24,
-  bloomThreshold: 0.75,  // halo peint : les sources chaudes fleurissent plus tôt
+  bloomThreshold: 0.75,  // painted halo: warm sources bloom earlier
   bloomIntensity: 0.55,
   vignetteDarkness: 0.35,
-  grainOpacity: 0.055,   // grain de papier — rendu gouache des refs
+  grainOpacity: 0.055,   // paper grain — gouache look from the refs
 }
 
 const CONTROLS_MAP = [
@@ -34,9 +34,9 @@ const CONTROLS_MAP = [
   { name: 'interact', keys: [INTERACT_KEY] },
 ]
 
-// Mode photo (vérification visuelle sans pointer lock) :
+// Photo mode (visual check without pointer lock):
 // http://localhost:5173/?photo=camX,camY,camZ,lookX,lookY,lookZ
-// Debug : ?nofx désactive le postprocessing (bloom/vignette)
+// Debug: ?nofx disables postprocessing (bloom/vignette)
 const NOFX = new URLSearchParams(window.location.search).has('nofx')
 
 const PHOTO = (() => {
@@ -46,9 +46,9 @@ const PHOTO = (() => {
   return nums.length === 6 && nums.every(n => !Number.isNaN(n)) ? nums : null
 })()
 
-// ?nofx coupe le composer — mais ReflectionsSansFog (useFrame à priorité ≠ 0)
-// désactive le rendu automatique de R3F : sans composer, personne ne rendait
-// → écran noir. En NOFX, ce composant reprend le rendu à la main.
+// ?nofx cuts the composer — but ReflectionsSansFog (useFrame at priority ≠ 0)
+// disables R3F automatic rendering: without the composer, nothing rendered
+// → black screen. In NOFX mode, this component takes over rendering manually.
 function ManualRender() {
   const { gl, scene, camera } = useThree()
   useFrame(() => {
@@ -57,11 +57,11 @@ function ManualRender() {
   return null
 }
 
-// Les réflecteurs drei (sol, vitre) rendent leur passe dans useFrame (prio 0) :
-// la caméra virtuelle, mirroir de la nôtre, voit le joueur 2× plus loin et le
-// fog l'avale (on « disparaît » du reflet en reculant). Un vrai reflet ne
-// prend pas le fog en double → fog coupé pendant les passes réflecteur,
-// restauré avant le rendu principal.
+// Drei reflectors (floor, glass) render their pass in useFrame (priority 0):
+// the virtual mirror camera sees the player 2× farther and fog swallows them
+// (you "disappear" from the reflection when stepping back). A real reflection
+// doesn't double-apply fog → fog disabled during reflector passes,
+// restored before the main render.
 function ReflectionsSansFog() {
   const scene = useThree(s => s.scene)
   const saved = useRef<THREE.Scene['fog']>(null)
@@ -75,12 +75,11 @@ function ReflectionsSansFog() {
   return null
 }
 
-// Écran de chargement + fondu d'ouverture : couvre le chargement des assets
-// (sans lui : impression de freeze, puis couleurs brûlées avant le montage de
-// l'EffectComposer qui vit dans le Suspense). Titre + barre de progression
-// cempasúchil pendant le chargement ; le noir reste 400 ms après la fin
-// (le temps que le composer s'installe) puis fond en 900 ms.
-// Phrases qui tournent pendant le chargement — la maison se prépare.
+// Loading screen + opening fade: covers asset loading (without it: freeze
+// impression, then blown-out colors before the EffectComposer mounts inside
+// Suspense). Title + cempasúchil progress bar during loading; black stays
+// 400 ms after completion (time for the composer to settle) then fades 900 ms.
+// Lines that rotate during loading — the house is getting ready.
 const LOADING_LINES = [
   'la casa se prepara…',
   'se encienden las velas…',
@@ -97,7 +96,7 @@ function FadeIn() {
   const [fading, setFading] = useState(false)
   const [lineIdx, setLineIdx] = useState(0)
 
-  // Rotation des phrases toutes les 1,8 s
+  // Rotate lines every 1.8 s
   useEffect(() => {
     if (fading) return
     const t = setInterval(() => setLineIdx(i => (i + 1) % LOADING_LINES.length), 1800)
@@ -113,9 +112,9 @@ function FadeIn() {
   }, [active, fading])
 
   if (gone) return null
-  // useProgress recule quand de nouveaux assets s'annoncent en cours de
-  // route : on ne descend jamais, et on force la barre pleine dès 99,5 %
-  // (sinon « 100 % » affiché avec une barre incomplète).
+  // useProgress regresses when new assets announce mid-flight: we never go
+  // backward, and force the bar to full at 99.5% (otherwise "100%" shown
+  // with an incomplete bar).
   const pct = !active ? 100 : Math.min(100, progress)
   return (
     <div style={{
@@ -134,7 +133,7 @@ function FadeIn() {
           <div style={{ color: '#8a6a5a', fontSize: '15px', fontStyle: 'italic', marginBottom: '36px', minHeight: '20px' }}>
             {LOADING_LINES[lineIdx]}
           </div>
-          {/* Barre de progression cempasúchil */}
+          {/* Cempasúchil progress bar */}
           <div style={{
             width: '280px', height: '5px', borderRadius: '3px',
             background: 'rgba(232,148,10,0.15)', overflow: 'hidden',
@@ -182,8 +181,8 @@ export default function App() {
           background: 'rgba(0,0,0,0.55)', pointerEvents: 'none',
           color: '#f5c87a', fontFamily: 'sans-serif', textAlign: 'center',
         }}>
-          <div style={{ fontSize: '32px', marginBottom: '10px', fontWeight: 'bold' }}>Cliquez pour naviguer</div>
-          <div style={{ fontSize: '18px', color: '#c9a87c' }}>WASD · souris · E pour se cacher</div>
+          <div style={{ fontSize: '32px', marginBottom: '10px', fontWeight: 'bold' }}>Click to play</div>
+          <div style={{ fontSize: '18px', color: '#c9a87c' }}>WASD · mouse · E to hide</div>
         </div>
       )}
       <FadeIn />
@@ -192,8 +191,8 @@ export default function App() {
       <KeyboardControls map={CONTROLS_MAP}>
         <Canvas
           camera={{ fov: 65, near: 0.1, far: 100, position: [0, 1.3, 4.2] }}
-          // DPR plafonné à 1.5 : sur écran hi-dpi le jeu rendait à 2× la
-          // résolution — fill rate doublé pour un gain invisible en toon
+          // DPR capped at 1.5: on hi-dpi screens the game rendered at 2× resolution
+          // — doubled fill rate for no visible gain in toon style
           dpr={[1, 1.5]}
           style={{ width: '100vw', height: '100vh', background: '#1a0e07' }}
         >
@@ -205,12 +204,12 @@ export default function App() {
           <Suspense fallback={null}>
             {PHOTO ? <PhotoCamera conf={PHOTO} /> : <Player />}
             <Salon />
-            {/* DANS le Suspense : monté hors Suspense, le composer capture un
-                framebuffer vide pendant le chargement des GLB et rend un écran
-                uniforme (couleur fog) définitivement. */}
+            {/* INSIDE Suspense: mounted outside Suspense, the composer captures an
+                empty framebuffer during GLB loading and renders a solid screen
+                (fog color) permanently. */}
             {TOON_RICHE.enabled && !NOFX && (
-              // multisampling 2 (défaut 8) : l'anti-aliasing 8× coûtait cher
-              // pour un rendu toon à contours noirs + grain qui masque tout
+              // multisampling 2 (default 8): 8× anti-aliasing was expensive
+              // for a toon render with black outlines + grain that masks it all
               <EffectComposer multisampling={2}>
                 <Bloom
                   luminanceThreshold={TOON_RICHE.bloomThreshold}

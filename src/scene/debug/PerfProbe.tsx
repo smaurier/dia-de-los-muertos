@@ -1,12 +1,12 @@
 // src/scene/debug/PerfProbe.tsx
-// Panneau de mesure r3f-perf : ?perf dans l'URL — FPS, draw calls,
-// triangles, mémoire GPU. À lire AVANT/APRÈS toute optimisation.
-// Comparaison culling : ?perf&noculling pour mesurer sans le room culling.
+// r3f-perf measurement panel: ?perf in the URL — FPS, draw calls,
+// triangles, GPU memory. Read BEFORE/AFTER any optimization.
+// Culling comparison: ?perf&noculling to measure without room culling.
 //
-// ?perflog : échantillon JSON dans la console toutes les 2 s —
+// ?perflog: JSON sample in the console every 2 s —
 // [PERF] {"t":12,"zone":"salon","fpsAvg":58,"fpsMin":31,"calls":420,...}
-// fpsMin = la PIRE frame de la fenêtre (les hitchs s'y voient). Copier-coller
-// la console donne un rapport analysable.
+// fpsMin = the WORST frame in the window (hitches show here). Copy-pasting
+// the console gives an analyzable report.
 import { useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { Perf } from 'r3f-perf'
@@ -62,16 +62,16 @@ function PerfLogger() {
     a.time = 0
     a.worst = 0
 
-    // Après 60 s de jeu : téléchargement automatique de perf-report.json
-    // (l'échantillon console dépend trop du navigateur/des extensions).
-    // Dump manuel à tout moment : window.__perfDump()
+    // After 60 s of play: automatic download of perf-report.json
+    // (console sampling is too dependent on browser/extensions).
+    // Manual dump at any time: window.__perfDump()
     if (!downloaded.current && samples.current.length >= 30) {
       downloaded.current = true
       downloadReport(samples.current)
     }
   })
 
-  // Dump manuel exposé
+  // Manual dump exposed on window
   ;(window as unknown as { __perfDump?: () => void }).__perfDump = () =>
     downloadReport(samples.current)
 

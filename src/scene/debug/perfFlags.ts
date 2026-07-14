@@ -1,14 +1,14 @@
 // src/scene/debug/perfFlags.ts
-// Interrupteurs de bissection perf : le salon rame même quasi vide (59 k
-// tris → 15 fps) — le coût est ailleurs que la géométrie. Chaque flag coupe
-// un sous-système ; on mesure le fps avec/sans → le coupable s'isole.
+// Perf bisection switches: the salon is slow even nearly empty (59 k tris
+// → 15 fps) — the cost is elsewhere than geometry. Each flag cuts one
+// subsystem; measure fps with/without → isolate the culprit.
 //
-// Protocole (fps salon, spawn, sans bouger, ~20 s chacun) :
-//   ?perflog                       → référence
-//   ?perflog&noreflect             → sans les 3 réflecteurs (sol/fenêtre/miroir)
-//   ?perflog&nonpc                 → sans les 22 NPCs + chien
-//   ?perflog&nopapel               → sans papel picado + rideaux animés
-//   ?perflog&nofx                  → sans Bloom/Vignette/Grain (existant)
+// Protocol (salon fps, at spawn, without moving, ~20 s each):
+//   ?perflog                       → baseline
+//   ?perflog&noreflect             → without the 3 reflectors (floor/window/mirror)
+//   ?perflog&nonpc                 → without the 22 NPCs + dog
+//   ?perflog&nopapel               → without papel picado + animated curtains
+//   ?perflog&nofx                  → without Bloom/Vignette/Grain (existing)
 const q = new URLSearchParams(window.location.search)
 
 export const NO_REFLECT = q.has('noreflect')

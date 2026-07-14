@@ -1,6 +1,6 @@
 // src/scene/ui/DoorHint.tsx
-// Indice d'interaction porte : « F — ouvrir / fermer » quand le joueur est à
-// portée d'une porte. La touche vient de controlsConfig (reconfigurable).
+// Door interaction hint: "F — open / close" when the player is within range
+// of a door. The key comes from controlsConfig (reconfigurable).
 import { createPortal } from 'react-dom'
 import { usePlayerStore } from '../../game/store/playerStore'
 import { useDoorStore } from '../../game/store/doorStore'
