@@ -33,94 +33,17 @@ import { NO_PAPEL } from '../debug/perfFlags'
 import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
 import { PerfProbe } from '../debug/PerfProbe'
 import { Bassinet } from './Bassinet'
-
-// Debug : ?aabb affiche les boîtes de collision (rouge translucide) et masque le plafond
-const SHOW_AABB = new URLSearchParams(window.location.search).has('aabb')
-
-// Intrados de l'arche cuisine : demi-cylindre vu par DESSOUS → normales et
-// winding inversés, sinon la face est éclairée à l'envers (noire en toon).
-const intradosGeometry = (() => {
-  const g = new THREE.CylinderGeometry(0.9, 0.9, 0.35, 24, 1, true, Math.PI / 2, Math.PI)
-  g.rotateX(Math.PI / 2)
-  const normals = g.getAttribute('normal')
-  for (let i = 0; i < normals.count; i++) {
-    normals.setXYZ(i, -normals.getX(i), -normals.getY(i), -normals.getZ(i))
-  }
-  const index = g.getIndex()
-  if (index) {
-    for (let i = 0; i < index.count; i += 3) {
-      const a = index.getX(i)
-      index.setX(i, index.getX(i + 2))
-      index.setX(i + 2, a)
-    }
-  }
-  return g
-})()
-
-
-// ─── Couleurs ────────────────────────────────────────────────────────────────
-const C_WOOD_DARK  = '#3A2008'
-const C_WOOD_MED   = '#5C3010'
-const C_UPHOLSTERY = '#4A2E1A'
-const C_CEIL       = '#F0E0C8'
-const C_IRON       = '#1A1512' // fer forgé quasi noir (l'ancien #2A3530 tirait au vert)
-const C_GOLD       = '#C8A040'
-const C_FRAME      = '#2A1A08'
-const C_PHOTO      = '#4A4858'
-const C_CACTUS     = '#2D7A2D'
-const C_POT        = '#C47A3A'
-const C_CANDLE     = '#F5E8D0'
-const C_FLAME      = '#FF7700'
-const C_LEAF       = '#3E7C3A'
-const C_CERAMIC    = '#E8E0D0'
-
-// ─── Papel picado ─────────────────────────────────────────────────────────────
-const PAPEL_COLORS = ['#C0392B', '#8E44AD', '#E67E22', '#27AE60', '#F1C40F', '#2980B9']
-// Guirlandes perpendiculaires à la table (le long de Z), accrochées sous les
-// vigas (x pairs) : cluster resserré côté entrée + une au fond (ref).
-const PAPEL_X = [4, 2, 0, -4]
-const FLAG_X  = [-4.9, -4.1, -3.3, -2.5, -1.7, -0.9, -0.1, 0.7, 1.5, 2.3, 3.1, 3.9, 4.7]
-
-// ─── Chaises ─────────────────────────────────────────────────────────────────
-type ChairCfg = { pos: [number, number, number]; rot: number }
-// Table centre z=1.0. Nord z=2.60, sud z=-0.60 — passage ~1m entre chaises sud et canapé (front z≈-2.1).
-// End chairs : West end face à +x → rot=+π/2. East end face à -x → rot=-π/2.
-// Positions x sorties du range table [-4.75, 3.75].
-const CHAIRS: ChairCfg[] = [
-  { pos: [-3.05, 0, 2.60], rot: Math.PI },    // nord — face au sud (table)
-  { pos: [-2.05, 0, 2.60], rot: Math.PI },
-  { pos: [-1.05, 0, 2.60], rot: Math.PI },
-  { pos: [-0.05, 0, 2.60], rot: Math.PI },
-  { pos: [0.95,  0, 2.60], rot: Math.PI },
-  { pos: [1.95,  0, 2.60], rot: Math.PI },
-  { pos: [2.95,  0, 2.60], rot: Math.PI },
-  { pos: [-3.05, 0, -0.60], rot: 0 },         // sud — face au nord (table)
-  { pos: [-2.05, 0, -0.60], rot: 0 },
-  { pos: [-1.05, 0, -0.60], rot: 0 },
-  { pos: [-0.05, 0, -0.60], rot: 0 },
-  { pos: [0.95,  0, -0.60], rot: 0 },
-  { pos: [1.95,  0, -0.60], rot: 0 },
-  { pos: [2.95,  0, -0.60], rot: 0 },
-  { pos: [-4.55, 0,  0.60], rot:  Math.PI / 2 }, // ouest — face à +x (table)
-  { pos: [-4.55, 0,  1.40], rot:  Math.PI / 2 },
-  { pos: [ 4.65, 0,  0.60], rot: -Math.PI / 2 }, // est — face à -x (table)
-  { pos: [ 4.65, 0,  1.40], rot: -Math.PI / 2 }, // chaise vide d'Emi
-  { pos: [ 3.95, 0,  2.60], rot: Math.PI },        // nord +1 — chaise vide grande-tante (elle est au fauteuil)
-]
-
-const TABLE_LEG_X = [-3.55, -0.05, 3.45]
-const TABLE_LEG_Z = [0.25, 1.75]
-
-// Cadres muraux (ref vue-entrée). Nord : autour de l'arche et au-dessus du
-// buffet. Sud : au-dessus du coin salon. Est : de part et d'autre de la porte.
-const FRAMES_SOUTH: [number, number, number][] = [[3.6, 2.1, -5.77], [4.8, 1.95, -5.77], [6.0, 2.15, -5.77]]
-const FRAMES_EAST:  [number, number, number][] = [[6.97, 1.9, 2.0], [6.97, 1.9, -1.8]]
-// Bougies supprimées (obstruaient la navigation vers les arches)
-// Grande fenêtre unique à rideaux, centrée mur ouest (ref salon-vue-entree-01)
-const WINDOW_CZ = 0.5
-const REJA_DZ   = [-1.32, -0.88, -0.44, 0, 0.44, 0.88, 1.32]
-const PLATE_X   = [-3.05, -2.05, -1.05, -0.05, 0.95, 1.95, 2.95]
-const PLATE_Z   = [1.80, 0.20]  // table centre z=1.0, assiettes à z=1.0±0.80
+import {
+  SHOW_AABB,
+  intradosGeometry,
+  C_WOOD_DARK, C_WOOD_MED, C_UPHOLSTERY, C_CEIL, C_IRON, C_GOLD,
+  C_FRAME, C_PHOTO, C_CACTUS, C_POT, C_CANDLE, C_FLAME, C_LEAF, C_CERAMIC,
+  PAPEL_COLORS, PAPEL_X, FLAG_X,
+  CHAIRS,
+  TABLE_LEG_X, TABLE_LEG_Z,
+  FRAMES_SOUTH, FRAMES_EAST,
+  WINDOW_CZ, REJA_DZ, PLATE_X, PLATE_Z,
+} from './shell/livingRoomConstants'
 
 // ─── Composants ───────────────────────────────────────────────────────────────
 // Écran CRT : lueur bleutée qui scintille (match/programme lointain).
