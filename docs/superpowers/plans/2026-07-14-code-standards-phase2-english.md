@@ -75,18 +75,29 @@ fix before continuing.)
 Run: `npm test`
 Expected: all suites green (unchanged count).
 
-- [ ] **Step 4 (scene waves only): Visual review**
+- [ ] **Step 4: Visual spot-check (only when JSX/props/renames changed)**
 
-Run `npm run dev`, reload, and walk the rooms touched by this wave. Confirm
-nothing changed visually (geometry, materials, animations, reflections identical).
-Waves touching only `src/game`/`src/audio` skip this step.
+tsc + tests are the real guard for a behavior-preserving translation. A visual
+check is needed only where the wave edits JSX, props, or renames (Waves 2, 3, 4,
+5). For comment/local-identifier-only waves (0, 1) it is optional. When needed:
+`npm run dev`, reload, walk the rooms touched; confirm geometry, materials,
+animations, reflections are visually identical.
 
-- [ ] **Step 5: French residue check**
+- [ ] **Step 5: French residue check (word-list, NOT accents-only)**
 
-Run (bash): grep the wave's files for leftover French. Example for a wave:
-`grep -InE "é|è|à|ê|î|ô|û|ç" src/scene/shared/*.ts src/scene/shared/*.tsx`
-Expected: only intentional data strings remain (dialogue, thematic names). Any
-leftover comment/identifier French → translate it.
+Accent-only grep misses most French (`mur`, `porte`, `sol`, `gauche`, `hauteur`…
+have no accents — one room file has 50+ such tokens). Use this word-list grep on
+the wave's files (adjust the path glob per wave):
+
+```bash
+grep -InEi "é|è|à|ê|î|ô|û|ç|\b(le|la|les|un|une|des|du|de|et|ou|pour|avec|dans|sur|sous|sans|par|vers|mais|donc|puis|entre|chaque|selon|même|autour|côté|coin|mur|murs|porte|portes|fenêtre|pièce|piece|sol|plafond|toit|assis|assise|debout|gauche|droite|haut|bas|hauteur|largeur|longueur|profond|profondeur|derrière|devant|dessus|dessous|milieu|bord|centre|couleur|ombre|lumière|nord|sud|est|ouest|table|chaise|meuble)\b" \
+  src/scene/shared/*.ts src/scene/shared/*.tsx
+```
+
+Expected: only intentional data strings remain (Spanish dialogue, `name`/
+`speakerName`, `ZoneId` values, asset paths). Any leftover comment/identifier
+French → translate it. (Some hits like `est`/`table` may be English in context —
+eyeball each; the list is a net, not an oracle.)
 
 - [ ] **Step 6: Commit**
 
@@ -153,8 +164,9 @@ Wave 5.
 
 Files:
 - `src/scene/salon/salonCollision.ts` (+ check `salonCollision.test.ts` still
-  green; do NOT rename exported symbols used by the test unless you also update
-  the test in the same commit — prefer leaving exported names for Phase 3)
+  green. In this wave translate comments + local internals only; the FILE rename
+  `salonCollision.ts`→`livingRoomCollision.ts` and exported-symbol renames
+  happen in Wave 5, updating the test import there.)
 - `src/scene/salon/familyConfig.ts`
 - `src/scene/salon/PorteEntree.tsx`
 - `src/scene/salon/WindowVista.tsx`
@@ -189,18 +201,30 @@ identifiers.
 ### Wave 5 — file / directory / exported-component renames (tsc-guarded)
 
 Rename French files, exported component/symbol names, and any French directory
-names to English, fixing every import in one pass. Do this LAST so all bodies are
-already translated. Rename ONE file at a time, run `tsc` after each, fix the
-imports it names, then move to the next — small steps keep the ripple traceable.
+names to English, fixing every reference in one pass. Do this LAST so all bodies
+are already translated. Rename ONE file at a time, run `tsc` after each, fix the
+references it names, then move to the next — small steps keep the ripple
+traceable.
 
-**Directories:** the current dirs (`game`, `store`, `systems`, `audio`, `scene`,
-`shared`, `rooms`, `salon`, `ui`, `debug`, `hooks`) are already English — likely
-no directory renames needed. Rename only a dir that is actually French.
+**A rename touches USAGES, not just imports.** Renaming `Couloir`→`Corridor`
+changes both the import AND every JSX usage `<Couloir/>`→`<Corridor/>`, including
+usages inside the deferred god-components (`LivingRoomShell` ex-`SalonRoom`).
+That is expected and fine — tsc flags an undefined JSX identifier, so nothing
+silently breaks. Editing a usage/import inside a deferred god-component is NOT
+translating its body (comments/internals stay French until Phase 3).
+
+**No dynamic imports exist** (`import()`/`lazy`/`require` = 0 in `src`), so tsc
+catches 100% of references — renames are safe. Use `git mv` to preserve history.
+
+**Directory rename:** only `src/scene/salon/` is French → rename to
+`src/scene/living-room/`. All other dirs are already English. This ripples every
+`./salon/…` / `../salon/…` import path — tsc + the compiler flag them.
 
 **Rename mapping (French file/component → English).** Proper names and thematic
 Spanish stay. Keep `ZoneId` VALUES untouched (data) even when the matching
-component is renamed — e.g. component `Chambre1`→`Bedroom1` but zone id stays
-`'chambre1'`.
+component is renamed — e.g. component `Chambre1`→`Bedroom1` but the zone id value
+stays `'chambre1'`. This EN-component / FR-data-value split is intentional (the
+value is game data, the component is code).
 
 | Current file / component | Rename to |
 |---|---|
@@ -219,17 +243,22 @@ component is renamed — e.g. component `Chambre1`→`Bedroom1` but zone id stay
 | `Canape.tsx` / `Canape` | `Sofa.tsx` / `Sofa` |
 | `Chien.tsx` / `Chien` | `Dog.tsx` / `Dog` |
 | `Couffin.tsx` / `Couffin` | `Bassinet.tsx` / `Bassinet` |
-| `NappeCloth.tsx` / `NappeCloth` | `TableclothCloth.tsx` / `TableclothCloth` |
+| `NappeCloth.tsx` / `NappeCloth` | `Tablecloth.tsx` / `Tablecloth` |
 | `DomeCiel.tsx` / `DomeCiel` | `SkyDome.tsx` / `SkyDome` |
-| `SalonRoom.tsx` / `SalonRoom` | `LivingRoom.tsx` / `LivingRoom` (file+name only; body Phase 3) |
-| `salonCollision.ts` (+ `.test.ts`) | `livingRoomCollision.ts` (+ update test import + exported symbols) |
+| **directory** `src/scene/salon/` | `src/scene/living-room/` |
+| `Salon.tsx` / `Salon` | `LivingRoom.tsx` / `LivingRoom` (scene orchestrator) |
+| `SalonRoom.tsx` / `SalonRoom` | `LivingRoomShell.tsx` / `LivingRoomShell` (file+name only; body Phase 3) |
+| `salonCollision.ts` (+ `.test.ts`) | `livingRoomCollision.ts` (+ update test import + exported symbols like `SALON_BOUNDS`→`LIVING_ROOM_BOUNDS`) |
+| store field `salonArcPhase`/`setSalonArcPhase` (gameStore) | `livingRoomArcPhase`/`setLivingRoomArcPhase` (do in Wave 0 or here, tsc-guarded) |
 | `doorConfig.ts`, `chairConfig.ts` | already English — leave |
 
-Keep (English, Spanish thematic, or proper names): `Salon.tsx` (thematic; if
-renamed, use `Living.tsx` only if you also rename its exports consistently —
-otherwise leave), `Patio.tsx`, `Garage.tsx`, `Mama.tsx`, `GrandUncle.tsx`,
-`FamilyMember.tsx`, `FamilyMemberGLB.tsx`, `WindowVista.tsx`, `Prop.tsx`,
-`RoomGroup.tsx`, `Couffin`→see table, texture/config `.ts` already English.
+Full-English decision (user): the whole `salon` family → `living-room`/
+`LivingRoom*`. The `ZoneId` value `'salon'` still stays (data).
+
+Keep as-is (already English, Spanish thematic, or proper names): `Patio.tsx`,
+`Garage.tsx`, `Mama.tsx`, `GrandUncle.tsx`, `FamilyMember.tsx`,
+`FamilyMemberGLB.tsx`, `WindowVista.tsx`, `Prop.tsx`, `RoomGroup.tsx`,
+texture/config `.ts` files.
 
 - [ ] **Step per rename:** rename the file (`git mv`), update the exported
   symbol name inside it, run `npx tsc --noEmit`, fix every import path/name tsc
@@ -246,9 +275,17 @@ otherwise leave), `Patio.tsx`, `Garage.tsx`, `Mama.tsx`, `GrandUncle.tsx`,
 
 - [ ] **Final residue sweep**
 
-Run: `grep -rInE "é|è|à|ê|î|ô|û|ç" src --include=*.ts --include=*.tsx | grep -v -E "\.test\.|SalonRoom|Cuisine"`
-Expected: only intentional data strings (Spanish dialogue, thematic names).
-Everything else translated. `SalonRoom.tsx`/`Cuisine.tsx` intentionally excluded.
+Run the word-list grep (same regex as per-wave Step 5) across all of `src`:
+
+```bash
+grep -rInEi "é|è|à|ê|î|ô|û|ç|\b(le|la|les|une|des|du|pour|avec|dans|sur|sous|sans|par|vers|entre|chaque|selon|même|autour|côté|coin|mur|porte|fenêtre|pièce|piece|sol|plafond|toit|assis|debout|gauche|droite|hauteur|largeur|profond|derrière|devant|dessus|dessous|milieu|couleur|ombre|lumière|meuble)\b" \
+  src --include=*.ts --include=*.tsx | grep -viE "\.test\.|LivingRoomShell|Kitchen\.tsx"
+```
+
+Expected: only intentional data strings (Spanish dialogue, `name`/`speakerName`,
+`ZoneId` values, asset paths). Everything else translated. The god-component
+BODIES (`LivingRoomShell.tsx` ex-`SalonRoom`, `Kitchen.tsx` ex-`Cuisine`) are
+intentionally still French — excluded from the sweep (Phase 3).
 
 - [ ] **Final verify**: `npx tsc --noEmit` (clean) + `npm test` (green).
 
