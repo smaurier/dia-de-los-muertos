@@ -5,8 +5,9 @@
 // Room empty during the party: dim light, bedside lamps, moonlight.
 import { Outlines } from '@react-three/drei'
 import { GlassReflector } from '../shared/GlassReflector'
+import { Wall } from '../shared/Wall'
 import { toonGradient } from '../shared/toonGradient'
-import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
+import { solTomettes, boisSombre } from '../shared/paintedTextures'
 import { AnimatedDoor } from '../shared/AnimatedDoor'
 import { PhotoFrame } from '../shared/PhotoFrame'
 
@@ -32,18 +33,9 @@ export function Bedroom2() {
 
       {/* ── South wall z=7.75 (hallway-facing side), pierced door
           x∈[10.2,11.14] ── */}
-      <mesh position={[8.775, 1.45, 7.75]}>
-        <planeGeometry args={[2.85, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[12.27, 1.45, 7.75]}>
-        <planeGeometry args={[2.26, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[10.67, 2.5, 7.75]}>
-        <planeGeometry args={[0.94, 0.8]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[8.775, 1.45, 7.75]} size={[2.85, 2.9]} />
+      <Wall position={[12.27, 1.45, 7.75]} size={[2.26, 2.9]} />
+      <Wall position={[10.67, 2.5, 7.75]} size={[0.94, 0.8]} />
       {/* Openable door (key F) — hinge on the west side, opens into the bedroom */}
       <AnimatedDoor id="chambre-2" position={[10.2, 0, 7.67]} rotationY={Math.PI / 2} openAngle={-1.9} width={0.94} />
       {/* Wood casing */}
@@ -60,28 +52,13 @@ export function Bedroom2() {
       </mesh>
 
       {/* ── West wall x=7.35 (shared with bedroom 1, east face) ── */}
-      <mesh position={[7.35, 1.45, 9.8]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[4.4, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[7.35, 1.45, 9.8]} rotation={[0, Math.PI / 2, 0]} size={[4.4, 2.9]} />
       {/* ── East wall x=13.4 — LARGE window z∈[8.9,10.9] y∈[0.9,2.3] (faces
           the outside; not a French door — sill at 0.9 m) ── */}
-      <mesh position={[13.4, 1.45, 8.25]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[1.3, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[13.4, 1.45, 11.45]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[1.1, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[13.4, 2.6, 9.9]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[2.0, 0.6]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[13.4, 0.45, 9.9]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[2.0, 0.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[13.4, 1.45, 8.25]} rotation={[0, -Math.PI / 2, 0]} size={[1.3, 2.9]} />
+      <Wall position={[13.4, 1.45, 11.45]} rotation={[0, -Math.PI / 2, 0]} size={[1.1, 2.9]} />
+      <Wall position={[13.4, 2.6, 9.9]} rotation={[0, -Math.PI / 2, 0]} size={[2.0, 0.6]} />
+      <Wall position={[13.4, 0.45, 9.9]} rotation={[0, -Math.PI / 2, 0]} size={[2.0, 0.9]} />
       {/* Night + wood casing + sill + rejas */}
       <mesh position={[13.52, 1.6, 9.9]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[2.1, 1.5]} />
@@ -126,22 +103,10 @@ export function Bedroom2() {
       <pointLight position={[12.9, 1.8, 9.9]} intensity={0.7} color="#8aa4d8" distance={4.5} decay={2} />
 
       {/* ── North wall z=12, pierced window x∈[8.3,9.9] y∈[1.0,2.2] ── */}
-      <mesh position={[7.825, 1.45, 12]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[0.95, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[11.65, 1.45, 12]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[3.5, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[9.1, 2.55, 12]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[1.6, 0.7]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[9.1, 0.5, 12]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[1.6, 1.0]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[7.825, 1.45, 12]} rotation={[0, Math.PI, 0]} size={[0.95, 2.9]} />
+      <Wall position={[11.65, 1.45, 12]} rotation={[0, Math.PI, 0]} size={[3.5, 2.9]} />
+      <Wall position={[9.1, 2.55, 12]} rotation={[0, Math.PI, 0]} size={[1.6, 0.7]} />
+      <Wall position={[9.1, 0.5, 12]} rotation={[0, Math.PI, 0]} size={[1.6, 1.0]} />
       {/* Window: blue night + casing + rejas */}
       <mesh position={[9.1, 1.6, 12.12]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[1.7, 1.3]} />
