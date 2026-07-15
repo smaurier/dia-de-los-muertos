@@ -5,8 +5,8 @@
 import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../../shared/toonGradient'
+import { Wall } from '../../shared/Wall'
 import {
-  murAdobeSide,
   solTomettes,
   azulejosTalavera,
   murPierre,
@@ -63,24 +63,12 @@ export function KitchenStructure() {
       </mesh>
       {/* ── North back wall (z=12.0) — adobe, OPENABLE door to the pantry
           x∈[-6.3,-5.3] (the pantry is behind this wall, cf. plan) ── */}
-      <mesh position={[-6.65, 1.45, 12.0]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[0.7, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-2.95, 1.45, 12.0]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[4.7, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-5.8, 2.5, 12.0]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[1.0, 0.8]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[-6.65, 1.45, 12.0]} rotation={[0, Math.PI, 0]} size={[0.7, 2.9]} />
+      <Wall position={[-2.95, 1.45, 12.0]} rotation={[0, Math.PI, 0]} size={[4.7, 2.9]} />
+      <Wall position={[-5.8, 2.5, 12.0]} rotation={[0, Math.PI, 0]} size={[1.0, 0.8]} />
       {/* ── West wall (x=-7.0) — solid adobe. The blue garden door (not
           openable) is applied on it, at the old spot z∈[9.5,10.5] ── */}
-      <mesh position={[-7.0, 1.45, CZ]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[CD, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[-7.0, 1.45, CZ]} rotation={[0, Math.PI / 2, 0]} size={[CD, 2.9]} />
       {/* ── East wall (x=-0.6) — stone (ref cuisine-coin-pierres-01), PIERCED
           for the hallway door (z∈[6.4,7.4]): a single holed mesh →
           continuous texture. DoubleSide: also visible from the hallway. ── */}
@@ -106,10 +94,7 @@ export function KitchenStructure() {
 
       {/* ── Azulejos backsplash — large panel behind the stove, from the base
           to mid-wall as in the ref entree-02 ── */}
-      <mesh position={[-2.2, 1.2, 11.96]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[2.6, 1.5]} />
-        <meshToonMaterial map={azulejosTalavera} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[-2.2, 1.2, 11.96]} rotation={[0, Math.PI, 0]} size={[2.6, 1.5]} map={azulejosTalavera} />
       {/* Wood trim at the top of the backsplash */}
       <mesh position={[-2.2, 1.97, 11.95]}>
         <boxGeometry args={[2.6, 0.045, 0.03]} />
