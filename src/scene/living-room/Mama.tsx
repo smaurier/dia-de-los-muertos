@@ -4,9 +4,8 @@ import * as THREE from 'three'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
 import { shouldTurnTowardPlayer } from '../../game/systems/npcSystem'
+import { MAMA_URL } from '../assets/manifest'
 // SEATED_Y not used here: the animated mama.glb model manages its own height
-
-const MODEL_URL = '/models/characters/mama.glb?v=3'
 
 // chair-1 (north table) — seated facing room center (south)
 // y=0: sitting-idle animation places hips at y≈0.4 local → floor visible, not below tiles
@@ -22,7 +21,7 @@ export function Mama() {
   const { camera } = useThree()
   const dirRef = useRef(new THREE.Vector3())
 
-  const { scene, animations } = useGLTF(MODEL_URL)
+  const { scene, animations } = useGLTF(MAMA_URL)
   const { actions, names } = useAnimations(animations, groupRef)
 
   useEffect(() => {
@@ -99,4 +98,4 @@ export function Mama() {
   )
 }
 
-useGLTF.preload(MODEL_URL)
+useGLTF.preload(MAMA_URL)

@@ -7,8 +7,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
-
-const MODEL_URL = '/models/characters/chien-puppy2.glb?v=3'
+import { DOG_URL } from '../assets/manifest'
 
 const POSITION: [number, number, number] = [3.5, 0, -3.8]
 const ROTATION_Y = Math.PI * 0.75
@@ -22,7 +21,7 @@ export function Dog() {
   const neckBoneRef = useRef<THREE.Object3D | null>(null)
   const { camera } = useThree()
 
-  const { scene, animations } = useGLTF(MODEL_URL)
+  const { scene, animations } = useGLTF(DOG_URL)
   const { actions, names } = useAnimations(animations, groupRef)
 
   useEffect(() => {
@@ -73,4 +72,4 @@ export function Dog() {
   )
 }
 
-useGLTF.preload(MODEL_URL)
+useGLTF.preload(DOG_URL)

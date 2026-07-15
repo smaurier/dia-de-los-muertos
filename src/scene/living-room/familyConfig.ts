@@ -1,5 +1,6 @@
 // src/scene/living-room/familyConfig.ts
 import type { NPCConfig, Scenario } from '../../game/systems/npcSystem'
+import { BASE_URLS } from '../assets/manifest'
 
 // ─── Scenarios by type ────────────────────────────────────────────────
 
@@ -199,7 +200,7 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: momScenarios,
     meshColor: '#c8956c',
-    modelUrl: '/models/characters/base-03.glb?v=3',
+    modelUrl: BASE_URLS[2],
     clipIdle: 'Sitting Idle(4)',
     rotationY: Math.PI,
   },
@@ -209,7 +210,7 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: dadScenarios,
     meshColor: '#8B6543',
-    modelUrl: '/models/characters/base-01.glb?v=3',
+    modelUrl: BASE_URLS[0],
     clipIdle: 'Sitting Idle(4)',
     rotationY: Math.PI,
   },
@@ -219,7 +220,7 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: uncleScenarios,
     meshColor: '#7A5533',
-    modelUrl: '/models/characters/base-01.glb?v=3',
+    modelUrl: BASE_URLS[0],
     clipIdle: 'Sitting Idle(4)',
     rotationY: Math.PI,
   },
@@ -229,7 +230,7 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: uncleScenarios,
     meshColor: '#6B4423',
-    modelUrl: '/models/characters/base-02.glb?v=3',
+    modelUrl: BASE_URLS[1],
     clipIdle: 'Sitting Idle(4)',
     rotationY: Math.PI,
   },
@@ -239,7 +240,7 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: uncleScenarios,
     meshColor: '#8B6040',
-    modelUrl: '/models/characters/base-02.glb?v=3',
+    modelUrl: BASE_URLS[1],
     clipIdle: 'Sitting Idle(4)',
     rotationY: Math.PI,
   },
@@ -249,7 +250,7 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: auntScenarios,
     meshColor: '#C27B5A',
-    modelUrl: '/models/characters/base-03.glb?v=3',
+    modelUrl: BASE_URLS[2],
     clipIdle: 'Sitting Idle(4)',
     rotationY: Math.PI,
   },
@@ -259,7 +260,7 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: auntScenarios,
     meshColor: '#B8705A',
-    modelUrl: '/models/characters/base-03.glb?v=3',
+    modelUrl: BASE_URLS[2],
     clipIdle: 'Sitting Idle(4)',
     rotationY: Math.PI,
   },
@@ -303,7 +304,7 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: youngUncleSeatedScenarios,
     meshColor: '#7B5535',
-    modelUrl: '/models/characters/base-01.glb?v=3',
+    modelUrl: BASE_URLS[0],
     clipIdle: 'Sitting Idle(4)',
     rotationY: Math.PI / 2,  // WEST end of table → facing +x (toward table)
   },
@@ -313,7 +314,7 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: youngAuntSeatedScenarios,
     meshColor: '#C07060',
-    modelUrl: '/models/characters/base-03.glb?v=3',
+    modelUrl: BASE_URLS[2],
     clipIdle: 'Sitting Idle(4)',
     rotationY: Math.PI / 2,  // WEST end of table → facing +x (toward table)
   },
@@ -356,7 +357,7 @@ export const familyConfig: NPCConfig[] = [
     waypoints: [],
     scenarios: [],
     meshColor: '#A88068',
-    modelUrl: '/models/characters/base-04.glb?v=3',
+    modelUrl: BASE_URLS[3],
     clipIdle: 'Sitting Idle(4)',
     rotationY: Math.PI / 2,  // armchair faces east (+x) — "sleeping" idle to come
   },

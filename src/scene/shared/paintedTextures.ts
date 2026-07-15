@@ -1,4 +1,7 @@
 import * as THREE from 'three'
+import {
+  TEX_ADOBE, TEX_TOMETTES, TEX_STONE, TEX_WOOD_DARK, TEX_AZULEJOS, TEX_TABLECLOTH,
+} from '../assets/manifest'
 
 // Painted textures (tier 3) — Ghibli-style gouache generated from
 // docs/references/textures/prompts-textures-salon.md, served from /textures.
@@ -7,8 +10,8 @@ import * as THREE from 'three'
 
 const loader = new THREE.TextureLoader()
 
-function painted(file: string, repeatX: number, repeatY: number): THREE.Texture {
-  const tex = loader.load(`/textures/${file}`)
+function painted(url: string, repeatX: number, repeatY: number): THREE.Texture {
+  const tex = loader.load(url)
   tex.colorSpace = THREE.SRGBColorSpace
   tex.wrapS = tex.wrapT = THREE.MirroredRepeatWrapping
   tex.repeat.set(repeatX, repeatY)
@@ -18,7 +21,7 @@ function painted(file: string, repeatX: number, repeatY: number): THREE.Texture 
 // Desaturated variant: refs show a sand/cream plaster; the raw Adobe image
 // pulls too orange. Filter applied once at load time (canvas).
 function paintedDesat(
-  file: string, repeatX: number, repeatY: number,
+  url: string, repeatX: number, repeatY: number,
   saturate: number, brightness: number,
 ): THREE.CanvasTexture {
   const canvas = document.createElement('canvas')
@@ -37,25 +40,25 @@ function paintedDesat(
     ctx.drawImage(img, 0, 0)
     tex.needsUpdate = true
   }
-  img.src = `/textures/${file}`
+  img.src = url
   return tex
 }
 
 // Walls: one repeat ≈ 3.2 m (wall height) to keep grain consistent
 // across segments of different widths.
-export const murAdobeNorth = paintedDesat('mur-adobe-01.png', 2.0, 1, 0.78, 1.05)   // 6.45 m segments
-export const murAdobeLintel = paintedDesat('mur-adobe-01.png', 0.34, 0.31, 0.78, 1.05) // lintel 1.1×1.0 m
-export const murAdobeSouth = paintedDesat('mur-adobe-01.png', 4.4, 1, 0.78, 1.05)   // 14 m wall
-export const murAdobeSide  = paintedDesat('mur-adobe-01.png', 3.1, 1, 0.78, 1.05)   // 10 m walls
+export const murAdobeNorth = paintedDesat(TEX_ADOBE, 2.0, 1, 0.78, 1.05)   // 6.45 m segments
+export const murAdobeLintel = paintedDesat(TEX_ADOBE, 0.34, 0.31, 0.78, 1.05) // lintel 1.1×1.0 m
+export const murAdobeSouth = paintedDesat(TEX_ADOBE, 4.4, 1, 0.78, 1.05)   // 14 m wall
+export const murAdobeSide  = paintedDesat(TEX_ADOBE, 3.1, 1, 0.78, 1.05)   // 10 m walls
 
 // Floor: image contains 4×4 tiles → 7×5 repeats over 14×10 m ≈ 0.5 m/tile.
-export const solTomettes = painted('sol-tomettes-01.png', 7, 5)
+export const solTomettes = painted(TEX_TOMETTES, 7, 5)
 
 // Normal map derived from image luminance (simplified Sobel): the light grout
 // lines between tiles become recesses that break reflections and catch warm
 // candle light. Generated at load time, in linear space.
 function paintedNormal(
-  file: string, repeatX: number, repeatY: number, strength: number,
+  url: string, repeatX: number, repeatY: number, strength: number,
 ): THREE.CanvasTexture {
   const canvas = document.createElement('canvas')
   canvas.width = canvas.height = 1
@@ -92,22 +95,22 @@ function paintedNormal(
     ctx.putImageData(out, 0, 0)
     tex.needsUpdate = true
   }
-  img.src = `/textures/${file}`
+  img.src = url
   return tex
 }
 
-export const solTomettesNormal = paintedNormal('sol-tomettes-01.png', 7, 5, 2.5)
+export const solTomettesNormal = paintedNormal(TEX_TOMETTES, 7, 5, 2.5)
 
 // Tablecloth: embroidered border, not tileable by translation — 2 mirrored
 // copies along the length = two cloths joined at center (real use on 8.5 m
 // table), embroidery stays continuous thanks to the mirror.
-export const nappeBrodee = painted('nappe-brodee-01.png', 2, 1)
+export const nappeBrodee = painted(TEX_TABLECLOTH, 2, 1)
 
 // Table top: horizontal planks in the image → repeat mostly on X.
-export const boisSombre = painted('bois-sombre-01.png', 4, 1)
+export const boisSombre = painted(TEX_WOOD_DARK, 4, 1)
 
 // ── Kitchen ──────────────────────────────────────────────────────────────────
 // Talavera azulejos: ~20 cm tiles → 3×2 repeats on backsplash ~60×40 cm.
-export const azulejosTalavera = painted('azulejos-talavera.png', 3, 2)
+export const azulejosTalavera = painted(TEX_AZULEJOS, 3, 2)
 // Stone wall (rubble): east wall of the kitchen.
-export const murPierre = paintedDesat('mur-pierre.png', 1.2, 1, 0.85, 1.0)
+export const murPierre = paintedDesat(TEX_STONE, 1.2, 1, 0.85, 1.0)

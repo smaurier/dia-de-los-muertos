@@ -6,6 +6,7 @@ import { toonGradient } from '../../shared/toonGradient'
 import { boisSombre } from '../../shared/paintedTextures'
 import { Tablecloth } from '../Tablecloth'
 import { Prop } from '../../shared/Prop'
+import { CHAIR_URL } from '../../assets/manifest'
 import {
   C_WOOD_DARK,
   CHAIRS,
@@ -128,7 +129,7 @@ export function DiningArea() {
       {CHAIRS.map((c, i) => (
         <group key={i} scale={[1, 1.14, 1]}>
           <Prop
-            url="/models/props/chaise.glb?v=3"
+            url={CHAIR_URL}
             color={C_WOOD_DARK}
             position={c.pos}
             rotationY={c.rot}
