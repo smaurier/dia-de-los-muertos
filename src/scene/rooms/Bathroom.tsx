@@ -6,8 +6,9 @@
 // small plain mirror (THE narrative mirror stays in the hallway, ch3).
 import { Outlines } from '@react-three/drei'
 import { GlassReflector } from '../shared/GlassReflector'
+import { Wall } from '../shared/Wall'
 import { toonGradient } from '../shared/toonGradient'
-import { murAdobeSide, azulejosTalavera } from '../shared/paintedTextures'
+import { azulejosTalavera } from '../shared/paintedTextures'
 import { AnimatedDoor } from '../shared/AnimatedDoor'
 
 const C_CEIL    = '#E4D6BC'
@@ -32,18 +33,9 @@ export function Bathroom() {
       </mesh>
 
       {/* ── North wall z=6.05 (inner face of the hallway wall), pierced door ── */}
-      <mesh position={[9.475, 1.45, 6.05]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[1.45, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[11.52, 1.45, 6.05]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[0.76, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[10.67, 2.5, 6.05]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[0.94, 0.8]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[9.475, 1.45, 6.05]} rotation={[0, Math.PI, 0]} size={[1.45, 2.9]} />
+      <Wall position={[11.52, 1.45, 6.05]} rotation={[0, Math.PI, 0]} size={[0.76, 2.9]} />
+      <Wall position={[10.67, 2.5, 6.05]} rotation={[0, Math.PI, 0]} size={[0.94, 0.8]} />
       {/* Openable door (key F) — opens inward (south) */}
       <AnimatedDoor id="salle-de-bain" position={[10.2, 0, 6.13]} rotationY={Math.PI / 2} openAngle={1.9} width={0.94} />
       {/* Wood casing */}
@@ -60,28 +52,13 @@ export function Bathroom() {
       </mesh>
 
       {/* ── West wall x=8.9 (inner face, shared with the east hallway branch) ── */}
-      <mesh position={[8.9, 1.45, 4.8]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[2.8, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[8.9, 1.45, 4.8]} rotation={[0, Math.PI / 2, 0]} size={[2.8, 2.9]} />
       {/* ── East wall x=11.9 — pierced high window z∈[4.6,5.4] y∈[2.1,2.6],
           ABOVE the mirror (only wall facing the outside) ── */}
-      <mesh position={[11.9, 1.45, 4.0]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[1.2, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[11.9, 1.45, 5.8]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.8, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[11.9, 2.75, 5.0]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.8, 0.3]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[11.9, 1.05, 5.0]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.8, 2.1]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[11.9, 1.45, 4.0]} rotation={[0, -Math.PI / 2, 0]} size={[1.2, 2.9]} />
+      <Wall position={[11.9, 1.45, 5.8]} rotation={[0, -Math.PI / 2, 0]} size={[0.8, 2.9]} />
+      <Wall position={[11.9, 2.75, 5.0]} rotation={[0, -Math.PI / 2, 0]} size={[0.8, 0.3]} />
+      <Wall position={[11.9, 1.05, 5.0]} rotation={[0, -Math.PI / 2, 0]} size={[0.8, 2.1]} />
       {/* High window: night + small casing + 2 bars */}
       <mesh position={[12.0, 2.35, 5.0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[0.84, 0.54]} />
@@ -111,33 +88,15 @@ export function Bathroom() {
         <GlassReflector zone="sdb" />
       </mesh>
       {/* ── South wall z=3.4 — solid (backs onto the interior: future storage room) ── */}
-      <mesh position={[10.4, 1.45, 3.4]}>
-        <planeGeometry args={[3.0, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[10.4, 1.45, 3.4]} size={[3.0, 2.9]} />
 
       {/* ── Talavera tile wainscoting (h=1.15, applied to all 4 walls,
           interrupted at the door x∈[10.2,11.14]) ── */}
-      <mesh position={[9.55, 0.575, 6.04]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[1.3, 1.15]} />
-        <meshToonMaterial map={azulejosTalavera} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[11.52, 0.575, 6.04]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[0.76, 1.15]} />
-        <meshToonMaterial map={azulejosTalavera} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[10.4, 0.575, 3.41]}>
-        <planeGeometry args={[3.0, 1.15]} />
-        <meshToonMaterial map={azulejosTalavera} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[8.91, 0.575, 4.8]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[2.8, 1.15]} />
-        <meshToonMaterial map={azulejosTalavera} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[11.89, 0.575, 4.8]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[2.8, 1.15]} />
-        <meshToonMaterial map={azulejosTalavera} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[9.55, 0.575, 6.04]} rotation={[0, Math.PI, 0]} size={[1.3, 1.15]} map={azulejosTalavera} />
+      <Wall position={[11.52, 0.575, 6.04]} rotation={[0, Math.PI, 0]} size={[0.76, 1.15]} map={azulejosTalavera} />
+      <Wall position={[10.4, 0.575, 3.41]} size={[3.0, 1.15]} map={azulejosTalavera} />
+      <Wall position={[8.91, 0.575, 4.8]} rotation={[0, Math.PI / 2, 0]} size={[2.8, 1.15]} map={azulejosTalavera} />
+      <Wall position={[11.89, 0.575, 4.8]} rotation={[0, -Math.PI / 2, 0]} size={[2.8, 1.15]} map={azulejosTalavera} />
       {/* Wood trim at the top of the wainscoting */}
       {([[9.55, 6.02, 1.3, 0], [11.52, 6.02, 0.76, 0], [10.4, 3.43, 3.0, 0], [8.93, 4.8, 2.8, 1], [11.87, 4.8, 2.8, 1]] as [number, number, number, number][]).map(([px, pz, w, vert], i) => (
         <mesh key={i} position={[px, 1.16, pz]}>
