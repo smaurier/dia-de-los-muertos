@@ -77,9 +77,15 @@ dismiss the loader.
      shared material is not recompiled.
    - Set the scene (or a designated root group) **invisible** for the duration.
    - Each frame (`useFrame`): pull objects from the queue and `gl.compile(obj,
-     camera, scene)` until the ~70 ms budget for this frame is spent, then yield
-     (return). Update `compileProgressStore.progress = compiledMaterials /
-     totalMaterials`.
+     camera, scene)`, then yield (return). Update `compileProgressStore.progress =
+     compiledMaterials / totalMaterials`.
+   - **The atomic unit is ONE program (~200 ms), not a 70 ms slice.** A single
+     `gl.compile` of an uncompiled material blocks ~200 ms and cannot be preempted,
+     so a per-frame time budget only controls *how many programs* per frame
+     (minimum one). Compile **one program per frame** (or a small count) and yield,
+     so the browser repaints the bar and the phrase timer fires between programs.
+     Already-compiled (shared) materials are near-free — dedupe by material so only
+     *new* programs count toward the ~200 ms cost.
    - When the queue is empty: restore visibility (reveal), set
      `compileProgressStore.done = true`.
    - Cleanup restores visibility if unmounted mid-warmup.
@@ -113,10 +119,26 @@ yield → store.progress rises, phrases tick → queue empty → reveal scene + 
 - Fallback timer (from the preload design, relative to mount, ~25 s): force
   `done` so the loader can never hang.
 
+## Risks to prototype FIRST (before building the full flow)
+
+1. **Reflectors + postprocessing during the hidden warmup.** `ZoneReflector` runs
+   its FBO pass in a `useFrame` that is independent of mesh visibility, and the
+   `EffectComposer` renders every frame. With the scene root `visible = false`,
+   these passes render an empty scene (probably harmless) — but this is UNVERIFIED.
+   The reflector pass could misbehave or compile its own material outside our queue.
+   Prototype this interaction early: confirm reflectors/composer don't break or do
+   heavy recompiling during the hidden warmup. If they do, also pause the reflector
+   passes (and/or skip the composer) until the reveal.
+2. **Reveal hitch.** The first VISIBLE render after reveal draws the full scene
+   through the composer once; even fully compiled, confirm it doesn't hitch
+   noticeably. If it does, reveal a frame or two before dropping the loader.
+
 ## Limits (honest)
 
-- Each ~70 ms batch is a small hitch, but there is **no long freeze**; the bar
-  genuinely rises and phrases rotate. Universal — no GPU extension required.
+- The bar advances in **~200 ms steps** (one program per frame) — it is **choppy
+  (~5 fps during load), not silky**, but it genuinely rises and never freezes for
+  long. The phrases tick between programs. Universal — no GPU extension required.
+  This is the honest outcome: "progress in visible steps," not "smooth."
 - React StrictMode double-invokes effects in dev → the compile runs ~twice in dev
   (slower); production (no StrictMode) runs once. Not a code bug.
 - This does not reduce total compile WORK (that would be fewer programs — a
