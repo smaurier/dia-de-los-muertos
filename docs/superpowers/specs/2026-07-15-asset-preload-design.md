@@ -67,18 +67,28 @@ then shaders are compiled deterministically before the loader dismisses.
    - The scene (`<Player/>`, `<LivingRoom/>`) **and the `EffectComposer`** mount
      together only when `ready`, gated as ONE unit (so the composer never captures
      an empty framebuffer — the known black-screen bug, App.tsx:207).
-   - **`ready` = debounced idle (CRITICAL — do not use naive `!active`).** The
-     original bug is exactly that `active`/`loaded`/`total` batch and reset. Because
-     `useGLTF.preload` is async and loads may register across ticks, a naive
-     `!active` fires on an intermediate batch gap → scene mounts → new loads →
-     re-batch (bug reproduced). Instead: set `ready` only when `active` has been
-     **continuously false for ≥ 300 ms** (any new load flips `active` true and
-     resets the timer). Floor it with an expected-count sanity check: don't `ready`
-     before `loaded` has reached at least `MODEL_URLS.length + TEXTURE_URLS.length`
-     at some point. This debounce is the same fix shape as the loader dismissal —
-     get it right here, it is the crux of the design.
+   - **`ready` = "has started" + debounced idle (CRITICAL — do not use naive
+     `!active`, and do NOT gate on an exact loaded count).** Two coupled traps:
+     (a) at mount, before `preloadAll`'s async loads register, `active` is already
+     `false` (nothing loading yet) → a bare debounce would fire `ready`
+     prematurely; (b) gating on `loaded ≥ MODEL_URLS.length + TEXTURE_URLS.length`
+     breaks on a 404 (a failed item increments `errors`, not `loaded`) → `ready`
+     would never fire, forcing the fallback timeout.
+     **Correct logic:** track a `hasStarted` flag — `ready` is only eligible after
+     `active` has gone `true` at least once (loads actually registered); then set
+     `ready` when `active` has been **continuously false for ≥ 300 ms** (any new
+     load flips `active` true and resets the debounce). No dependence on an exact
+     count → 404-safe. This little state machine is the crux — see Testing.
 
-4. **Shader warmup — `src/scene/assets/SceneWarmup.tsx`** — a component rendered
+4. **Ready state machine — `src/scene/assets/loaderState.ts`** — extract the
+   `hasStarted` + debounced-idle logic into a **pure, tested** reducer, e.g.
+   `advanceLoader(state, { active, dt }) → { hasStarted, idleFor, ready }`. The
+   Canvas/`useProgress` glue feeds it `active` + elapsed time each tick; the pure
+   reducer decides `ready`. This is the falsifiable core (the original loader bug
+   lived in exactly this kind of timing logic) and gets Vitest coverage; only the
+   React/useProgress wiring stays manual.
+
+5. **Shader warmup — `src/scene/assets/SceneWarmup.tsx`** — a component rendered
    inside the Canvas once the scene is mounted. In an effect it calls
    `gl.compileAsync(scene, camera)` (three r152+, available in three 0.184) and,
    when the returned Promise resolves, calls `onWarmed()`. This is the
@@ -128,12 +138,18 @@ frozen on index 0 for the whole load. Dismiss on `warmed`.
 
 ## Testing
 
-- No unit test for the loading-manager/Canvas integration — validated manually:
-  the bar climbs 0→100 **once** (no loop, no reset), the phrase advances, the
-  loader dismisses at true completion, no black-screen and no post-reveal freeze.
-- A `manifest` test is **not** included: with the manifest derived from real
-  constants it cannot meaningfully duplicate, and "covers every asset the scene
-  uses" is not statically checkable — a weak test would give false confidence.
+- **`loaderState.ts` reducer — unit tested (Vitest).** This is the falsifiable
+  crux; cover: does NOT ready before `hasStarted` (active still idle at mount);
+  readies after active went true then stayed false ≥ 300 ms; a mid-load `active`
+  blip resets the debounce; stays 404-safe (readies on settle regardless of
+  loaded/error counts). TDD it.
+- **No unit test for the loading-manager/Canvas integration** — validated
+  manually: the bar climbs 0→100 **once** (no loop, no reset), the phrase advances,
+  the loader dismisses at true completion, no black-screen and no post-reveal
+  freeze.
+- **No `manifest` test:** derived-from-single-source it cannot meaningfully
+  duplicate, and "covers every asset the scene uses" is not statically checkable —
+  a weak test would give false confidence.
 
 ## Pre-implementation audit (must do first)
 
