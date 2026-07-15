@@ -13,7 +13,8 @@ import { DoorHint } from './scene/ui/DoorHint'
 import { INTERACT_KEY } from './game/controlsConfig'
 import { advanceLoader, initialLoaderState, type LoaderState } from './scene/assets/loaderState'
 import { preloadAll } from './scene/assets/preloadAssets'
-import { SceneWarmup } from './scene/assets/SceneWarmup'
+import { ProgressiveWarmup } from './scene/assets/ProgressiveWarmup'
+import { useCompileProgress } from './scene/assets/compileProgressStore'
 
 // Rich toon (art direction experience): warm fog + candle bloom + vignette.
 // Mood target: docs/references/rooms/cuisine/cuisine-entree-02.png
@@ -117,10 +118,13 @@ function useLoaderReady(): boolean {
 }
 
 function FadeIn({ done }: { done: boolean }) {
-  const progress = useProgress(s => s.progress)
-  // never go backward: useProgress regresses when new assets announce mid-flight
+  const assetActive = useProgress(s => s.active)
+  const assetProgress = useProgress(s => s.progress)
+  const compileProgress = useCompileProgress(s => s.progress) // 0..1
   const shown = useRef(0)
-  if (progress > shown.current) shown.current = progress
+  // Asset phase fills 0→30 %, compile phase fills 30→100 %.
+  const raw = assetActive ? assetProgress * 0.30 : 30 + compileProgress * 70
+  if (raw > shown.current) shown.current = raw
   const [gone, setGone] = useState(false)
   const [fading, setFading] = useState(false)
   const [lineIdx, setLineIdx] = useState(0)
@@ -197,9 +201,9 @@ export default function App() {
 
   useEffect(() => { preloadAll() }, [])
   const ready = useLoaderReady()
-  const [warmed, setWarmed] = useState(false)
+  const compileDone = useCompileProgress(s => s.done)
   useEffect(() => {
-    const t = setTimeout(() => setWarmed(true), 20000) // fallback: never hang
+    const t = setTimeout(() => useCompileProgress.getState().markDone(), 25000) // fallback: never hang
     return () => clearTimeout(t)
   }, [])
 
@@ -217,7 +221,7 @@ export default function App() {
           <div style={{ fontSize: '18px', color: '#c9a87c' }}>WASD · souris · E pour se cacher</div>
         </div>
       )}
-      <FadeIn done={warmed} />
+      <FadeIn done={compileDone} />
       <Subtitles />
       <DoorHint />
       <KeyboardControls map={CONTROLS_MAP}>
@@ -254,7 +258,7 @@ export default function App() {
                     <Vignette darkness={TOON_RICHE.vignetteDarkness} />
                   </EffectComposer>
                 )}
-                <SceneWarmup onWarmed={() => setWarmed(true)} />
+                <ProgressiveWarmup />
               </>
             )}
           </Suspense>
