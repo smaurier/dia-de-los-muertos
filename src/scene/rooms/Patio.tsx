@@ -11,6 +11,7 @@
 import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
+import { Wall } from '../shared/Wall'
 import { murAdobeSide } from '../shared/paintedTextures'
 import { AnimatedDoor } from '../shared/AnimatedDoor'
 
@@ -157,14 +158,8 @@ export function Patio() {
       </group>
 
       {/* ── Adobe enclosure (2.6 m): south, west + coping ── */}
-      <mesh position={[3.5, 1.3, -10.6]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[11.0, 2.6]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
-      </mesh>
-      <mesh position={[-2, 1.3, -8.1]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[5.0, 2.6]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
-      </mesh>
+      <Wall position={[3.5, 1.3, -10.6]} rotation={[0, Math.PI, 0]} size={[11.0, 2.6]} side={THREE.DoubleSide} />
+      <Wall position={[-2, 1.3, -8.1]} rotation={[0, Math.PI / 2, 0]} size={[5.0, 2.6]} side={THREE.DoubleSide} />
       {/* Tile coping */}
       <mesh position={[3.5, 2.64, -10.6]}>
         <boxGeometry args={[11.2, 0.1, 0.3]} />
@@ -191,19 +186,10 @@ export function Patio() {
 
       {/* ── Shared wall with the garage x=9.0 — pierced by an ARCH z∈[-8.6,-7.6]
           with an openable wooden door ── */}
-      <mesh position={[9.0, 1.3, -9.6]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[2.0, 2.6]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
-      </mesh>
-      <mesh position={[9.0, 1.3, -6.6]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[2.0, 2.6]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
-      </mesh>
+      <Wall position={[9.0, 1.3, -9.6]} rotation={[0, Math.PI / 2, 0]} size={[2.0, 2.6]} side={THREE.DoubleSide} />
+      <Wall position={[9.0, 1.3, -6.6]} rotation={[0, Math.PI / 2, 0]} size={[2.0, 2.6]} side={THREE.DoubleSide} />
       {/* Arch header + curve (both sides) */}
-      <mesh position={[9.0, 2.35, -8.1]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[1.0, 0.5]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
-      </mesh>
+      <Wall position={[9.0, 2.35, -8.1]} rotation={[0, Math.PI / 2, 0]} size={[1.0, 0.5]} side={THREE.DoubleSide} />
       {[8.99, 9.01].map((px, i) => (
         <mesh key={px} position={[px, 2.1, -8.1]} rotation={[0, (i === 0 ? -1 : 1) * Math.PI / 2, 0]}>
           <ringGeometry args={[0.5, 0.85, 18, 1, 0, Math.PI]} />
