@@ -5,8 +5,9 @@
 // solemn: writing desk, banker's lamp, bookshelf, filing cabinet, typewriter.
 import { Outlines } from '@react-three/drei'
 import { GlassReflector } from '../shared/GlassReflector'
+import { Wall } from '../shared/Wall'
 import { toonGradient } from '../shared/toonGradient'
-import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
+import { solTomettes, boisSombre } from '../shared/paintedTextures'
 import { AnimatedDoor } from '../shared/AnimatedDoor'
 import { PhotoFrame } from '../shared/PhotoFrame'
 
@@ -32,18 +33,9 @@ export function Office() {
       </mesh>
 
       {/* ── West wall x=8.9 (inner face), pierced door z∈[-2.5,-1.56] ── */}
-      <mesh position={[8.9, 1.45, -1.38]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[0.36, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[8.9, 1.45, -3.35]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[1.7, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[8.9, 2.5, -2.03]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[0.94, 0.8]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[8.9, 1.45, -1.38]} rotation={[0, Math.PI / 2, 0]} size={[0.36, 2.9]} />
+      <Wall position={[8.9, 1.45, -3.35]} rotation={[0, Math.PI / 2, 0]} size={[1.7, 2.9]} />
+      <Wall position={[8.9, 2.5, -2.03]} rotation={[0, Math.PI / 2, 0]} size={[0.94, 0.8]} />
       {/* Openable door (key F) — opens into the office */}
       <AnimatedDoor id="bureau" position={[8.82, 0, -2.5]} openAngle={1.9} width={0.94} />
       {/* Wood casing */}
@@ -60,32 +52,14 @@ export function Office() {
       </mesh>
 
       {/* ── North wall z=-1.2 (back of the entrance hallway) ── */}
-      <mesh position={[10.65, 1.45, -1.2]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[3.5, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[10.65, 1.45, -1.2]} rotation={[0, Math.PI, 0]} size={[3.5, 2.9]} />
       {/* ── South wall z=-4.2 ── */}
-      <mesh position={[10.65, 1.45, -4.2]}>
-        <planeGeometry args={[3.5, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[10.65, 1.45, -4.2]} size={[3.5, 2.9]} />
       {/* ── East wall x=12.4, pierced window z∈[-3.3,-2.1] y∈[1.0,2.2] ── */}
-      <mesh position={[12.4, 1.45, -1.65]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.9, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[12.4, 1.45, -3.75]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.9, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[12.4, 2.55, -2.7]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[1.2, 0.7]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[12.4, 0.5, -2.7]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[1.2, 1.0]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[12.4, 1.45, -1.65]} rotation={[0, -Math.PI / 2, 0]} size={[0.9, 2.9]} />
+      <Wall position={[12.4, 1.45, -3.75]} rotation={[0, -Math.PI / 2, 0]} size={[0.9, 2.9]} />
+      <Wall position={[12.4, 2.55, -2.7]} rotation={[0, -Math.PI / 2, 0]} size={[1.2, 0.7]} />
+      <Wall position={[12.4, 0.5, -2.7]} rotation={[0, -Math.PI / 2, 0]} size={[1.2, 1.0]} />
       {/* Window: night + casing + rejas */}
       <mesh position={[12.52, 1.6, -2.7]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[1.3, 1.3]} />
