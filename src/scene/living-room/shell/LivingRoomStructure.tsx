@@ -9,6 +9,7 @@ import {
 } from '../../shared/paintedTextures'
 import { plafondBoisTexture } from '../../shared/fabricTexture'
 import { ZoneReflectorMaterial } from '../../shared/ZoneReflector'
+import { Wall } from '../../shared/Wall'
 import {
   SHOW_AABB,
   intradosGeometry,
@@ -109,14 +110,8 @@ export function LivingRoomStructure() {
       <mesh position={[4.5, 1.8, 5.975]} geometry={intradosGeometry}>
         <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
       </mesh>
-      <mesh position={[3.6, 0.9, 5.975]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[0.35, 1.8]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[5.4, 0.9, 5.975]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.35, 1.8]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[3.6, 0.9, 5.975]} rotation={[0, Math.PI / 2, 0]} size={[0.35, 1.8]} map={murAdobeLintel} />
+      <Wall position={[5.4, 0.9, 5.975]} rotation={[0, -Math.PI / 2, 0]} size={[0.35, 1.8]} map={murAdobeLintel} />
       {/* Spandrel above arch 1 (from apex 2.7 to ceiling 3.2) */}
       <mesh position={[-2.5, 2.95, 5.975]}>
         <boxGeometry args={[1.8, 0.5, 0.35]} />
@@ -137,14 +132,8 @@ export function LivingRoomStructure() {
         <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
       </mesh>
       {/* Jambs: inner faces of the reveal, normals toward the opening */}
-      <mesh position={[-3.4, 0.9, 5.975]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[0.35, 1.8]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-1.6, 0.9, 5.975]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.35, 1.8]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[-3.4, 0.9, 5.975]} rotation={[0, Math.PI / 2, 0]} size={[0.35, 1.8]} map={murAdobeLintel} />
+      <Wall position={[-1.6, 0.9, 5.975]} rotation={[0, -Math.PI / 2, 0]} size={[0.35, 1.8]} map={murAdobeLintel} />
 
       {/* ─── East wall x=7 — entrance arch (zaguán, z=0, opening z∈[-0.9,0.9]).
           THICK wall (0.35 m, x∈[7,7.35]) like the north wall: deep reveal,
@@ -176,14 +165,8 @@ export function LivingRoomStructure() {
         <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
       </mesh>
       {/* Jambs: inner faces of the reveal, normals toward the opening */}
-      <mesh position={[7.175, 0.9, 0.9]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[0.35, 1.8]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[7.175, 0.9, -0.9]}>
-        <planeGeometry args={[0.35, 1.8]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[7.175, 0.9, 0.9]} rotation={[0, Math.PI, 0]} size={[0.35, 1.8]} map={murAdobeLintel} />
+      <Wall position={[7.175, 0.9, -0.9]} size={[0.35, 1.8]} map={murAdobeLintel} />
       {/* Cross above the east arch (living-room interior) */}
       <mesh position={[6.99, 2.82, 0]}>
         <boxGeometry args={[0.04, 0.42, 0.07]} />
@@ -198,39 +181,15 @@ export function LivingRoomStructure() {
       {/* ─── West wall x=-7, pierced for the window (opening z∈[-1.2,2.2],
           y∈[0.75,2.85] — the ref gives it most of the wall): 4 segments +
           deep reveal 0.35 m ─────────────────────────────────────────────── */}
-      <mesh position={[-7, 1.6, -3.5]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[4.6, 3.2]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-7, 1.6, 4.0]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[3.6, 3.2]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-7, 3.025, 0.5]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[3.4, 0.35]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-7, 0.375, 0.5]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[3.4, 0.75]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[-7, 1.6, -3.5]} rotation={[0, Math.PI / 2, 0]} size={[4.6, 3.2]} />
+      <Wall position={[-7, 1.6, 4.0]} rotation={[0, Math.PI / 2, 0]} size={[3.6, 3.2]} />
+      <Wall position={[-7, 3.025, 0.5]} rotation={[0, Math.PI / 2, 0]} size={[3.4, 0.35]} map={murAdobeLintel} />
+      <Wall position={[-7, 0.375, 0.5]} rotation={[0, Math.PI / 2, 0]} size={[3.4, 0.75]} map={murAdobeLintel} />
       {/* Reveal: jambs, sub-lintel, sill (faces toward the opening) */}
-      <mesh position={[-7.175, 1.8, 2.2]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[0.35, 2.1]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-7.175, 1.8, -1.2]}>
-        <planeGeometry args={[0.35, 2.1]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-7.175, 2.85, 0.5]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[0.35, 3.4]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-7.175, 0.75, 0.5]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[0.35, 3.4]} />
-        <meshToonMaterial map={murAdobeLintel} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[-7.175, 1.8, 2.2]} rotation={[0, Math.PI, 0]} size={[0.35, 2.1]} map={murAdobeLintel} />
+      <Wall position={[-7.175, 1.8, -1.2]} size={[0.35, 2.1]} map={murAdobeLintel} />
+      <Wall position={[-7.175, 2.85, 0.5]} rotation={[Math.PI / 2, 0, 0]} size={[0.35, 3.4]} map={murAdobeLintel} />
+      <Wall position={[-7.175, 0.75, 0.5]} rotation={[-Math.PI / 2, 0, 0]} size={[0.35, 3.4]} map={murAdobeLintel} />
     </>
   )
 }
