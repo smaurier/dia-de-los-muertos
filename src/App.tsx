@@ -11,6 +11,9 @@ import { LivingRoom } from './scene/living-room/LivingRoom'
 import { Subtitles } from './scene/ui/Subtitles'
 import { DoorHint } from './scene/ui/DoorHint'
 import { INTERACT_KEY } from './game/controlsConfig'
+import { advanceLoader, initialLoaderState, type LoaderState } from './scene/assets/loaderState'
+import { preloadAll } from './scene/assets/preloadAssets'
+import { SceneWarmup } from './scene/assets/SceneWarmup'
 
 // Rich toon (art direction experience): warm fog + candle bloom + vignette.
 // Mood target: docs/references/rooms/cuisine/cuisine-entree-02.png
@@ -90,32 +93,53 @@ const LOADING_LINES = [
   'la familia llega…',
 ]
 
-function FadeIn() {
-  const { active, progress } = useProgress()
+// Drives scene mounting: keeps the loading gate held until the drei loader has
+// been idle long enough (advanceLoader debounce), independent of the fade.
+function useLoaderReady(): boolean {
+  const active = useProgress(s => s.active)
+  const activeRef = useRef(active)
+  activeRef.current = active
+  const [ready, setReady] = useState(false)
+  const stateRef = useRef<LoaderState>(initialLoaderState)
+  useEffect(() => {
+    let raf = 0
+    let last = performance.now()
+    const tick = (now: number) => {
+      const dt = now - last; last = now
+      stateRef.current = advanceLoader(stateRef.current, activeRef.current, dt)
+      if (stateRef.current.ready) { setReady(true); return }
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [])
+  return ready
+}
+
+function FadeIn({ done }: { done: boolean }) {
+  const progress = useProgress(s => s.progress)
+  // never go backward: useProgress regresses when new assets announce mid-flight
+  const shown = useRef(0)
+  if (progress > shown.current) shown.current = progress
   const [gone, setGone] = useState(false)
   const [fading, setFading] = useState(false)
   const [lineIdx, setLineIdx] = useState(0)
 
   // Rotate lines every 1.8 s
   useEffect(() => {
-    if (fading) return
     const t = setInterval(() => setLineIdx(i => (i + 1) % LOADING_LINES.length), 1800)
     return () => clearInterval(t)
-  }, [fading])
+  }, [])
 
   useEffect(() => {
-    if (!active && !fading) {
-      const t1 = setTimeout(() => setFading(true), 400)
-      const t2 = setTimeout(() => setGone(true), 1700)
-      return () => { clearTimeout(t1); clearTimeout(t2) }
-    }
-  }, [active, fading])
+    if (!done) return
+    setFading(true)
+    const t = setTimeout(() => setGone(true), 900)
+    return () => clearTimeout(t)
+  }, [done])
 
   if (gone) return null
-  // useProgress regresses when new assets announce mid-flight: we never go
-  // backward, and force the bar to full at 99.5% (otherwise "100%" shown
-  // with an incomplete bar).
-  const pct = !active ? 100 : Math.min(100, progress)
+  const pct = fading ? 100 : Math.min(99, Math.round(shown.current))
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 20, background: '#12080a',
@@ -139,13 +163,13 @@ function FadeIn() {
             background: 'rgba(232,148,10,0.15)', overflow: 'hidden',
           }}>
             <div style={{
-              width: pct >= 99.5 ? '100%' : `${pct}%`, height: '100%', borderRadius: '3px',
+              width: `${pct}%`, height: '100%', borderRadius: '3px',
               background: 'linear-gradient(90deg, #C0392B, #E8940A)',
               transition: 'width 300ms ease',
             }} />
           </div>
           <div style={{ color: '#6a5248', fontSize: '12px', marginTop: '12px' }}>
-            {Math.round(pct)} %
+            {pct} %
           </div>
         </>
       )}
@@ -171,6 +195,14 @@ export default function App() {
     return () => document.removeEventListener('pointerlockchange', handleChange)
   }, [])
 
+  useEffect(() => { preloadAll() }, [])
+  const ready = useLoaderReady()
+  const [warmed, setWarmed] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setWarmed(true), 20000) // fallback: never hang
+    return () => clearTimeout(t)
+  }, [])
+
   return (
     <>
       {!locked && !PHOTO && (
@@ -185,7 +217,7 @@ export default function App() {
           <div style={{ fontSize: '18px', color: '#c9a87c' }}>WASD · souris · E pour se cacher</div>
         </div>
       )}
-      <FadeIn />
+      <FadeIn done={warmed} />
       <Subtitles />
       <DoorHint />
       <KeyboardControls map={CONTROLS_MAP}>
@@ -202,23 +234,28 @@ export default function App() {
           <ReflectionsSansFog />
           {NOFX && <ManualRender />}
           <Suspense fallback={null}>
-            {PHOTO ? <PhotoCamera conf={PHOTO} /> : <Player />}
-            <LivingRoom />
-            {/* INSIDE Suspense: mounted outside Suspense, the composer captures an
-                empty framebuffer during GLB loading and renders a solid screen
-                (fog color) permanently. */}
-            {TOON_RICHE.enabled && !NOFX && (
-              // multisampling 2 (default 8): 8× anti-aliasing was expensive
-              // for a toon render with black outlines + grain that masks it all
-              <EffectComposer multisampling={2}>
-                <Bloom
-                  luminanceThreshold={TOON_RICHE.bloomThreshold}
-                  intensity={TOON_RICHE.bloomIntensity}
-                  mipmapBlur
-                />
-                <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={TOON_RICHE.grainOpacity} />
-                <Vignette darkness={TOON_RICHE.vignetteDarkness} />
-              </EffectComposer>
+            {ready && (
+              <>
+                {PHOTO ? <PhotoCamera conf={PHOTO} /> : <Player />}
+                <LivingRoom />
+                {/* INSIDE Suspense: mounted outside Suspense, the composer captures an
+                    empty framebuffer during GLB loading and renders a solid screen
+                    (fog color) permanently. */}
+                {TOON_RICHE.enabled && !NOFX && (
+                  // multisampling 2 (default 8): 8× anti-aliasing was expensive
+                  // for a toon render with black outlines + grain that masks it all
+                  <EffectComposer multisampling={2}>
+                    <Bloom
+                      luminanceThreshold={TOON_RICHE.bloomThreshold}
+                      intensity={TOON_RICHE.bloomIntensity}
+                      mipmapBlur
+                    />
+                    <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={TOON_RICHE.grainOpacity} />
+                    <Vignette darkness={TOON_RICHE.vignetteDarkness} />
+                  </EffectComposer>
+                )}
+                <SceneWarmup onWarmed={() => setWarmed(true)} />
+              </>
             )}
           </Suspense>
         </Canvas>
