@@ -9,6 +9,7 @@ import { TVScreen } from './TVScreen'
 import { PhotoFrame } from '../../shared/PhotoFrame'
 import { Bassinet } from '../Bassinet'
 import { C_WOOD_DARK, C_UPHOLSTERY } from './livingRoomConstants'
+import { ARMCHAIR_URL, TV_URL } from '../../assets/manifest'
 
 export function SofaCorner() {
   return (
@@ -70,7 +71,7 @@ export function SofaCorner() {
       {/* ─── Armchair, back against the bottom of the window, facing the room
           (ref entrance-view) ───────────────────────────────────────────────────── */}
       <Prop
-        url="/models/props/fauteuil.glb?v=3"
+        url={ARMCHAIR_URL}
         color={C_UPHOLSTERY}
         position={[-6.42, 0, -0.6]}
         rotationY={Math.PI / 2}
@@ -84,7 +85,7 @@ export function SofaCorner() {
           screen toward the north-east: both segments of the L-shaped sofa see it.
           (TV cabinet: dedicated model to come — textured props backlog.) ────────── */}
       <Prop
-        url="/models/props/tv.glb?v=3"
+        url={TV_URL}
         color="#3a3a3e"
         position={[-6.15, 0, -4.95]}
         rotationY={Math.PI / 4}

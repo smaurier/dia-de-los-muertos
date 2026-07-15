@@ -14,6 +14,7 @@ import { resolvePlayerNpcCollision } from '../game/systems/npcSystem'
 import { canMove, cameraBackDistance, clampCameraToRoom, LIVING_ROOM_BOUNDS } from './living-room/livingRoomCollision'
 import { DOORS, DOOR_INTERACT_DIST } from './living-room/doorConfig'
 import { npcPositions } from './living-room/npcRegistry'
+import { HERO_URL } from './assets/manifest'
 
 const SPEED = 3
 const CAM_BACK = 1.2      // metres behind the boy
@@ -21,7 +22,6 @@ const CAM_UP = 1.3        // camera height
 const BOY_HIDE_DIST = 0.35 // camera too close → hide boy mesh
 
 // Textured hero (Hunyuan → Mixamo pipeline, 5 clips).
-const HERO_URL = '/models/characters/heros.glb?v=3'
 // Clips per state; crossfade smooths transitions.
 const CLIP_IDLE = 'standing-idle'
 const CLIP_WALK = 'walking'

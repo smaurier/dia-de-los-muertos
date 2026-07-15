@@ -2,19 +2,7 @@ import { useMemo, useEffect } from 'react'
 import * as THREE from 'three'
 import { useGLTF, useTexture } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
-
-const BODY_URL = '/models/props/canape-body.glb?v=3'
-const CUSHION_URLS = [
-  '/models/props/coussin-rouge.glb?v=3',
-  '/models/props/coussin-creme.glb?v=3',
-  '/models/props/coussin-violet.glb?v=3',
-] as const
-
-const TEXTURE_URLS = [
-  '/textures/coussin-rouge-01.png',
-  '/textures/coussin-creme-01.png',
-  '/textures/coussin-violet-01.png',
-] as const
+import { SOFA_BODY_URL, CUSHION_URLS, CUSHION_TEX_URLS } from '../assets/manifest'
 
 // UVs of coussin-*.glb: all faces in [0.27, 0.73]
 // Rescaling → [0, 1]: pattern covers entire face
@@ -57,7 +45,7 @@ export function Sofa({
   rotationY?: number
   targetLength?: number
 }) {
-  const { scene: bodyScene } = useGLTF(BODY_URL)
+  const { scene: bodyScene } = useGLTF(SOFA_BODY_URL)
   const { scene: redScene }    = useGLTF(CUSHION_URLS[0])
   const { scene: creamScene }  = useGLTF(CUSHION_URLS[1])
   const { scene: purpleScene } = useGLTF(CUSHION_URLS[2])
@@ -68,7 +56,7 @@ export function Sofa({
     [redScene, creamScene, purpleScene],
   )
 
-  const [texRed, texCream, texPurple] = useTexture([...TEXTURE_URLS])
+  const [texRed, texCream, texPurple] = useTexture([...CUSHION_TEX_URLS])
 
   const { scale, yOffset } = useMemo(() => {
     const box = new THREE.Box3().setFromObject(bodyObj)
@@ -132,6 +120,6 @@ export function Sofa({
   )
 }
 
-for (const url of [BODY_URL, ...CUSHION_URLS]) {
+for (const url of [SOFA_BODY_URL, ...CUSHION_URLS]) {
   useGLTF.preload(url)
 }

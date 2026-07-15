@@ -4,6 +4,7 @@ import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../../shared/toonGradient'
 import { boisSombre } from '../../shared/paintedTextures'
 import { Prop } from '../../shared/Prop'
+import { CHAIR_URL } from '../../assets/manifest'
 import {
   C_WOOD_DARK,
   C_CERAMIC,
@@ -77,14 +78,14 @@ export function KitchenTable() {
 
       {/* ── Kitchen chairs: one to the south facing the table, one to the west (ref) ── */}
       <Prop
-        url="/models/props/chaise.glb?v=3"
+        url={CHAIR_URL}
         color={C_WOOD_DARK}
         position={[-3.6, 0, 8.05]}
         rotationY={0}
         targetHeight={0.95}
       />
       <Prop
-        url="/models/props/chaise.glb?v=3"
+        url={CHAIR_URL}
         color={C_WOOD_DARK}
         position={[-4.85, 0, 8.9]}
         rotationY={Math.PI / 2}

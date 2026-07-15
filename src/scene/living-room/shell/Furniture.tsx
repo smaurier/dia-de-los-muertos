@@ -9,6 +9,7 @@ import { solTomettes } from '../../shared/paintedTextures'
 import { Wall } from '../../shared/Wall'
 import { Prop } from '../../shared/Prop'
 import { FrontDoor } from '../FrontDoor'
+import { BUFFET_URL } from '../../assets/manifest'
 import {
   C_WOOD_DARK, C_WOOD_MED, C_CEIL, C_FRAME, C_PHOTO, C_CERAMIC,
 } from './livingRoomConstants'
@@ -18,7 +19,7 @@ export function Furniture() {
     <>
       {/* ─── Buffet/dresser (north wall, on the left as you enter — ref entrance-view) ─── */}
       <Prop
-        url="/models/props/buffet.glb?v=3"
+        url={BUFFET_URL}
         color={C_WOOD_MED}
         position={[2.0, 0, 5.35]}
         rotationY={Math.PI}

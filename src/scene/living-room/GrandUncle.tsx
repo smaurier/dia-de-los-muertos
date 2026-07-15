@@ -9,6 +9,7 @@ import { useSubtitleStore } from '../../game/store/subtitleStore'
 import { npcPositions } from './npcRegistry'
 import { shouldTurnTowardPlayer, pickScenario } from '../../game/systems/npcSystem'
 import type { Scenario } from '../../game/systems/npcSystem'
+import { GRAND_UNCLE_URL } from '../assets/manifest'
 
 const GRAND_UNCLE_POSITIONS: Record<string, [number, number, number]> = {
   couch: [-2.62, 0, -3.7],  // back of seat, offset by sofa depth (+0.2)
@@ -20,7 +21,6 @@ const GRAND_UNCLE_POSITIONS: Record<string, [number, number, number]> = {
 // Origin at feet, 1.75 m, embedded 2048 texture. 7 clips: sitting-idle,
 // sit-to-stand, stand-to-sit, sitting-clap, sitting-disbelief, standing-idle,
 // happy-walk (in-place).
-const MODEL_URL = '/models/characters/grand-oncle.glb?v=3'
 const CLIP_SIT = 'sitting-idle'
 const MODEL_TUNING = {
   scale: 1,
@@ -72,7 +72,7 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
   const grandUnclePosition = useGameStore(s => s.grandUnclePosition)
   const { camera } = useThree()
 
-  const { scene, animations } = useGLTF(MODEL_URL)
+  const { scene, animations } = useGLTF(GRAND_UNCLE_URL)
   const { actions, names } = useAnimations(animations, ref)
 
   // Toon materials: GLB texture when present (body), source material color
@@ -170,4 +170,4 @@ export function GrandUncle({ meshRef }: GrandUncleProps) {
   )
 }
 
-useGLTF.preload(MODEL_URL)
+useGLTF.preload(GRAND_UNCLE_URL)
