@@ -23,6 +23,10 @@ Source plan: `docs/superpowers/plans/2026-06-20-vertical-slice-chapter3.md`
 - ✅ LIVRE Task 4: Corridor MeshToonMaterial — `forwardRef<THREE.Group>`, `meshToonMaterial` on all 6 meshes, `directionalLight` added, TS clean, committed
 - ✅ LIVRE Task 5: Adult MeshToonMaterial — Replaced 2x meshStandardMaterial with meshToonMaterial, gradientMap wired, TS clean, committed
 
+## Déploiement (2026-07-16)
+
+- 🚀 **Déployer sur Netlify** (demain) — build `npm run build` (= `tsc -b && vite build`, le typecheck passe maintenant), publish dir `dist`. Repo reste PRIVÉ (build Netlify depuis repo privé = OK). Caveats : (1) idéalement finir le bug compile-30% avant (prod = pas de StrictMode donc compile ~2× plus rapide, mais le blocage à 30% reste) ; (2) vérifier que `public/models` + `public/textures` sont servis ; base URL Vite `/` OK pour Netlify.
+
 ## Bugs connus — NPC tablée (différés 2026-07-14)
 
 - 🐛 **Idle synchronisé** — tous les NPC GLB jouent `Sitting Idle(4)` en phase (mixer démarre à t=0 pour tous). Fix : déphaser (offset aléatoire de `action.time` / `timeScale` léger par instance).
