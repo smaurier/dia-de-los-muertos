@@ -10,8 +10,9 @@
 import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
-import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
+import { solTomettes, boisSombre } from '../shared/paintedTextures'
 import { AnimatedDoor } from '../shared/AnimatedDoor'
+import { Wall } from '../shared/Wall'
 import { ZoneReflectorMaterial } from '../shared/ZoneReflector'
 
 const C_CEIL = '#E4D6BC'
@@ -41,33 +42,15 @@ export function Corridor() {
       {/* ── North branch ── */}
       {/* South wall z=6.2 (back of the salon's north wall) — open x∈[3.6,5.4]:
           salon arch 2 opens into the hallway */}
-      <mesh position={[1.5, 1.45, 6.2]}>
-        <planeGeometry args={[4.2, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[6.375, 1.45, 6.2]}>
-        <planeGeometry args={[1.95, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[1.5, 1.45, 6.2]} size={[4.2, 2.9]} />
+      <Wall position={[6.375, 1.45, 6.2]} size={[1.95, 2.9]} />
       {/* South wall of the extension (z=6.2, x∈[8.75,13.4]), pierced x∈[10.2,11.14]:
           bathroom door, FACING the bedroom 2 door.
           The gap x∈[7.35,8.75] is the start of the east branch. */}
-      <mesh position={[9.475, 1.45, 6.2]}>
-        <planeGeometry args={[1.45, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[12.27, 1.45, 6.2]}>
-        <planeGeometry args={[2.26, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[10.67, 2.5, 6.2]}>
-        <planeGeometry args={[0.94, 0.8]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[4.5, 2.8, 6.2]}>
-        <planeGeometry args={[1.8, 0.2]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[9.475, 1.45, 6.2]} size={[1.45, 2.9]} />
+      <Wall position={[12.27, 1.45, 6.2]} size={[2.26, 2.9]} />
+      <Wall position={[10.67, 2.5, 6.2]} size={[0.94, 0.8]} />
+      <Wall position={[4.5, 2.8, 6.2]} size={[1.8, 0.2]} />
       {/* Threshold floor in the wall thickness (z∈[5.8,6.2], under arch 2) */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[4.5, 0.001, 6.0]}>
         <planeGeometry args={[1.8, 0.4]} />
@@ -75,67 +58,28 @@ export function Corridor() {
       </mesh>
       {/* North wall z=7.6 — all the way to x=13.4, pierced x∈[4.03,4.97] (bedroom 1
           door, facing arch 2) and x∈[10.2,11.14] (bedroom 2 door) */}
-      <mesh position={[1.715, 1.45, 7.6]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[4.63, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[7.585, 1.45, 7.6]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[5.23, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[12.27, 1.45, 7.6]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[2.26, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[1.715, 1.45, 7.6]} rotation={[0, Math.PI, 0]} size={[4.63, 2.9]} />
+      <Wall position={[7.585, 1.45, 7.6]} rotation={[0, Math.PI, 0]} size={[5.23, 2.9]} />
+      <Wall position={[12.27, 1.45, 7.6]} rotation={[0, Math.PI, 0]} size={[2.26, 2.9]} />
       {/* Lintels above doors (y∈[2.1,2.9]) */}
-      <mesh position={[4.5, 2.5, 7.6]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[0.94, 0.8]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[10.67, 2.5, 7.6]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[0.94, 0.8]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[4.5, 2.5, 7.6]} rotation={[0, Math.PI, 0]} size={[0.94, 0.8]} />
+      <Wall position={[10.67, 2.5, 7.6]} rotation={[0, Math.PI, 0]} size={[0.94, 0.8]} />
       {/* Dead end at x=13.4 (future bathroom) */}
-      <mesh position={[13.4, 1.45, 6.9]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[1.4, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[13.4, 1.45, 6.9]} rotation={[0, -Math.PI / 2, 0]} size={[1.4, 2.9]} />
 
       {/* ── East branch — crosses the entrance junction (z∈[-0.9,0.9]) and
           continues south between the office and the salon to the green door ── */}
       {/* East wall x=8.75 — pierced z∈[2.25,3.19] (storage door), open
           z∈[-0.9,0.9] (junction), pierced z∈[-2.5,-1.56] (office door) */}
-      <mesh position={[8.75, 1.45, 1.575]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[1.35, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[8.75, 1.45, 4.695]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[3.01, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[8.75, 2.5, 2.72]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.94, 0.8]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[8.75, 1.45, -1.23]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.66, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[8.75, 2.5, -2.03]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.94, 0.8]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[8.75, 1.45, -3.9]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[2.8, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[8.75, 1.45, 1.575]} rotation={[0, -Math.PI / 2, 0]} size={[1.35, 2.9]} />
+      <Wall position={[8.75, 1.45, 4.695]} rotation={[0, -Math.PI / 2, 0]} size={[3.01, 2.9]} />
+      <Wall position={[8.75, 2.5, 2.72]} rotation={[0, -Math.PI / 2, 0]} size={[0.94, 0.8]} />
+      <Wall position={[8.75, 1.45, -1.23]} rotation={[0, -Math.PI / 2, 0]} size={[0.66, 2.9]} />
+      <Wall position={[8.75, 2.5, -2.03]} rotation={[0, -Math.PI / 2, 0]} size={[0.94, 0.8]} />
+      <Wall position={[8.75, 1.45, -3.9]} rotation={[0, -Math.PI / 2, 0]} size={[2.8, 2.9]} />
       {/* West wall x=7.36 (1 cm in front of the salon's thick east wall face —
           avoids z-fighting; interrupted at the east arch z∈[-0.9,0.9]) */}
-      <mesh position={[7.36, 1.45, 3.55]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[5.3, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[7.36, 1.45, 3.55]} rotation={[0, Math.PI / 2, 0]} size={[5.3, 2.9]} />
       {/* ── THE MIRROR (clue #1, spec V10 ch3) — on the salon's exterior wall,
           in the hallway that runs along the bathroom. The child is reflected.
           The adult is not — layer mechanic coming later (backlog "Mirror robuste");
@@ -162,23 +106,11 @@ export function Corridor() {
           <ZoneReflectorMaterial zone="couloir" color="#dfe8ec" resolution={512} mirror={1} mixStrength={1.0} blur={[0, 0]} roughness={0.04} metalness={0} depthScale={0} side={THREE.DoubleSide} />
         </mesh>
       </group>
-      <mesh position={[7.36, 1.45, -3.1]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[4.4, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[7.36, 1.45, -3.1]} rotation={[0, Math.PI / 2, 0]} size={[4.4, 2.9]} />
       {/* South end z=-5.3: GREEN DOOR (openable — leads to the patio) */}
-      <mesh position={[7.465, 1.45, -5.3]}>
-        <planeGeometry args={[0.23, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[8.635, 1.45, -5.3]}>
-        <planeGeometry args={[0.23, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[8.05, 2.5, -5.3]}>
-        <planeGeometry args={[0.94, 0.8]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[7.465, 1.45, -5.3]} size={[0.23, 2.9]} />
+      <Wall position={[8.635, 1.45, -5.3]} size={[0.23, 2.9]} />
+      <Wall position={[8.05, 2.5, -5.3]} size={[0.94, 0.8]} />
       <AnimatedDoor
         id="porte-verte"
         position={[7.58, 0, -5.3]}
