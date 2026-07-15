@@ -37,44 +37,59 @@ then shaders are compiled deterministically before the loader dismisses.
 
 ### Components
 
-1. **`src/scene/assets/manifest.ts`** — the single source of truth for what to
-   preload. To avoid drift (see Risks), it **imports the existing URL constants**
-   rather than re-typing strings:
-   - Re-export/aggregate the GLB URL constants already defined in components
-     (`HERO_URL`, the `MODEL_URL`s in Dog/Mama/GrandUncle, `BODY_URL`/`CUSHION_URLS`
-     in Sofa, chair/prop GLBs, etc.). Those local consts must be **exported** so the
-     manifest imports them (one definition, no duplication).
-   - Aggregate the texture URL strings from the shared texture modules
-     (`paintedTextures`, `fabricTexture`, `papelTexture`, `vistaTextures`, …). Where
-     a module builds textures from filenames, export the filename list.
-   - Result: `export const MODEL_URLS: string[]` and `export const TEXTURE_URLS:
-     string[]`, both derived from real definitions.
+1. **`src/scene/assets/manifest.ts`** — the single source of truth. The manifest
+   **owns** the URLs; components **import from it** (inverted dependency — the
+   manifest does NOT import component internals). Concretely:
+   - Define and export every asset URL here: `export const HERO_URL = '…'`, the
+     NPC model URLs, sofa body/cushion URLs, chair/prop GLB URLs, and the texture
+     filenames.
+   - Also export the aggregate arrays: `export const MODEL_URLS: string[]` and
+     `export const TEXTURE_URLS: string[]`.
+   - **Refactor consumers** (Dog, Mama, GrandUncle, Sofa, Player, chair/prop
+     configs, and the shared texture modules `paintedTextures`/`fabricTexture`/…)
+     to import their URL from the manifest instead of defining a local literal.
+     One definition, consumed everywhere → no drift possible.
 
 2. **`src/scene/assets/preloadAssets.ts`** — `preloadAll()` fires every load in
-   one batch: `MODEL_URLS.forEach(u => useGLTF.preload(u))` (loads + parses GLBs
-   into the useGLTF cache) and loads every texture in `TEXTURE_URLS` through the
-   DefaultLoadingManager (or ensures the shared texture-singleton modules are
-   imported so their `TextureLoader.load()` fires). All go through the same manager
-   → `useProgress` sees one batch.
+   one batch, explicitly (no side-effect module imports):
+   - GLBs: `MODEL_URLS.forEach(u => useGLTF.preload(u))` (loads + parses into the
+     useGLTF cache the scene later reads).
+   - Textures: load each `TEXTURE_URLS` entry explicitly via a `THREE.TextureLoader`
+     (default manager). The shared texture modules build their singletons from the
+     SAME manifest URLs, so the scene reuses the already-loaded textures — no double
+     load, no reliance on import order.
+   - All go through the DefaultLoadingManager → `useProgress` sees one batch.
 
 3. **Preload gate in `App`** — a `ready` state (data preloaded) and a `warmed`
    state (shaders compiled):
    - On mount: call `preloadAll()`.
-   - `<FadeIn>` overlay reads `useProgress` → the real monotonic bar. It stays up
-     until `warmed`.
+   - `<FadeIn>` overlay reads `useProgress` → the bar. It stays up until `warmed`.
    - The scene (`<Player/>`, `<LivingRoom/>`) **and the `EffectComposer`** mount
-     together only when `ready` (so the composer never captures an empty
-     framebuffer — see Risks). Gate them as one unit.
-   - `ready` is set when the preload batch completes: `useProgress` `active` goes
-     false after having loaded (guard against the initial idle-before-start with a
-     "has started" flag, or key off `loaded === total && total > 0`).
+     together only when `ready`, gated as ONE unit (so the composer never captures
+     an empty framebuffer — the known black-screen bug, App.tsx:207).
+   - **`ready` = debounced idle (CRITICAL — do not use naive `!active`).** The
+     original bug is exactly that `active`/`loaded`/`total` batch and reset. Because
+     `useGLTF.preload` is async and loads may register across ticks, a naive
+     `!active` fires on an intermediate batch gap → scene mounts → new loads →
+     re-batch (bug reproduced). Instead: set `ready` only when `active` has been
+     **continuously false for ≥ 300 ms** (any new load flips `active` true and
+     resets the timer). Floor it with an expected-count sanity check: don't `ready`
+     before `loaded` has reached at least `MODEL_URLS.length + TEXTURE_URLS.length`
+     at some point. This debounce is the same fix shape as the loader dismissal —
+     get it right here, it is the crux of the design.
 
 4. **Shader warmup — `src/scene/assets/SceneWarmup.tsx`** — a component rendered
    inside the Canvas once the scene is mounted. In an effect it calls
    `gl.compileAsync(scene, camera)` (three r152+, available in three 0.184) and,
    when the returned Promise resolves, calls `onWarmed()`. This is the
-   **deterministic warmup-done signal** — the loader dismisses exactly when all
-   scene programs are compiled, not after an arbitrary frame count.
+   **deterministic warmup-done signal** — the loader dismisses exactly when the
+   compiled programs are ready, not after an arbitrary frame count.
+   - **Caveat:** `compile()` only compiles materials of objects it walks as
+     currently relevant; objects with `visible === false` (gated reflectors,
+     satellite rooms masked by culling) may be skipped, so a small hitch is still
+     possible the first time such an object appears. Acceptable — the bulk of the
+     first-frame program set is compiled. Note it; do not try to force-compile
+     everything (diminishing returns).
 
 ### Data flow
 
@@ -94,8 +109,11 @@ frozen on index 0 for the whole load. Dismiss on `warmed`.
 ## Error handling
 
 - If an asset 404s or errors, `useProgress.errors` is populated; log it.
-- **Fallback timeout** (e.g. 15 s): force `ready`/`warmed` even if the batch never
-  reports complete, so the loader can never hang forever on a missing asset.
+- **Fallback timeout, relative to mount:** arm a single timer at App mount (e.g.
+  20 s — comfortably above the observed ~18 s load). If it fires before the normal
+  path, force `ready` then `warmed`, so the loader can never hang forever on a
+  missing/failed asset. (Relative to mount, not a long stare at 100 % after the
+  bar fills.)
 
 ## Limits (honest expectations — not over-promising)
 
