@@ -6,8 +6,8 @@
 // door id 'garage', defined in Patio.tsx).
 import { Outlines } from '@react-three/drei'
 import { GlassReflector } from '../shared/GlassReflector'
+import { Wall } from '../shared/Wall'
 import { toonGradient } from '../shared/toonGradient'
-import { murAdobeSide } from '../shared/paintedTextures'
 
 const C_CEIL   = '#C8BCA4'
 const C_IRON   = '#1A1512'
@@ -42,34 +42,16 @@ export function Garage() {
       </mesh>
 
       {/* ── North wall (back of the facade / street side) ── */}
-      <mesh position={[12.0, 1.35, -5.62]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[6.0, 2.7]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[12.0, 1.35, -5.62]} rotation={[0, Math.PI, 0]} size={[6.0, 2.7]} />
       {/* ── South wall z=-10.6 — pierced by two workshop-style high windows
           x∈[10.3,11.3] and x∈[12.7,13.7], y∈[1.5,2.2] ── */}
-      <mesh position={[9.65, 1.35, -10.58]}>
-        <planeGeometry args={[1.3, 2.7]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[12.0, 1.35, -10.58]}>
-        <planeGeometry args={[1.4, 2.7]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[14.35, 1.35, -10.58]}>
-        <planeGeometry args={[1.3, 2.7]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[9.65, 1.35, -10.58]} size={[1.3, 2.7]} />
+      <Wall position={[12.0, 1.35, -10.58]} size={[1.4, 2.7]} />
+      <Wall position={[14.35, 1.35, -10.58]} size={[1.3, 2.7]} />
       {[10.8, 13.2].map(px => (
         <group key={px}>
-          <mesh position={[px, 2.45, -10.58]}>
-            <planeGeometry args={[1.0, 0.5]} />
-            <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-          </mesh>
-          <mesh position={[px, 0.75, -10.58]}>
-            <planeGeometry args={[1.0, 1.5]} />
-            <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-          </mesh>
+          <Wall position={[px, 2.45, -10.58]} size={[1.0, 0.5]} />
+          <Wall position={[px, 0.75, -10.58]} size={[1.0, 1.5]} />
           {/* Night + casing + 2 bars + glass (salon glass) */}
           <mesh position={[px, 1.85, -10.72]}>
             <planeGeometry args={[1.04, 0.74]} />
@@ -120,18 +102,9 @@ export function Garage() {
         <Outlines thickness={0.008} color="black" />
       </mesh>
       {/* Header + side pillars around the gate */}
-      <mesh position={[14.98, 2.55, -8.1]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[3.4, 0.3]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[14.98, 1.35, -6.0]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.8, 2.7]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[14.98, 1.35, -10.2]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[0.8, 2.7]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[14.98, 2.55, -8.1]} rotation={[0, -Math.PI / 2, 0]} size={[3.4, 0.3]} />
+      <Wall position={[14.98, 1.35, -6.0]} rotation={[0, -Math.PI / 2, 0]} size={[0.8, 2.7]} />
+      <Wall position={[14.98, 1.35, -10.2]} rotation={[0, -Math.PI / 2, 0]} size={[0.8, 2.7]} />
 
       {/* ── The vocho (placeholder — 3D model pipeline upcoming) — aligned
           east-west, nose toward the patio arch (drove in from the street) ── */}
