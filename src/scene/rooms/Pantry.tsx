@@ -5,7 +5,8 @@
 // Dim light, preserves, grains, dried chiles.
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
-import { murAdobeSide, solTomettes, boisSombre } from '../shared/paintedTextures'
+import { Wall } from '../shared/Wall'
+import { solTomettes, boisSombre } from '../shared/paintedTextures'
 import { AnimatedDoor } from '../shared/AnimatedDoor'
 import { BlueDoor } from '../shared/BlueDoor'
 
@@ -48,33 +49,15 @@ export function Pantry() {
       </mesh>
       {/* ── Walls (inner faces) ── */}
       {/* West x=-7 */}
-      <mesh position={[-7.0, 1.45, CZ]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[CD, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[-7.0, 1.45, CZ]} rotation={[0, Math.PI / 2, 0]} size={[CD, 2.9]} />
       {/* Back z=15.2 */}
-      <mesh position={[CX, 1.45, 15.2]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[CW, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[CX, 1.45, 15.2]} rotation={[0, Math.PI, 0]} size={[CW, 2.9]} />
       {/* East x=-0.6 */}
-      <mesh position={[-0.6, 1.45, CZ]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[CD, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[-0.6, 1.45, CZ]} rotation={[0, -Math.PI / 2, 0]} size={[CD, 2.9]} />
       {/* South wall z=12 pantry side: 2 segments + lintel (door x∈[-6.3,-5.3]) */}
-      <mesh position={[-6.65, 1.45, 12.0]}>
-        <planeGeometry args={[0.7, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-2.95, 1.45, 12.0]}>
-        <planeGeometry args={[4.7, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[-5.8, 2.5, 12.0]}>
-        <planeGeometry args={[1.0, 0.8]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[-6.65, 1.45, 12.0]} size={[0.7, 2.9]} />
+      <Wall position={[-2.95, 1.45, 12.0]} size={[4.7, 2.9]} />
+      <Wall position={[-5.8, 2.5, 12.0]} size={[1.0, 0.8]} />
       {/* Door wood casing */}
       {[-6.3, -5.3].map(dx => (
         <mesh key={dx} position={[dx, 1.05, 12.0]}>

@@ -7,7 +7,8 @@
 // No window here. Weak bare bulb. Things go here when nobody wants to see them.
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../shared/toonGradient'
-import { murAdobeSide, boisSombre } from '../shared/paintedTextures'
+import { Wall } from '../shared/Wall'
+import { boisSombre } from '../shared/paintedTextures'
 import { AnimatedDoor } from '../shared/AnimatedDoor'
 
 const C_CEIL  = '#D8CBB2'
@@ -32,14 +33,8 @@ export function StorageRoom() {
 
       {/* ── West wall x=8.9 (inner face of the east branch wall),
           pierced door z∈[2.25,3.19] ── */}
-      <mesh position={[8.9, 1.45, 1.725]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[1.05, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
-      <mesh position={[8.9, 2.5, 2.72]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[0.94, 0.8]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[8.9, 1.45, 1.725]} rotation={[0, Math.PI / 2, 0]} size={[1.05, 2.9]} />
+      <Wall position={[8.9, 2.5, 2.72]} rotation={[0, Math.PI / 2, 0]} size={[0.94, 0.8]} />
       {/* Openable door (key F) — opens into the storage room */}
       <AnimatedDoor id="debarras" position={[8.82, 0, 2.25]} openAngle={1.9} width={0.94} />
       {/* Wood casing (fills the band slivers) */}
@@ -56,20 +51,11 @@ export function StorageRoom() {
       </mesh>
 
       {/* ── South wall z=1.2 (back of the entrance hallway) ── */}
-      <mesh position={[11.15, 1.45, 1.2]}>
-        <planeGeometry args={[4.5, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[11.15, 1.45, 1.2]} size={[4.5, 2.9]} />
       {/* ── North wall z=3.25 (back of the bathroom on the west, outside on the east) ── */}
-      <mesh position={[11.15, 1.45, 3.25]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[4.5, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[11.15, 1.45, 3.25]} rotation={[0, Math.PI, 0]} size={[4.5, 2.9]} />
       {/* ── East wall x=13.4 ── */}
-      <mesh position={[13.4, 1.45, 2.225]} rotation={[0, -Math.PI / 2, 0]}>
-        <planeGeometry args={[2.05, 2.9]} />
-        <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-      </mesh>
+      <Wall position={[13.4, 1.45, 2.225]} rotation={[0, -Math.PI / 2, 0]} size={[2.05, 2.9]} />
 
       {/* ── Rough shelves along the south wall (jars, boxes, newspapers) ── */}
       <group position={[10.4, 0, 1.5]}>

@@ -5,7 +5,8 @@
 import * as THREE from 'three'
 import { Outlines } from '@react-three/drei'
 import { toonGradient } from '../../shared/toonGradient'
-import { murAdobeSide, solTomettes } from '../../shared/paintedTextures'
+import { solTomettes } from '../../shared/paintedTextures'
+import { Wall } from '../../shared/Wall'
 import { Prop } from '../../shared/Prop'
 import { FrontDoor } from '../FrontDoor'
 import {
@@ -69,20 +70,11 @@ export function Furniture() {
           <meshToonMaterial color={C_CEIL} gradientMap={toonGradient} />
         </mesh>
         {/* East wall x=10 (behind the front door) */}
-        <mesh position={[10, 1.45, 0]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[1.8, 2.9]} />
-          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} />
-        </mesh>
+        <Wall position={[10, 1.45, 0]} rotation={[0, -Math.PI / 2, 0]} size={[1.8, 2.9]} />
         {/* North wall z=0.9 and south wall z=-0.9 (x∈[8.75,9.94] — to the west, the
             crossroads is open). DoubleSide: visible from both sides. */}
-        <mesh position={[9.345, 1.45, 0.9]} rotation={[0, Math.PI, 0]}>
-          <planeGeometry args={[1.19, 2.9]} />
-          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
-        </mesh>
-        <mesh position={[9.345, 1.45, -0.9]}>
-          <planeGeometry args={[1.19, 2.9]} />
-          <meshToonMaterial map={murAdobeSide} gradientMap={toonGradient} side={THREE.DoubleSide} />
-        </mesh>
+        <Wall position={[9.345, 1.45, 0.9]} rotation={[0, Math.PI, 0]} size={[1.19, 2.9]} side={THREE.DoubleSide} />
+        <Wall position={[9.345, 1.45, -0.9]} size={[1.19, 2.9]} side={THREE.DoubleSide} />
         {/* Front door: studded leaves, cantera, transom, farol —
             see PorteEntree.tsx */}
         <FrontDoor />
