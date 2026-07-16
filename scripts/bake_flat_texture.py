@@ -35,6 +35,18 @@ fg = (np.abs(ra - bg).sum(axis=2) > 45)
 # Exclude label rows at the top (e.g. "FRONT" text) — same mechanism as project_face.py
 fg[:SKIP_TOP, :] = False
 
+# Label text can sit below SKIP_TOP (sheet layouts vary): keep only the largest
+# contiguous row-cluster of foreground (the silhouette), drop the rest.
+fg_rows = np.where(fg.any(axis=1))[0]
+if len(fg_rows):
+    breaks = np.where(np.diff(fg_rows) > 1)[0]
+    starts = np.concatenate(([0], breaks + 1))
+    ends = np.concatenate((breaks, [len(fg_rows) - 1]))
+    spans = [(fg_rows[s], fg_rows[e]) for s, e in zip(starts, ends)]
+    lo, hi = max(spans, key=lambda se: se[1] - se[0])
+    fg[:lo, :] = False
+    fg[hi + 1:, :] = False
+
 ys, xs = np.where(fg)
 ix0, ix1, iy0, iy1 = xs.min(), xs.max(), ys.min(), ys.max()
 print(f"[bake] silhouette ref (skip_top={SKIP_TOP}): x[{ix0},{ix1}] y[{iy0},{iy1}]")

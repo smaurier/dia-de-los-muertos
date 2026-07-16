@@ -10,8 +10,8 @@ export const DOG_URL = '/models/characters/chien-puppy2.glb?v=3'
 export const BASE_URLS = [
   '/models/characters/base-01.glb?v=6',
   '/models/characters/base-02.glb?v=3',
-  '/models/characters/base-03.glb?v=6',
-  '/models/characters/base-04.glb?v=6',
+  '/models/characters/base-03.glb?v=7',
+  '/models/characters/base-04.glb?v=7',
 ] as const
 
 // ── Prop GLBs ──
