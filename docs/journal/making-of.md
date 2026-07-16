@@ -197,14 +197,43 @@ la porte bleue de la cuisine.
 
 ---
 
+## 2026-07-16 — La famille a des visages
+
+Jusqu'ici, la tablée était peuplée de silhouettes beiges. Les modèles étaient
+riggés, animés, assis — mais gris : la géométrie Hunyuan n'avait ni UVs, ni
+texture. Aujourd'hui, la famille a des visages.
+
+Le serveur Hunyuan local ne sait pas texturer un mesh existant (vérifié —
+c'était LE risque du plan, tué en premier par un spike de 10 minutes). Donc
+pipeline maison : dépliage UV headless dans Blender, projection des couleurs
+du corps depuis la planche de référence frontale, puis projection nette du
+visage — la même technique qui avait donné son regard au grand-oncle.
+
+Trois pièges le même jour : la bibliothèque qui éditait les textures jetait
+silencieusement le squelette (les persos seraient restés figés en T) ; le mot
+« FRONT » écrit sur les planches de référence s'est retrouvé imprimé sur les
+cheveux d'une tante ; et l'arrière des crânes échantillonnait le gris du fond.
+À chaque fois : constat en jeu par screenshot, diagnostic, correction générique.
+
+Et pour que quatre tantes partageant le même corps ne soient pas des clones :
+un masque peau/cheveux/vêtements par personnage, et chaque PNJ reçoit sa
+variante recolorée. Lupita en violet, Consuelo en ambre, Verónica en teal.
+
+Découverte du jour : Beto n'a jamais existé. Son fichier était une copie
+byte-à-byte de celui de son frère. Son vrai corps (chauve, moustache) vient
+d'être généré — il attend son passage chez Mixamo.
+
+---
+
 ## Ce qui reste
 
-- 9 GLB à générer (en cours)
+- Beto : rig Mixamo + texture (généré, en attente)
+- Enfants : bases 05-06 à générer (capsules colorées pour l'instant)
 - Mixamo pour chaque personnage (anims : idle, walk, talk, réaction)
-- Intégration NPC par NPC via `familyConfig`
 - Audio : 6 couches Howler, voix de ma fille
 - Chapitres 2-9
 - La chanson
+- Déploiement Netlify
 
 ---
 
@@ -216,4 +245,4 @@ L'attention construit l'expérience.
 
 ---
 
-*Dernière mise à jour : 2026-07-14*
+*Dernière mise à jour : 2026-07-16*
