@@ -32,15 +32,26 @@ scene.world.use_nodes = True
 scene.world.node_tree.nodes["Background"].inputs[0].default_value = (0.25, 0.25, 0.28, 1)
 
 # Cadrage sur la bbox de l'objet importé
+# Ignore helper meshes (e.g. culling Icospheres) — frame only skinned meshes
+# when present, otherwise all meshes.
 import mathutils
 mins = mathutils.Vector((1e9,) * 3)
 maxs = mathutils.Vector((-1e9,) * 3)
-for obj in scene.objects:
-    if obj.type == "MESH":
-        for c in obj.bound_box:
-            w = obj.matrix_world @ mathutils.Vector(c)
-            mins = mathutils.Vector(map(min, mins, w))
-            maxs = mathutils.Vector(map(max, maxs, w))
+
+def _is_skinned(obj):
+    return obj.type == "MESH" and any(
+        m.type == "ARMATURE" for m in obj.modifiers
+    )
+
+mesh_objs = [o for o in scene.objects if o.type == "MESH"]
+skinned = [o for o in mesh_objs if _is_skinned(o)]
+frame_objs = skinned if skinned else mesh_objs
+
+for obj in frame_objs:
+    for c in obj.bound_box:
+        w = obj.matrix_world @ mathutils.Vector(c)
+        mins = mathutils.Vector(map(min, mins, w))
+        maxs = mathutils.Vector(map(max, maxs, w))
 center = (mins + maxs) / 2
 size = max(maxs - mins)
 
@@ -49,7 +60,10 @@ sun.data.energy = 3
 sun.rotation_euler = (math.radians(50), 0, math.radians(30))
 scene.collection.objects.link(sun)
 
-cam = bpy.data.objects.new("Cam", bpy.data.cameras.new("Cam"))
+cam_data = bpy.data.cameras.new("Cam")
+cam_data.clip_start = size * 0.001  # avoid near-clip culling on small meshes
+cam_data.clip_end = size * 100.0
+cam = bpy.data.objects.new("Cam", cam_data)
 scene.collection.objects.link(cam)
 scene.camera = cam
 
