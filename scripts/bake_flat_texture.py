@@ -3,6 +3,7 @@
 # the mirrored front sample (cheap but colors are right). Sharp face comes
 # later from project_face.py.
 # Usage: python scripts/bake_flat_texture.py <in.glb> <front_ref.png> <out.glb>
+#        [--skip-top-rows N]  (rows at top of ref to ignore for label, default 80)
 import sys
 
 import numpy as np
@@ -10,6 +11,7 @@ import trimesh
 from PIL import Image
 
 in_glb, ref_png, out_glb = sys.argv[1:4]
+SKIP_TOP = int(sys.argv[sys.argv.index("--skip-top-rows") + 1]) if "--skip-top-rows" in sys.argv else 80
 
 scene = trimesh.load(in_glb, process=False)
 mesh = max(
@@ -29,8 +31,13 @@ ref = Image.open(ref_png).convert("RGB")
 ra = np.asarray(ref).astype(int)
 bg = np.median(ra[2:8, 2:8].reshape(-1, 3), axis=0)
 fg = (np.abs(ra - bg).sum(axis=2) > 45)
+
+# Exclude label rows at the top (e.g. "FRONT" text) — same mechanism as project_face.py
+fg[:SKIP_TOP, :] = False
+
 ys, xs = np.where(fg)
 ix0, ix1, iy0, iy1 = xs.min(), xs.max(), ys.min(), ys.max()
+print(f"[bake] silhouette ref (skip_top={SKIP_TOP}): x[{ix0},{ix1}] y[{iy0},{iy1}]")
 
 mx0, my0, _ = verts.min(axis=0)
 mx1, my1, _ = verts.max(axis=0)
@@ -63,8 +70,10 @@ for f in faces:
     p = (w0[..., None] * verts[f[0]] + w1[..., None] * verts[f[1]]
          + w2[..., None] * verts[f[2]])
     sx, sy = to_image(p[..., 0], p[..., 1])
-    sx = np.clip(sx, 0, ref.width - 1).astype(int)
-    sy = np.clip(sy, 0, ref.height - 1).astype(int)
+    # Clamp to silhouette bbox (not the full image) so vertices above the
+    # character top (hair peak) cannot sample into the excluded label rows.
+    sx = np.clip(sx, ix0, ix1).astype(int)
+    sy = np.clip(sy, iy0, iy1).astype(int)
     colors = np.asarray(ref)[sy, sx].astype(np.float32)
     ys_ = slice(max(0, y0), min(H, y1))
     xs_ = slice(max(0, x0), min(W, x1))
