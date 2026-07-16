@@ -51,6 +51,41 @@ ys, xs = np.where(fg)
 ix0, ix1, iy0, iy1 = xs.min(), xs.max(), ys.min(), ys.max()
 print(f"[bake] silhouette ref (skip_top={SKIP_TOP}): x[{ix0},{ix1}] y[{iy0},{iy1}]")
 
+Href, Wref = fg.shape  # reference image dimensions
+
+# --- Precompute nearest-foreground-x lookup (vectorized, once) ---
+# nearest_fg_x[r, c] = column index of the closest foreground pixel in row r.
+# Rows with NO foreground are marked via nearest_fg_row[r] = nearest row that has fg.
+nearest_fg_x = np.empty((Href, Wref), dtype=np.int32)
+col_range = np.arange(Wref)
+fg_row_indices = np.where(fg.any(axis=1))[0]  # rows that have at least one fg pixel
+
+for r in range(Href):
+    cols = np.where(fg[r])[0]
+    if len(cols) == 0:
+        # sentinel: will be resolved via nearest_fg_row below
+        nearest_fg_x[r] = 0
+    else:
+        # searchsorted gives the index of the right neighbor; compare with left
+        idx = np.searchsorted(cols, col_range)
+        idx_right = np.clip(idx, 0, len(cols) - 1)
+        idx_left  = np.clip(idx - 1, 0, len(cols) - 1)
+        dist_right = np.abs(col_range - cols[idx_right])
+        dist_left  = np.abs(col_range - cols[idx_left])
+        nearest_fg_x[r] = np.where(dist_right <= dist_left, cols[idx_right], cols[idx_left])
+
+# For sentinel rows, precompute nearest row that HAS foreground
+nearest_fg_row = np.empty(Href, dtype=np.int32)
+nearest_fg_row[fg_row_indices] = fg_row_indices
+for r in range(Href):
+    if not fg[r].any():
+        dists = np.abs(fg_row_indices - r)
+        nearest_fg_row[r] = fg_row_indices[dists.argmin()]
+    else:
+        nearest_fg_row[r] = r
+
+print(f"[bake] nearest-fg lookup built ({Href} rows, {len(fg_row_indices)} with fg)")
+
 mx0, my0, _ = verts.min(axis=0)
 mx1, my1, _ = verts.max(axis=0)
 
@@ -82,10 +117,15 @@ for f in faces:
     p = (w0[..., None] * verts[f[0]] + w1[..., None] * verts[f[1]]
          + w2[..., None] * verts[f[2]])
     sx, sy = to_image(p[..., 0], p[..., 1])
-    # Clamp to silhouette bbox (not the full image) so vertices above the
-    # character top (hair peak) cannot sample into the excluded label rows.
+    # Clamp to silhouette bbox so vertices above the hair peak cannot sample
+    # into excluded label rows.
     sx = np.clip(sx, ix0, ix1).astype(int)
     sy = np.clip(sy, iy0, iy1).astype(int)
+    # Snap samples that land on background to nearest foreground pixel in the
+    # same row — prevents grey patches on back/top of head where the silhouette
+    # is narrow (many bbox columns are background at those rows).
+    sy = nearest_fg_row[sy]          # resolve sentinel rows first
+    sx = nearest_fg_x[sy, sx]        # then clamp x to nearest fg in that row
     colors = np.asarray(ref)[sy, sx].astype(np.float32)
     ys_ = slice(max(0, y0), min(H, y1))
     xs_ = slice(max(0, x0), min(W, x1))
