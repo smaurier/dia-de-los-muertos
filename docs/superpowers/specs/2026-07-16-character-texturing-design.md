@@ -47,6 +47,35 @@ Space) for a texture/paint stage; try to texture one small UV'd mesh. Outcome:
   a flat/sampled body tint, OR use a different texturer. The plan branches here.
 Do not batch four bases before this is answered.
 
+### Verdict (2026-07-16)
+
+**PIVOT.**
+
+Probe script: `scripts/spike_texgen_on_mesh.py` (raw HTTP GET `/config`, gradio 4.44.1).
+
+All 14 named endpoints found:
+
+| fn_index | api_name | Input types (summary) |
+|----------|----------|-----------------------|
+| 0 | /load_example | dataset |
+| 1 | /load_example_1 | dataset |
+| 2 | /load_example_2 | dataset |
+| 3 | /lambda | (none) |
+| 4 | /shape_generation | textbox, image×5, slider, number, slider, slider, checkbox, slider, checkbox |
+| 5 | /lambda_1 | (none) |
+| 6 | /lambda_2 | (none) |
+| 7 | /generation_all | textbox, image×5, slider, number, slider, slider, checkbox, slider, checkbox |
+| 8 | /lambda_3 | (none) |
+| 9 | /lambda_4 | (none) |
+| 10 | /on_gen_mode_change | radio |
+| 11 | /on_decode_mode_change | radio |
+| 12 | /lambda_5 | (none) |
+| 13 | /on_export_click | file, file, dropdown(File Type), checkbox(Simplify), checkbox(Include Texture), slider(Target Faces) |
+
+No endpoint accepts a user-provided mesh for texturing. `/on_export_click` (fn_index=13) takes two hidden `file` inputs (comp ids 21, 22) that are server-internal state pipes from a previous generation step — not user-uploaded meshes. The "Include Texture" checkbox is `visible: False`. This endpoint is a format converter (GLB/OBJ/PLY/STL + optional decimation), not a texturing stage.
+
+**Consequence:** Layer A cannot use Hunyuan texgen-on-mesh. Proceed with the PIVOT path: texture bases via `project_face` (orthographic face projection from a frontal crop) + a flat body tint from the reference image. The `project_face.py` script is already proven on `grand-oncle`. Adapt it for each base.
+
 ## Pilot-first (de-risk)
 
 After Spike 0, do **base-01 end-to-end** (mirrors how grand-oncle was the pilot),
