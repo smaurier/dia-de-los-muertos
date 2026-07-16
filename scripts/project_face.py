@@ -9,8 +9,17 @@
 # (mapping linéaire calibré sur les bounding boxes mesh <-> silhouette).
 # Fondu doux aux bords de la zone pour se marier à la texture Hunyuan.
 #
+# Calibration tête-à-tête (v2) :
+#   MESH head box : vertices dans la bande verticale [face_y0, face_y1] et
+#     orientés vers l'avant (nz > 0) → extent (x, y) en espace mesh.
+#   REF head box : dans la silhouette de la référence, lignes correspondant
+#     à la MÊME fraction de hauteur de personnage → extent x des pixels
+#     avant-plan dans ces lignes.
+#   Mapping linéaire mesh_head → ref_head : immunisé contre l'envergure des bras.
+#
 # Usage : python project_face.py <in.glb> <ref.png> <out.glb>
-#         [--face-top 1.0] [--face-bottom 0.80] (fractions de la hauteur)
+#         [--face-top 1.0] [--face-bottom 0.80]
+#         [--skip-top-rows N]  (rows at top of ref to ignore for label, default 80)
 import struct
 import sys
 
@@ -21,6 +30,7 @@ from PIL import Image
 in_glb, ref_png, out_glb = sys.argv[1:4]
 FACE_TOP = float(sys.argv[sys.argv.index("--face-top") + 1]) if "--face-top" in sys.argv else 1.00
 FACE_BOT = float(sys.argv[sys.argv.index("--face-bottom") + 1]) if "--face-bottom" in sys.argv else 0.80
+SKIP_TOP = int(sys.argv[sys.argv.index("--skip-top-rows") + 1]) if "--skip-top-rows" in sys.argv else 80
 
 scene = trimesh.load(in_glb, process=False)
 mesh = max(
@@ -42,60 +52,81 @@ ref = Image.open(ref_png).convert("RGB")
 ra = np.asarray(ref).astype(int)
 bg = np.median(ra[2:8, 2:8].reshape(-1, 3), axis=0)  # coin = fond
 fg = (np.abs(ra - bg).sum(axis=2) > 45)
+
+# Exclure les lignes de label en haut (ex. "FRONT") — paramétrable
+fg[:SKIP_TOP, :] = False
+
 ys, xs = np.where(fg)
-ix0, ix1, iy0_raw, iy1 = xs.min(), xs.max(), ys.min(), ys.max()
-print(f"[proj] silhouette ref: x[{ix0},{ix1}] y[{iy0_raw},{iy1}]")
+ix0, ix1, iy0, iy1 = xs.min(), xs.max(), ys.min(), ys.max()
+print(f"[proj] silhouette ref (skip_top={SKIP_TOP}): x[{ix0},{ix1}] y[{iy0},{iy1}]")
 
-# ── Skip label text at top of reference (e.g. "FRONT" / "BACK") ─────────────
-# Character sheets often have a text label above the figure. Detect it by
-# finding the first row where fg pixels form a wide horizontal band (body)
-# rather than a narrow cluster (text). We look for the first row where the
-# fg cluster is wider than 60px after the initial narrow rows.
-iy0 = iy0_raw
-for _y in range(iy0_raw, iy0_raw + 80):
-    row_fg = fg[_y, :]
-    row_xs = np.where(row_fg)[0]
-    if len(row_xs) >= 60:  # body pixel cluster starts here
-        break
-    if len(row_xs) == 0:  # gap row = text above, body below
-        iy0 = _y + 1
-if iy0 != iy0_raw:
-    print(f"[proj] skipped label text, body starts at y={iy0}")
-
-# ── Visage : X bbox restreinte à la zone tête ────────────────────────────────
-# La silhouette totale est dominée par l'envergure des bras (arm span).
-# Pour la zone visage, on utilise la bbox horizontale des pixels dans le
-# quart supérieur du personnage (corps sans bras) — plus étroite, centrée tête.
-head_y_frac = 0.20  # top 20% of figure height = head/neck region
-head_ref_ymax = int(iy0 + head_y_frac * (iy1 - iy0))
-head_fg = fg[iy0:head_ref_ymax, :]
-if head_fg.any():
-    _, hxs = np.where(head_fg)
-    margin = int(0.08 * (hxs.max() - hxs.min()))
-    face_ix0 = max(0, hxs.min() - margin)
-    face_ix1 = min(ra.shape[1] - 1, hxs.max() + margin)
-else:
-    face_ix0, face_ix1 = ix0, ix1  # fallback: full width
-print(f"[proj] face X bbox (head region y<{head_ref_ymax}): x[{face_ix0},{face_ix1}]")
-
-# ── Mesh : bbox (espace bind Hunyuan : Y vertical, Z avant) ──────────────────
+# ── Mesh : bbox globale ───────────────────────────────────────────────────────
 mx0, my0, mz0 = verts.min(axis=0)
 mx1, my1, mz1 = verts.max(axis=0)
 mh = my1 - my0
-print(f"[proj] mesh: x[{mx0:.2f},{mx1:.2f}] y[{my0:.2f},{my1:.2f}] z[{mz0:.2f},{mz1:.2f}]")
+print(f"[proj] mesh: x[{mx0:.3f},{mx1:.3f}] y[{my0:.3f},{my1:.3f}] z[{mz0:.3f},{mz1:.3f}]")
 
-# Zone visage : bande verticale haute, moitié avant
+# Zone visage dans l'espace mesh : bande verticale haute
 face_y0 = my0 + FACE_BOT * mh
 face_y1 = my0 + FACE_TOP * mh
 
+# ── MESH head box : vertices dans la bande visage, orientés vers l'avant ─────
+# On filtre par bande y ET nz forward-ish (nz > 0.3) pour exclure l'arrière de
+# la tête et les côtés extrêmes qui fausseraient l'extent x.
+fwd_mask = (verts[:, 1] >= face_y0) & (verts[:, 1] <= face_y1) & (normals[:, 2] > 0.3)
+if fwd_mask.sum() < 3:
+    # Fallback: all vertices in band (no normal filter)
+    fwd_mask = (verts[:, 1] >= face_y0) & (verts[:, 1] <= face_y1)
+head_verts = verts[fwd_mask]
+hx0 = head_verts[:, 0].min()
+hx1 = head_verts[:, 0].max()
+hy0 = head_verts[:, 1].min()
+hy1 = head_verts[:, 1].max()
+print(f"[proj] mesh head box ({fwd_mask.sum()} verts): x[{hx0:.3f},{hx1:.3f}] y[{hy0:.3f},{hy1:.3f}]")
+
+# ── REF head box : fraction équivalente dans la silhouette ref ───────────────
+# La silhouette ref mappe linéairement [iy0..iy1] → [my0..my1].
+# La bande [face_y0..face_y1] correspond aux lignes ref :
+#   ry1 = iy1 - FACE_BOT * (iy1 - iy0)   (bas de la bande → haut dans l'image)
+#   ry0 = iy1 - FACE_TOP * (iy1 - iy0)   (haut de la bande → encore plus haut)
+# (les images ont l'axe y inversé : iy1 = bas personnage = my0, iy0 = haut personnage = my1)
+ref_h_span = iy1 - iy0
+ry0 = int(iy1 - FACE_TOP * ref_h_span)
+ry1 = int(iy1 - FACE_BOT * ref_h_span)
+ry0 = max(SKIP_TOP, ry0)
+ry1 = max(ry0 + 1, ry1)
+print(f"[proj] ref head band rows: y[{ry0},{ry1}]")
+
+# x-extent des pixels avant-plan dans ces lignes
+band_fg = fg[ry0:ry1, :]
+if band_fg.any():
+    _, band_xs = np.where(band_fg)
+    rx0, rx1 = int(band_xs.min()), int(band_xs.max())
+else:
+    rx0, rx1 = ix0, ix1  # fallback
+print(f"[proj] ref head box: x[{rx0},{rx1}] y[{ry0},{ry1}]")
+
+# ── Mapping tête mesh → tête ref ─────────────────────────────────────────────
 def to_image(px, py):
-    """Position mesh (x, y) -> pixel image de référence (projection frontale).
-    X uses face_ix0/face_ix1 (head-width bbox) so features are not distorted
-    by the arm span. Y uses full silhouette iy0/iy1.
+    """Position mesh (x, y) -> pixel image de référence.
+    Mapping tête-à-tête : mesh head box -> ref head box.
+    Les deux axes sont mappés linéairement et indépendamment.
     """
-    u = (px - mx0) / (mx1 - mx0)
-    v = (py - my0) / (my1 - my0)
-    return face_ix0 + u * (face_ix1 - face_ix0), iy1 - v * (iy1 - iy0)
+    # x : mesh hx0..hx1  →  ref rx0..rx1
+    if hx1 > hx0:
+        u = (px - hx0) / (hx1 - hx0)
+    else:
+        u = 0.5
+    ix = rx0 + u * (rx1 - rx0)
+
+    # y : mesh hy0..hy1  →  ref ry1..ry0  (y inversé image)
+    if hy1 > hy0:
+        v = (py - hy0) / (hy1 - hy0)
+    else:
+        v = 0.5
+    iy = ry1 - v * (ry1 - ry0)
+
+    return ix, iy
 
 # ── Rasterisation UV des triangles de la zone visage ────────────────────────
 painted = np.zeros((H, W), dtype=np.float32)  # poids de projection par texel
