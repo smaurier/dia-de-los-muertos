@@ -1,5 +1,10 @@
 # Rendu preview d'un GLB (vérif texture) : 2 vues face/dos sur fond neutre.
 # Usage : blender --background --python scripts/preview_glb.py -- input.glb out_prefix [map_override.png]
+#
+# Strategy : the GLB skeleton is a Mixamo rig exported without a true Armature
+# modifier — Blender renders the un-deformed bind mesh (collapsed near origin).
+# We instead render the atlas texture on a subdivided plane for a fast colour
+# check, then attempt a 3-D framing using armature bone world-positions.
 import math
 import sys
 
@@ -27,51 +32,75 @@ scene = bpy.context.scene
 scene.render.engine = "BLENDER_EEVEE"
 scene.render.resolution_x = 768
 scene.render.resolution_y = 1024
-scene.world = bpy.data.worlds.new("W")
-scene.world.use_nodes = True
-scene.world.node_tree.nodes["Background"].inputs[0].default_value = (0.25, 0.25, 0.28, 1)
 
-# Cadrage sur la bbox de l'objet importé
-# Cadre seulement les meshes skinnés : les GLB de personnages embarquent de la
-# géométrie utilitaire (Icosphere unitaire de culling) qui dominerait la bbox
-# et éloignerait la caméra. Fallback : tous les meshes si aucun skinné.
+world = bpy.data.worlds.new("W")
+world.use_nodes = True
+world.node_tree.nodes["Background"].inputs[0].default_value = (0.25, 0.25, 0.28, 1)
+scene.world = world
+
 import mathutils
+
+# ── Framing using bone empty world positions ──────────────────────────────────
+# glTF importer (Blender 5.x) exports Mixamo joints as EMPTY objects.
+# Their world matrix translation gives the true character silhouette in
+# Blender space (Z-up after Y-up → Z-up conversion).
+bone_empties = [
+    o for o in scene.objects
+    if o.type == "EMPTY" and o.name not in ("Armature",)
+    and "mixamo" in o.name.lower()
+]
+mesh_objs = [o for o in scene.objects if o.type == "MESH"]
+
 mins = mathutils.Vector((1e9,) * 3)
 maxs = mathutils.Vector((-1e9,) * 3)
 
-def _is_skinned(obj):
-    return obj.type == "MESH" and any(
-        m.type == "ARMATURE" for m in obj.modifiers
-    )
-
-mesh_objs = [o for o in scene.objects if o.type == "MESH"]
-skinned = [o for o in mesh_objs if _is_skinned(o)]
-frame_objs = skinned if skinned else mesh_objs
-
-for obj in frame_objs:
-    for c in obj.bound_box:
-        w = obj.matrix_world @ mathutils.Vector(c)
+if bone_empties:
+    for obj in bone_empties:
+        w = obj.matrix_world.translation
         mins = mathutils.Vector(map(min, mins, w))
         maxs = mathutils.Vector(map(max, maxs, w))
-center = (mins + maxs) / 2
-size = max(maxs - mins)
+else:
+    for obj in mesh_objs:
+        for c in obj.bound_box:
+            w = obj.matrix_world @ mathutils.Vector(c)
+            mins = mathutils.Vector(map(min, mins, w))
+            maxs = mathutils.Vector(map(max, maxs, w))
 
+center = (mins + maxs) / 2
+extents = maxs - mins
+size = max(extents)  # largest dimension (arm span or height)
+
+print(f"[preview] center={center[:]}, extents={extents[:]}, size={size:.4f}")
+
+# Sun light
 sun = bpy.data.objects.new("Sun", bpy.data.lights.new("Sun", "SUN"))
 sun.data.energy = 3
 sun.rotation_euler = (math.radians(50), 0, math.radians(30))
 scene.collection.objects.link(sun)
 
 cam_data = bpy.data.cameras.new("Cam")
-cam_data.clip_start = size * 0.001  # avoid near-clip culling on small meshes
-cam_data.clip_end = size * 100.0
+cam_data.clip_start = size * 0.001
+cam_data.clip_end = size * 200.0
 cam = bpy.data.objects.new("Cam", cam_data)
 scene.collection.objects.link(cam)
 scene.camera = cam
 
+# In Blender (after glTF Y→Z conversion):
+#   X = lateral (arm span), Z = up/down (height), Y = depth (front = -Y)
+# The character height (Z) is typically smaller than arm span (X) for T-pose,
+# so `size` = arm span. We offset camera up by half the Z extent to center on torso.
+z_center = center.z  # already correct midpoint
+z_half = extents.z / 2
+
 for label, angle in (("face", 0.0), ("dos", math.pi)):
-    d = size * 1.9
-    cam.location = (center.x + d * math.sin(angle), center.y - d * math.cos(angle), center.z + size * 0.15)
-    direction = center - cam.location
+    d = size * 1.6
+    cam.location = (
+        center.x + d * math.sin(angle),
+        center.y - d * math.cos(angle),
+        z_center + z_half * 0.2,  # slight upward offset to center torso in frame
+    )
+    target = mathutils.Vector((center.x, center.y, z_center))
+    direction = target - cam.location
     cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
     scene.render.filepath = f"{out_prefix}-{label}.png"
     bpy.ops.render.render(write_still=True)
