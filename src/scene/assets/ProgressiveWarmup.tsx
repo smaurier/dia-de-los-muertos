@@ -53,6 +53,14 @@ export function ProgressiveWarmup() {
     // check below would fire markDone() prematurely (dismissing the loader at
     // the asset-phase 30% while compilation still runs). Wait for init.
     if (!initialized.current || finished.current) return
+    // The app-level fallback timer can force done externally (very slow GPUs,
+    // software GL). The loader fades either way — reveal the scene rather than
+    // leave a black screen; remaining shaders compile lazily on first draw.
+    if (useCompileProgress.getState().done) {
+      scene.visible = true
+      finished.current = true
+      return
+    }
     for (let i = 0; i < OBJECTS_PER_FRAME && queue.current.length > 0; i++) {
       const obj = queue.current.shift()!
       try { gl.compile(obj, camera, scene) } catch (e) { console.warn('[warmup] compile skipped', e) }
