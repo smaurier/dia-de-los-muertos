@@ -144,12 +144,22 @@ URL and swaps it onto the cloned material in `applyToon`. `familyConfig` gains a
 per-NPC variant field. No change to `GrandUncle` (single instance, already
 textured).
 
-## Testing
+## Testing / validation
 
-- **No unit tests** for the asset pipeline (Blender/Hunyuan/GLB) — validated
-  **in-engine** (visual): the pilot base-01 renders with a readable face/mouth,
-  correct skin/clothing, no artifacts; then each subsequent base; then per-NPC
-  variants look distinct; then the hero nose is clean.
+- **No unit tests** for the asset pipeline (Blender/Hunyuan/GLB).
+- **PRIMARY validation is OFFLINE via `scripts/preview_glb.py`**, NOT the game.
+  The game currently does not fully load (the compile-30% loader bug on `main`),
+  and during warmup the scene is hidden — so in-engine visual checks of a
+  re-textured base are blocked right now. Validate each textured GLB with
+  `preview_glb.py` (readable face/mouth, correct skin/clothing, no seams/artifacts,
+  face aligned — checks the project_face calibration). This also makes the pilot
+  loop fast (no game reload).
+- **Sequencing dependency:** full in-engine validation (and seeing the family at
+  the table) needs the loader fixed. Either finish the loader first (also needed
+  for the Netlify deploy), or rely on `preview_glb.py` until it is. The texturing
+  work itself does not depend on the loader — only its in-engine confirmation does.
+- After the loader is fixed: confirm in-engine — pilot base-01 face, then each
+  base, then per-NPC variants look distinct, then the hero nose is clean.
 - If Layer B option (b) adds a `variantTexture` field + a code path in
   `FamilyMemberGLB`, add a tiny pure test only if there is falsifiable logic (e.g.
   a variant→URL resolver); otherwise manual.
