@@ -35,11 +35,24 @@ tablée, the most-visible characters — + per-NPC variants + the hero nose fix.
 girl) so the ~8 placeholder children get real models; add one extra adult-woman
 base if base-03's four women still read as clones after recolor.
 
+## Spike 0 — Hunyuan texgen-on-mesh feasibility (DO FIRST, before the pilot)
+
+The chosen approach ("texgen") assumes the local Hunyuan3D-2GP server at
+`:8080` can **texture a provided UV'd mesh from an image**, not only generate
+geometry from an image. This is UNVERIFIED and it validates-or-kills the approach.
+Spike it first: probe the server's endpoints (the gradio API of the running
+Space) for a texture/paint stage; try to texture one small UV'd mesh. Outcome:
+- **If texgen-on-mesh exists** → proceed with Layer A as written.
+- **If it does NOT** → pivot: texture via `project_face` alone (projected head) +
+  a flat/sampled body tint, OR use a different texturer. The plan branches here.
+Do not batch four bases before this is answered.
+
 ## Pilot-first (de-risk)
 
-Do **base-01 end-to-end first** (mirrors how grand-oncle was the pilot), validate
-in-engine, THEN industrialise base-02/03/04. The unknown is UV-unwrap quality on a
-rigged Hunyuan mesh with no normals — prove it on one before batching four.
+After Spike 0, do **base-01 end-to-end** (mirrors how grand-oncle was the pilot),
+validate in-engine, THEN industrialise base-02/03/04. The remaining unknown is
+UV-unwrap quality on a rigged Hunyuan mesh with no normals — prove it on one
+before batching four.
 
 ## Constraints (from the AI-asset pipeline spec, 2026-07-10)
 
@@ -65,9 +78,12 @@ For each base GLB (`public/models/characters/base-0X.glb`):
    - Hunyuan **texgen** driven by `base-0X-multi.png` (via `drive_bases_texgen.py`,
      adapted to texture an existing UV'd mesh rather than regenerate geometry) →
      full-body atlas.
-   - **`project_face.py`** with the same `base-0X-multi.png` to overwrite the head
-     region with a sharp orthographic face projection (fidelity; this is what
-     makes the mouth/eyes readable), tuned via `--face-top`/`--face-bottom`.
+   - **`project_face.py`** to overwrite the head region with a sharp orthographic
+     face projection (fidelity; this is what makes the mouth/eyes readable). NOTE:
+     `project_face` expects a **FRONTAL face reference**, not the multiview sheet.
+     So first produce a `base-0X-face.png` — a frontal head crop of the base's
+     reference (from `base-0X-multi.png`'s front view) — and pass THAT to
+     `project_face`, tuned via `--face-top`/`--face-bottom`.
 3. **Optimise + install** — `npm run optimize-model` (gltf-transform: resize
    texture to 1k, prune) → overwrite `public/models/characters/base-0X.glb`.
 4. **Ledger** — add/update the line in `ASSETS-LEDGER.md`.
@@ -78,10 +94,25 @@ baseColorTexture — `applyToon` then renders it textured (map → `#ffffff`).
 ### Layer B — per-NPC differentiation
 
 The 4 bases are already distinct persons. For NPCs sharing a base, derive per-NPC
-**texture variants** by recolouring hair/clothing/skin regions of the base atlas
-(new `scripts/make_variant.py`): a hue/tone shift over region masks (or sampled
-regions, like `make_face_variants.py` does for eyelids). Produce e.g. distinct
-variants for the four base-03 women (different rebozo/dress/hair colours).
+**texture variants** by recolouring the base atlas. **The hard part is knowing
+which texels are hair vs clothing vs skin** — no masks exist, and a global
+hue-shift would wreck the skin. Resolve this explicitly (decide in the plan, in
+this preference order):
+1. **Bake region masks during Layer A** — when we UV-unwrap + texture, we know the
+   UV zones (head/body/hair by mesh region or by the reference sheet's regions).
+   Emit a per-base **region mask PNG** (e.g. R=skin, G=hair, B=clothing) alongside
+   the atlas. `make_variant.py` then recolours only the masked clothing/hair
+   channels per NPC. Cleanest; do this while the texturing context is open.
+2. **Colour-threshold heuristic** — segment the atlas by colour (dark = hair,
+   saturated = clothing, skin-tone = skin). Fragile on ambiguous colours; a
+   fallback only.
+3. **Weaker differentiation** — if masks prove too costly at the pilot, ship a
+   simpler variation: per-NPC hair-only recolour (hair is a distinct dark region,
+   easy to mask by luminance) + the existing per-NPC clothing already modelled in
+   the geometry, and accept faces stay identical per base. YAGNI floor.
+
+Produce distinct variants for the four base-03 women (different rebozo/dress/hair
+colours). Decide masks-vs-fallback at the pilot, not upfront.
 
 Assignment: extend `familyConfig` so each NPC points at its variant. Options
 resolved in the plan: either (a) separate variant GLB files per NPC
@@ -126,11 +157,15 @@ textured).
 
 ## Risks
 
+- **Hunyuan texgen-on-mesh may not exist** — the single biggest risk; resolved by
+  **Spike 0** before any base is processed (pivot to project_face-only if absent).
 - **UV-unwrap on a rigged, normal-less Hunyuan mesh** may produce ugly seams
-  (esp. on the face). The pilot exists to catch this before batching. Fallback:
+  (esp. on the face). The pilot catches this before batching. Fallback:
   face-forward projection unwrap for the head, Smart-UV for the body.
-- **Texgen on an existing UV'd mesh** — confirm `drive_bases_texgen.py`/Hunyuan can
-  texture a provided mesh (vs regenerate geometry); if not, texture via
-  `project_face` alone (body stays a flat tint, face is projected) as a fallback.
+- **Region identification for recolor** (Layer B) is the hardest differentiation
+  step — resolved by baking region masks during Layer A (preferred) or the fallback
+  ladder above; decided at the pilot.
+- **project_face needs a frontal crop**, not the multiview sheet — produce
+  `base-0X-face.png` per base (Layer A step 2).
 - Mixamo rig round-trips strip UVs/textures — so texturing must happen AFTER rig,
   on the final rigged GLB (which is what this design does).
