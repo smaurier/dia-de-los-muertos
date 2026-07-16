@@ -1,6 +1,6 @@
 // src/scene/living-room/familyConfig.ts
 import type { NPCConfig, Scenario } from '../../game/systems/npcSystem'
-import { BASE_URLS } from '../assets/manifest'
+import { BASE_URLS, NPC_VARIANT_TEX } from '../assets/manifest'
 
 // ─── Scenarios by type ────────────────────────────────────────────────
 
@@ -221,6 +221,7 @@ export const familyConfig: NPCConfig[] = [
     scenarios: uncleScenarios,
     meshColor: '#7A5533',
     modelUrl: BASE_URLS[0],
+    variantTexture: NPC_VARIANT_TEX.oncle1,
     clipIdle: 'Sitting Idle(4)',
     rotationY: Math.PI,
   },
@@ -251,6 +252,7 @@ export const familyConfig: NPCConfig[] = [
     scenarios: auntScenarios,
     meshColor: '#C27B5A',
     modelUrl: BASE_URLS[2],
+    variantTexture: NPC_VARIANT_TEX.tante1,
     clipIdle: 'Sitting Idle(4)',
     rotationY: Math.PI,
   },
@@ -261,6 +263,7 @@ export const familyConfig: NPCConfig[] = [
     scenarios: auntScenarios,
     meshColor: '#B8705A',
     modelUrl: BASE_URLS[2],
+    variantTexture: NPC_VARIANT_TEX.tante2,
     clipIdle: 'Sitting Idle(4)',
     rotationY: Math.PI,
   },
@@ -305,6 +308,7 @@ export const familyConfig: NPCConfig[] = [
     scenarios: youngUncleSeatedScenarios,
     meshColor: '#7B5535',
     modelUrl: BASE_URLS[0],
+    variantTexture: NPC_VARIANT_TEX['oncle-jeune'],
     clipIdle: 'Sitting Idle(4)',
     rotationY: Math.PI / 2,  // WEST end of table → facing +x (toward table)
   },
@@ -315,6 +319,7 @@ export const familyConfig: NPCConfig[] = [
     scenarios: youngAuntSeatedScenarios,
     meshColor: '#C07060',
     modelUrl: BASE_URLS[2],
+    variantTexture: NPC_VARIANT_TEX['tante-jeune'],
     clipIdle: 'Sitting Idle(4)',
     rotationY: Math.PI / 2,  // WEST end of table → facing +x (toward table)
   },

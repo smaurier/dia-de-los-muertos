@@ -34,6 +34,8 @@ export type NPCConfig = {
   clipIdle?: string
   rotationY?: number
   headBoneName?: string
+  /** Optional per-NPC baseColor override (variant PNG) applied on the cloned material. */
+  variantTexture?: string
 }
 
 export function pickScenario(scenarios: Scenario[], seed: number): Scenario {

@@ -3,7 +3,7 @@
 import { useRef, useEffect, useMemo } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { useGLTF, useAnimations } from '@react-three/drei'
+import { useGLTF, useAnimations, useTexture } from '@react-three/drei'
 import { SkeletonUtils } from 'three-stdlib'
 import { toonGradient } from '../shared/toonGradient'
 import { shouldTurnTowardPlayer } from '../../game/systems/npcSystem'
@@ -11,7 +11,9 @@ import type { NPCConfig } from '../../game/systems/npcSystem'
 
 interface Props { config: NPCConfig }
 
-function applyToon(scene: THREE.Object3D, meshColor: string) {
+const NO_VARIANT = '/textures/characters/blanc-1px.png'
+
+function applyToon(scene: THREE.Object3D, meshColor: string, overrideMap: THREE.Texture | null) {
   scene.traverse(obj => {
     if (!(obj as THREE.Mesh).isMesh) return
     const mesh = obj as THREE.Mesh
@@ -19,9 +21,10 @@ function applyToon(scene: THREE.Object3D, meshColor: string) {
     const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
     mesh.material = mats.map(m => {
       const std = m as THREE.MeshStandardMaterial
+      const map = overrideMap ?? std.map ?? null
       return new THREE.MeshToonMaterial({
-        map:         std.map ?? null,
-        color:       std.map ? '#ffffff' : meshColor,
+        map,
+        color:       map ? '#ffffff' : meshColor,
         gradientMap: toonGradient,
       })
     })
@@ -50,15 +53,22 @@ export function FamilyMemberGLB({ config }: Props) {
   // stable (useMemo) and always contains the bones. (drei-recommended root.)
   const { actions, names } = useAnimations(animations, clonedScene)
 
+  const variantTex = useTexture(config.variantTexture ?? NO_VARIANT)
+  // GLTF-embedded textures use flipY=false + sRGB; a drei-loaded PNG must match
+  // or the variant maps upside down and washed out.
+  variantTex.flipY = false
+  variantTex.colorSpace = THREE.SRGBColorSpace
+  variantTex.needsUpdate = true
+
   useEffect(() => {
-    applyToon(clonedScene, config.meshColor)
+    applyToon(clonedScene, config.meshColor, config.variantTexture ? variantTex : null)
 
     const boneName = config.headBoneName ?? 'mixamorigHead'
     headBoneRef.current =
       clonedScene.getObjectByName(boneName) ??
       clonedScene.getObjectByName('mixamorig:Head') ??
       null
-  }, [clonedScene, config.meshColor, config.headBoneName])
+  }, [clonedScene, config.meshColor, config.headBoneName, config.variantTexture, variantTex])
 
   useEffect(() => {
     const clip   = config.clipIdle ?? names[0]

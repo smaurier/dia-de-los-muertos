@@ -8,10 +8,10 @@ export const MAMA_URL = '/models/characters/mama.glb?v=3'
 export const GRAND_UNCLE_URL = '/models/characters/grand-oncle.glb?v=3'
 export const DOG_URL = '/models/characters/chien-puppy2.glb?v=3'
 export const BASE_URLS = [
-  '/models/characters/base-01.glb?v=6',
+  '/models/characters/base-01.glb?v=9',
   '/models/characters/base-02.glb?v=3',
-  '/models/characters/base-03.glb?v=7',
-  '/models/characters/base-04.glb?v=7',
+  '/models/characters/base-03.glb?v=9',
+  '/models/characters/base-04.glb?v=9',
 ] as const
 
 // ── Prop GLBs ──
@@ -39,6 +39,14 @@ export const CUSHION_TEX_URLS = [
   '/textures/coussin-violet-01.png',
 ] as const
 
+export const NPC_VARIANT_TEX = {
+  oncle1:        '/textures/characters/base-01-oncle1.png',
+  'oncle-jeune': '/textures/characters/base-01-oncle-jeune.png',
+  tante1:        '/textures/characters/base-03-tante1.png',
+  tante2:        '/textures/characters/base-03-tante2.png',
+  'tante-jeune': '/textures/characters/base-03-tante-jeune.png',
+} as const
+
 // ── Aggregates for the preloader ──
 export const MODEL_URLS: string[] = [
   HERO_URL, MAMA_URL, GRAND_UNCLE_URL, DOG_URL, ...BASE_URLS,
@@ -47,4 +55,5 @@ export const MODEL_URLS: string[] = [
 export const TEXTURE_URLS: string[] = [
   TEX_ADOBE, TEX_TOMETTES, TEX_STONE, TEX_WOOD_DARK, TEX_AZULEJOS, TEX_TABLECLOTH,
   ...CUSHION_TEX_URLS,
+  ...Object.values(NPC_VARIANT_TEX),
 ]
