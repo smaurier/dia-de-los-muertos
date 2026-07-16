@@ -5,10 +5,18 @@
 # so the back of the head shows hair/clothing from the back reference instead
 # of a mirrored copy of the face.
 #
+# --face-flat T  (float, default 0.80): for FRONT-facing texels whose 3D y is
+#   in the top band (y >= my0 + T*(my1-my0)), replace the direct reference
+#   sample (which would paint a blurry face) with the per-row center-median
+#   color (median of fg pixels within the central 50% x-extent of that row).
+#   This produces smooth skin/hair tones with no facial features, so that
+#   project_face.py can paint a clean sharp face on top without ghosting.
+#
 # Usage:
 #   python scripts/bake_flat_texture.py <in.glb> <front_ref.png> <out.glb>
 #       [--back back_ref.png]
 #       [--skip-top-rows N]  (rows at top of ref to ignore for label, default 80)
+#       [--face-flat T]      (face band threshold, default 0.80)
 import sys
 
 import numpy as np
@@ -18,6 +26,7 @@ from PIL import Image
 in_glb, ref_png, out_glb = sys.argv[1:4]
 SKIP_TOP = int(sys.argv[sys.argv.index("--skip-top-rows") + 1]) if "--skip-top-rows" in sys.argv else 80
 BACK_PNG = sys.argv[sys.argv.index("--back") + 1] if "--back" in sys.argv else None
+FACE_FLAT = float(sys.argv[sys.argv.index("--face-flat") + 1]) if "--face-flat" in sys.argv else 0.80
 
 scene = trimesh.load(in_glb, process=False)
 mesh = max(
@@ -84,23 +93,37 @@ def prepare_ref(path):
 
     ref_arr = np.asarray(ref)
     row_median = np.zeros((Href, 3), dtype=np.float32)
+    row_center_median = np.zeros((Href, 3), dtype=np.float32)
     for r in fg_row_indices:
-        row_median[r] = np.median(ref_arr[r][fg[r]], axis=0)
+        row_px = ref_arr[r][fg[r]]
+        row_median[r] = np.median(row_px, axis=0)
+        # center-median: median of fg pixels within the central 50% x-extent
+        row_xs = np.where(fg[r])[0]
+        cx0 = row_xs[0] + (row_xs[-1] - row_xs[0]) * 0.25
+        cx1 = row_xs[0] + (row_xs[-1] - row_xs[0]) * 0.75
+        center_mask = (row_xs >= cx0) & (row_xs <= cx1)
+        if center_mask.any():
+            row_center_median[r] = np.median(ref_arr[r][row_xs[center_mask]], axis=0)
+        else:
+            row_center_median[r] = row_median[r]
 
-    return ref_arr, fg, (ix0, ix1, iy0, iy1), nearest_fg_row, row_median
+    return ref_arr, fg, (ix0, ix1, iy0, iy1), nearest_fg_row, row_median, row_center_median
 
 
 print(f"[bake] loading FRONT ref: {ref_png}")
-front_arr, front_fg, (fix0, fix1, fiy0, fiy1), front_nfr, front_median = prepare_ref(ref_png)
+front_arr, front_fg, (fix0, fix1, fiy0, fiy1), front_nfr, front_median, front_center_median = prepare_ref(ref_png)
 print(f"[bake] front silhouette (skip_top={SKIP_TOP}): x[{fix0},{fix1}] y[{fiy0},{fiy1}]")
+
+# face-flat band threshold in mesh y-space (precomputed after mesh load)
+# (mx0/my0/mx1/my1 are set further below — we defer this line)
 
 if BACK_PNG:
     print(f"[bake] loading BACK ref: {BACK_PNG}")
-    back_arr, back_fg, (bix0, bix1, biy0, biy1), back_nfr, back_median = prepare_ref(BACK_PNG)
+    back_arr, back_fg, (bix0, bix1, biy0, biy1), back_nfr, back_median, back_center_median = prepare_ref(BACK_PNG)
     print(f"[bake] back silhouette (skip_top={SKIP_TOP}): x[{bix0},{bix1}] y[{biy0},{biy1}]")
 else:
     print("[bake] no --back ref; back-facing triangles will use front view (legacy mode)")
-    back_arr = back_fg = back_nfr = back_median = None
+    back_arr = back_fg = back_nfr = back_median = back_center_median = None
     bix0 = bix1 = biy0 = biy1 = None
 
 
@@ -124,6 +147,10 @@ def to_image_back(px, py):
     iy_back = biy1 - v * (biy1 - biy0)
     return ix_back, iy_back
 
+
+# ── Face-flat band: mesh y threshold above which bake uses center-median ──────
+face_flat_y = my0 + FACE_FLAT * (my1 - my0)
+print(f"[bake] face-flat band: y >= {face_flat_y:.3f} (FACE_FLAT={FACE_FLAT}, my0={my0:.3f}, my1={my1:.3f})")
 
 # ── Per-triangle rasterisation ────────────────────────────────────────────────
 painted = np.zeros((H, W), dtype=bool)
@@ -178,6 +205,15 @@ for f in faces:
         colors = front_arr[sy, sx].astype(np.float32)
         on_bg = ~front_fg[sy, sx]
         colors[on_bg] = front_median[sy][on_bg]
+        # Face-flat: texels in the face band AND front-facing -> replace
+        # with row center-median (smooth skin/hair tone, no facial features).
+        # Only applies when the triangle's mean 3D y is in the face band and
+        # mean_nz >= 0 (front-facing, not profile/back).
+        if mean_nz >= 0:
+            in_face_band = p[..., 1] >= face_flat_y  # shape (rows, cols)
+            if in_face_band.any():
+                flat_colors = front_center_median[sy]  # per-texel center-median
+                colors[in_face_band] = flat_colors[in_face_band]
         front_count += 1
 
     ys_ = slice(max(0, y0), min(H, y1))

@@ -186,7 +186,9 @@ for f in faces:
         + w2[..., None] * normals[f[2]]
     )
     band = np.clip((p[..., 1] - face_y0) / (0.06 * mh), 0, 1)
-    frontness = np.clip(n[..., 2] / (np.linalg.norm(n, axis=-1) + 1e-9) * 2.2, 0, 1)
+    # Steeper frontness: reaches 1.0 quickly so the whole front face paints
+    # at full alpha with minimal half-transparent mix zone at the sides.
+    frontness = np.clip(n[..., 2] / (np.linalg.norm(n, axis=-1) + 1e-9) * 4.0, 0, 1)
     weight = np.where(inside, band * frontness, 0.0)
     # échantillonnage de la référence
     sx, sy = to_image(p[..., 0], p[..., 1])
@@ -207,7 +209,10 @@ for f in faces:
 print(f"[proj] triangles projetés: {tri_count}, texels touchés: {(painted > 0).sum()}")
 
 # ── Fusion : atlas Hunyuan <- projection pondérée ────────────────────────────
-alpha = painted[..., None]
+# Hard-clamp: where weight > 0.5, project at full opacity (no half-transparent
+# bake bleeding through); soft blend only at the outer fringe (weight <= 0.5).
+painted_hard = np.where(painted > 0.5, 1.0, painted)
+alpha = painted_hard[..., None]
 blended = atlas.astype(np.float32) * (1 - alpha) + src * alpha
 atlas_out = blended.clip(0, 255).astype(np.uint8)
 
