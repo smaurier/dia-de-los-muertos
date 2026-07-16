@@ -32,8 +32,9 @@ scene.world.use_nodes = True
 scene.world.node_tree.nodes["Background"].inputs[0].default_value = (0.25, 0.25, 0.28, 1)
 
 # Cadrage sur la bbox de l'objet importé
-# Ignore helper meshes (e.g. culling Icospheres) — frame only skinned meshes
-# when present, otherwise all meshes.
+# Cadre seulement les meshes skinnés : les GLB de personnages embarquent de la
+# géométrie utilitaire (Icosphere unitaire de culling) qui dominerait la bbox
+# et éloignerait la caméra. Fallback : tous les meshes si aucun skinné.
 import mathutils
 mins = mathutils.Vector((1e9,) * 3)
 maxs = mathutils.Vector((-1e9,) * 3)

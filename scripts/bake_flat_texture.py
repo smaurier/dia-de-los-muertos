@@ -36,8 +36,8 @@ mx0, my0, _ = verts.min(axis=0)
 mx1, my1, _ = verts.max(axis=0)
 
 def to_image(px, py):
-    u = (px - mx0) / (mx1 - mx0)
-    v = (py - my0) / (my1 - my0)
+    u = (px - mx0) / max(mx1 - mx0, 1e-9)
+    v = (py - my0) / max(my1 - my0, 1e-9)
     return ix0 + u * (ix1 - ix0), iy1 - v * (iy1 - iy0)
 
 painted = np.zeros((H, W), dtype=bool)
