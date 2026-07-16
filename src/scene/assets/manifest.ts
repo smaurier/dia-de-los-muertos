@@ -3,7 +3,7 @@
 // preloader loads MODEL_URLS + TEXTURE_URLS as one batch.
 
 // ── Character GLBs ──
-export const HERO_URL = '/models/characters/heros.glb?v=3'
+export const HERO_URL = '/models/characters/heros.glb?v=4'
 export const MAMA_URL = '/models/characters/mama.glb?v=3'
 export const GRAND_UNCLE_URL = '/models/characters/grand-oncle.glb?v=3'
 export const DOG_URL = '/models/characters/chien-puppy2.glb?v=3'

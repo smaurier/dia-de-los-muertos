@@ -18,6 +18,8 @@ Une ligne = source exacte, licence, date. Les sorties d'outils non-commerciaux
 | `public/models/characters/base-03.glb` | Modèle 3D riggé + anim retexturé (femme adulte — maman, tante1, tante2, tante-jeune) | Géométrie Hunyuan3D-2GP + rig Mixamo existant → Smart-UV unwrap (unwrap_base.py) → bake_flat_texture.py (body) → project_face.py --face-top 1.0 --face-bottom 0.80 (visage) → swap_texture.py (atlas → GLB riggé) → gltf-transform resize 1024 | Commercial OK (chaîne complète) — rig Mixamo : usage in-product OK | 2026-07-16 |
 | `public/models/characters/base-04.glb` | Modèle 3D riggé + anim retexturé (femme âgée — grande-tante) | Géométrie Hunyuan3D-2GP + rig Mixamo existant → Smart-UV unwrap (unwrap_base.py) → bake_flat_texture.py (body) → project_face.py --face-top 1.0 --face-bottom 0.80 (visage) → swap_texture.py (atlas → GLB riggé) → gltf-transform resize 1024 | Commercial OK (chaîne complète) — rig Mixamo : usage in-product OK | 2026-07-16 |
 
+| `public/models/characters/heros.glb` | Modèle 3D riggé + anim (héros enfant) — correctif texture | Atlas 2048×2048 extrait (trimesh) → artefact rouge sur le nez localisé (atlas y=261, x=1702, RGB 207,18,18) → 71 texels repeints au ton chair médian [211,174,150] (fix_hero_nose.py --box 1692,251,1714,273) → swap_texture.py (Blender) → rig + 5 clips préservés | Commercial OK (rig/anim Mixamo, usage in-product) | 2026-07-16 |
+
 Notes :
 - FBX Mixamo bruts et intermédiaires : conservés en local (`docs/references/characters/*/mixamo|work/`), gitignorés — la licence Mixamo couvre l'usage dans le produit, pas la redistribution de fichiers standalone sur un repo public.
 - Images de référence (`docs/references/**/*.png`) : générées ChatGPT/Nano Banana, propriété utilisateur, usage documentation.
