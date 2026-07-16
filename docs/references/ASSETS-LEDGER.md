@@ -14,6 +14,8 @@ Une ligne = source exacte, licence, date. Les sorties d'outils non-commerciaux
 | `public/models/props/table.glb` | Prop 3D statique (non intégrée — banquet 8.5 m impossible en scale uniforme, nappe masque le placeholder) | Image ChatGPT → Hunyuan3D-2 HF Space → gltf-transform weld+simplify (ratio 0.3) | Commercial OK | 2026-07-10 |
 | `public/textures/*.png` (mur-adobe, sol-tomettes, nappe-brodee, bois-sombre) | Textures peintes | Image ChatGPT (GPT-4o, sortie propriété utilisateur), tiling MirroredRepeat côté moteur | Commercial OK | 2026-07-10 |
 
+| `public/models/characters/base-01.glb` | Modèle 3D statique (mesh de base retexturé, pilote) | Géométrie Hunyuan3D-2GP existante → Smart-UV unwrap (Blender headless unwrap_base.py) → bake texture plate depuis base-01-front.png (bake_flat_texture.py) → projection visage (project_face.py) → gltf-transform resize 1024 + prune | Commercial OK (chaîne complète) — licence géométrie Hunyuan inchangée ; image-driven (pas de prompt) | 2026-07-16 |
+
 Notes :
 - FBX Mixamo bruts et intermédiaires : conservés en local (`docs/references/characters/*/mixamo|work/`), gitignorés — la licence Mixamo couvre l'usage dans le produit, pas la redistribution de fichiers standalone sur un repo public.
 - Images de référence (`docs/references/**/*.png`) : générées ChatGPT/Nano Banana, propriété utilisateur, usage documentation.
