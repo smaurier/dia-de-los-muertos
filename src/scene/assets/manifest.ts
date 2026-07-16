@@ -8,10 +8,10 @@ export const MAMA_URL = '/models/characters/mama.glb?v=3'
 export const GRAND_UNCLE_URL = '/models/characters/grand-oncle.glb?v=3'
 export const DOG_URL = '/models/characters/chien-puppy2.glb?v=3'
 export const BASE_URLS = [
-  '/models/characters/base-01.glb?v=9',
+  '/models/characters/base-01.glb?v=10',
   '/models/characters/base-02.glb?v=3',
-  '/models/characters/base-03.glb?v=9',
-  '/models/characters/base-04.glb?v=9',
+  '/models/characters/base-03.glb?v=10',
+  '/models/characters/base-04.glb?v=10',
 ] as const
 
 // ── Prop GLBs ──
