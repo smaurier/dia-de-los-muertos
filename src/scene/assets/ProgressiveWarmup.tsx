@@ -28,6 +28,7 @@ export function ProgressiveWarmup() {
   const total = useRef(0)
   const compiled = useRef(0)
   const finished = useRef(false)
+  const initialized = useRef(false) // guard: useFrame can tick before this effect runs
 
   useEffect(() => {
     const sat = scene.getObjectByName(SATELLITE_GROUP)
@@ -42,12 +43,16 @@ export function ProgressiveWarmup() {
     total.current = queue.current.length
     compiled.current = 0
     finished.current = false
+    initialized.current = true
     scene.visible = false // render nothing heavy while we compile hidden
     return () => { scene.visible = true }
   }, [scene])
 
   useFrame(() => {
-    if (finished.current) return
+    // Until the effect has built the queue, total is 0 and the empty-queue
+    // check below would fire markDone() prematurely (dismissing the loader at
+    // the asset-phase 30% while compilation still runs). Wait for init.
+    if (!initialized.current || finished.current) return
     for (let i = 0; i < OBJECTS_PER_FRAME && queue.current.length > 0; i++) {
       const obj = queue.current.shift()!
       try { gl.compile(obj, camera, scene) } catch (e) { console.warn('[warmup] compile skipped', e) }
