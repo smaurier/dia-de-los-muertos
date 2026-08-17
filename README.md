@@ -1,5 +1,11 @@
 # Día de Muertos
 
+![React](https://img.shields.io/badge/-React-61DAFB?style=flat-square&logo=react&logoColor=black)
+![Three.js](https://img.shields.io/badge/-Three.js-000000?style=flat-square&logo=three.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Vitest](https://img.shields.io/badge/-Vitest-6E9F18?style=flat-square&logo=vitest&logoColor=white)
+![License](https://img.shields.io/badge/license-All_Rights_Reserved-lightgrey?style=flat-square)
+
 A narrative browser game about a child who gets lost in the family house during the Día de Muertos celebration. Magical realism is the default regime of reality: the supernatural is not another world — it is the same world, with more depth of field.
 
 **One evening. Continuous. 9 chapters. One song. One dog. One adult.**
