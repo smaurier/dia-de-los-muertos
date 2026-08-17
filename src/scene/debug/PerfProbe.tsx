@@ -56,7 +56,7 @@ function PerfLogger() {
       programs: info.programs?.length ?? 0,
     }
     samples.current.push(sample)
-    // eslint-disable-next-line no-console
+     
     console.log('[PERF]', JSON.stringify(sample))
     a.frames = 0
     a.time = 0

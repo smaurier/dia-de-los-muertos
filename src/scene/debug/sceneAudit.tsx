@@ -113,7 +113,7 @@ export function runSceneAudit(scene: THREE.Scene): void {
     .filter(pl => !pl.doubleSided && pl.area >= 2.0)
     .map(pl => `${pl.name} ${fmt(pl.pos)} — ${pl.area.toFixed(1)} m², normale ${fmt(pl.normal)}`)
 
-  /* eslint-disable no-console */
+   
   console.group('%c=== SCENE GRAPHICAL AUDIT ===', 'color:#E8940A;font-weight:bold')
   console.log(`Meshes: ${meshCount} | Lights: ${lightCount} | Planar reflectors: ${reflectorCount} | Planes ≥0.2 m²: ${planes.length}`)
   if (lightCount > 40) console.warn(`⚠ ${lightCount} lights — high budget for a 1660 Ti`)
@@ -133,7 +133,7 @@ export function runSceneAudit(scene: THREE.Scene): void {
   console.groupEnd()
 
   console.groupEnd()
-  /* eslint-enable no-console */
+   
 }
 
 // Probe to mount in the scene: does nothing without ?audit.
